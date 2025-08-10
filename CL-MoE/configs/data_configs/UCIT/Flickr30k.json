@@ -1,0 +1,5 @@
+{
+  "train_path": "/your_path/UCIT/Flickr30k/train.json",
+  "test_path": "/your_path/UCIT/Flickr30k/test.json",
+  "image_folder": "/your_path/UCIT/datasets"
+}
