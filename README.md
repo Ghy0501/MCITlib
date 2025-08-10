@@ -49,6 +49,9 @@ huggingface-cli download openai/clip-vit-large-patch14-336 --local-dir /your_pat
 ```
 We also plan to extend our reproduction to other MLLM architectures in the near future.
 
+Note: For methods such as HiDe that require loading an additional `text_tower`, please modify the `config` file in `llava-v1.5-7b` accordingly. For more details, refer to the [HiDe-LLaVA](https://github.com/Ghy0501/HiDe-LLaVA) repository.
+
+
 ## 🏃 How to run
 ### 1. Clone this repository
 ```
