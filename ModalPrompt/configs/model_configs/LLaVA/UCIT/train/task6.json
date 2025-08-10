@@ -1,0 +1,15 @@
+{
+  "gpu_num": 8,
+  "model_name": "/your_path/llava-v1.5-7b",
+  "mm_projector": "/your_path/llava-v1.5-7b/mm_projector.bin",
+  "previous_model": "/your_path/checkpoints/UCIT/LLaVA-1.5/ModalPrompt/Task5_llava",
+  "vision_tower": "/your_path/clip-vit-large-patch14-336",
+  "output_dir": "/your_path/checkpoints/UCIT/LLaVA-1.5/ModalPrompt/Task6_llava",
+  "prefix_len": 10,
+  "num_tasks": 6,
+  "cur_task": 6,
+  "epoch": 10,
+  "batch_size": 24,
+  "grad_acc": 1,
+  "lr": 2e-4
+}

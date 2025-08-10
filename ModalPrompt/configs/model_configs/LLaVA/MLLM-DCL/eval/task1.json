@@ -1,0 +1,10 @@
+{
+  "gpu_num": 8,
+  "stage": "ModalPrompt-task1",
+  "model_path": "/your_path/checkpoints/MLLM-DCL/LLaVA-1.5/ModalPrompt/Task1_llava",
+  "model_base": "/your_path/llava-v1.5-7b",
+  "text_tower": "/your_path/clip-vit-large-patch14-336",
+  "prefix_len": 20,
+  "cur_task": 1,
+  "num_task":5
+}

@@ -1,0 +1,9 @@
+{
+  "gpu_num": 8,
+  "stage": "ModalPrompt-task2",
+  "model_path": "/your_path/checkpoints/UCIT/LLaVA-1.5/ModalPrompt/Task2_llava",
+  "model_base": "/your_path/llava-v1.5-7b",
+  "prefix_len": 10,
+  "cur_task": 2,
+  "num_task": 6
+}
