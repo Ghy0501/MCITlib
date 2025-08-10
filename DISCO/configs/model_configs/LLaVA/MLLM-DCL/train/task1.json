@@ -1,0 +1,14 @@
+{
+  "gpu_num": 8,
+  "rank": 160,
+  "expert_num": 5,
+  "model_name": "/your_path/llava-v1.5-7b",
+  "mm_projector": "/your_path/llava-v1.5-7b/mm_projector.bin",
+  "vision_tower": "/your_path/clip-vit-large-patch14-336",
+  "output_dir": "/your_path/checkpoints/MLLM-DCL/LLaVA-1.5/DISCO/Task1_llava_lora",
+  "cur_task": 0,
+  "epoch": 1,
+  "batch_size": 4,
+  "grad_acc": 2,
+  "lr": 2e-5
+}

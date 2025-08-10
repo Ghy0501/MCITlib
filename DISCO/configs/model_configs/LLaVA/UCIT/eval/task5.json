@@ -1,0 +1,8 @@
+{
+  "gpu_num": 8,
+  "stage": "DISCO-task5",
+  "model_path": "/your_path/checkpoints/UCIT/LLaVA-1.5/DISCO/Task5_llava_lora",
+  "model_base": "/your_path/llava-v1.5-7b",
+  "text_tower": "/your_path/clip-vit-large-patch14-336",
+  "num_task": 6
+}
