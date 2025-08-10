@@ -4,6 +4,10 @@
 
 Welcome to MCITlib — a comprehensive library for continual instruction tuning based on multimodal large language models. This repository continuously integrates a range of existing methods, including MoELoRA, HiDe-LLaVA, and CL-MoE. In addition, MCITlib provides evaluation results for these methods across diverse benchmarks and model architectures. Through MCITlib, we hope to foster broader interest and engagement in this promising research field.
 
+## 📰 News
+
+- **[2025.08.10]** Initial version of MCITlib is released. :tada:
+
 ## 🥇 Methods Provided
 - `LoRA-FT`: Baseline method which simply updates LoRA parameters on new tasks. [[Paper]](https://arxiv.org/pdf/2106.09685v1/1000) ![](https://img.shields.io/badge/ICLR-2022-blue)
 - `O-LoRA`: Orthogonal subspace learning for language model continual learning. [[Paper]](https://arxiv.org/pdf/2310.14152) ![](https://img.shields.io/badge/EMNLP_findings-2023-blue)
@@ -34,6 +38,7 @@ We currently report results on the [UCIT](https://github.com/Ghy0501/HiDe-LLaVA)
         |-- ImageNet-R
         |-- VizWiz
 ```
+We also plan to extend our reproduction to other benchmarks in the near future.
 
 ## ⚾ Models
 
@@ -42,6 +47,7 @@ We currently provide a reproduction based on the [LLaVA-1.5-7B](https://arxiv.or
 huggingface-cli download liuhaotian/llava-v1.5-7b --local-dir /your_path/llava-v1.5-7b
 huggingface-cli download openai/clip-vit-large-patch14-336 --local-dir /your_path/clip-vit-large-patch14-336
 ```
+We also plan to extend our reproduction to other MLLM architectures in the near future.
 
 ## 🏃 How to run
 ### 1. Clone this repository
