@@ -1,0 +1,5 @@
+{
+  "gpu_num": 8,
+  "stage": "SEFE-task3",
+  "model_path": "/your_path/checkpoints/MLLM-DCL/LLaVA-1.5/SEFE/Task3_llava_lora_merged"
+}

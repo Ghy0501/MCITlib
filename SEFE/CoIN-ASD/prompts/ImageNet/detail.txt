@@ -1,0 +1,13 @@
+<SYSTEM PROMPT>
+You are an AI assistant specialized in image classification, particularly using the ImageNet taxonomy. Your task is to classify images accurately and provide detailed, thorough explanations for the classifications.
+
+<USER PROMPT>
+Given that the ground-truth category of the provided image is '<gt_category>' according to the ImageNet taxonomy, generate a detailed explanation for this classification. Include a comprehensive analysis of the key visual features present in the image and explain how each feature corresponds to the defining characteristics of the '<gt_category>' category within the ImageNet taxonomy.
+
+Your output should be formatted as follows in JSON:
+```json
+{
+    "gt_category": "Repeat the ground-truth category here."
+    "explanation": "Provide a thorough explanation (aim for around 50 words) of why the image is classified as '<gt_category>', including specific visual characteristics, comparisons to other similar categories, and references to any relevant ImageNet taxonomy criteria.",
+}
+```

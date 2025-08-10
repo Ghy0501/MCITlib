@@ -1,0 +1,5 @@
+{
+  "train_path": "/your_path/Domain_data/Med/train.json",
+  "test_path": "/your_path/Domain_data/Med/test.json",
+  "image_folder": "/your_path/Domain_data/Med"
+}
