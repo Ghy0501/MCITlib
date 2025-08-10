@@ -1,0 +1,15 @@
+{
+  "gpu_num": 8,
+  "rank": 160,
+  "expert_num": 5,
+  "model_name": "/your_path/llava-v1.5-7b",
+  "previous_model": "/your_path/checkpoints/MLLM-DCL/LLaVA-1.5/OLoRA/Task1_llava_lora",
+  "vision_tower": "/your_path/clip-vit-large-patch14-336",
+  "output_dir": "/your_path/checkpoints/MLLM-DCL/LLaVA-1.5/OLoRA/Task2_llava_lora",
+  "epoch": 3,
+  "batch_size": 2,
+  "grad_acc": 2,
+  "lr": 2e-5,
+  "cur_task": 1,
+  "gradient_checkpointing": "False"
+}

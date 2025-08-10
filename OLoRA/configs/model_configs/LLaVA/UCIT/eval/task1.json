@@ -1,0 +1,6 @@
+{
+  "gpu_num": 8,
+  "stage": "OLoRA-task1",
+  "model_path": "/your_path/checkpoints/UCIT/LLaVA-1.5/OLoRA/Task1_llava_lora",
+  "model_base": "/your_path/llava-v1.5-7b"
+}
