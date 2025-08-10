@@ -1,0 +1,8 @@
+{
+  "gpu_num": 8,
+  "stage": "HiDe-task4",
+  "model_path": "/your_path/checkpoints/UCIT/LLaVA-1.5/HiDe/Task4_llava_lora",
+  "model_base": "/your_path/llava-v1.5-7b",
+  "text_tower": "/your_path/clip-vit-large-patch14-336",
+  "num_task": 6
+}
