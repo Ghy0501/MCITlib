@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TRAIN_CONFIG=$1
+MODEL_CONFIG=$1
 DATA_CONFIG=$2
 
 read_config() {
