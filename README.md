@@ -40,7 +40,7 @@ We currently report results on the [UCIT](https://github.com/Ghy0501/HiDe-LLaVA)
 ```
 We also plan to extend our reproduction to other benchmarks in the near future.
 
-## ⚾ Models
+## 🎨 Models
 
 We currently provide a reproduction based on the [LLaVA-1.5-7B](https://arxiv.org/pdf/2310.03744) model. Please download it to your local directory.
 ```
