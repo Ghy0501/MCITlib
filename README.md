@@ -1,5 +1,7 @@
 # 🌅 MCITlib: Multimodal Continual Instruction Tuning Library and Benchmark
 
+[![📑 Paper (arXiv:2508.07307)](https://img.shields.io/badge/arXiv-2503.12941-b31b1b.svg?logo=arXiv)](https://arxiv.org/pdf/2508.07307)
+
 ## ✨ Introduction
 
 Welcome to MCITlib — a comprehensive library for continual instruction tuning based on multimodal large language models. This repository continuously integrates a range of existing methods, including MoELoRA, HiDe-LLaVA, and CL-MoE. In addition, MCITlib provides evaluation results for these methods across diverse benchmarks and model architectures. Through MCITlib, we hope to foster broader interest and engagement in this promising research field.
