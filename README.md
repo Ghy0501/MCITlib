@@ -1,6 +1,6 @@
 # 🌅 MCITlib: Multimodal Continual Instruction Tuning Library and Benchmark
 
-[![📑 Paper (arXiv:2508.07307)](https://img.shields.io/badge/arXiv-2503.12941-b31b1b.svg?logo=arXiv)](https://arxiv.org/pdf/2508.07307)
+[![📑 Paper (arXiv:2508.07307)](https://img.shields.io/badge/arXiv-2508.07307-b31b1b.svg?logo=arXiv)](https://arxiv.org/pdf/2508.07307)
 
 ## ✨ Introduction
 
