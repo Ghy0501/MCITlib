@@ -6,6 +6,11 @@
 
 Welcome to MCITlib — a comprehensive library for continual instruction tuning based on multimodal large language models. This repository continuously integrates a range of existing methods, including MoELoRA, HiDe-LLaVA, and CL-MoE. In addition, MCITlib provides evaluation results for these methods across diverse benchmarks and model architectures. Through MCITlib, we hope to foster broader interest and engagement in this promising research field.
 
+## 📆 TODO
+
+- [ ] Updated results and codes on the **MLLM-ACL** dataset using **LLaVA-1.5-7B** as the base model.
+- [ ] Updated results and codes on the **MLLM-DCL** and **UCIT** dataset using **InternVL-Chat-7B** as the base model.
+
 ## 📰 News
 
 - **[2025.08.12]** Initial [MCITlib](https://arxiv.org/pdf/2508.07307) paper released! :tada:
