@@ -90,6 +90,17 @@ sh scripts/CoIN/Train_DCL/train_all.sh
 ```
 The program will automatically perform both training and inference. However, for ModalPrompt, training and inference must be executed separately. Please refer to its [repository](https://github.com/AuroraZengfh/ModalPrompt) for detailed instructions.
 
+## Citation
+
+```bibtex
+@article{guo2025mcitlib,
+  title={MCITlib: Multimodal Continual Instruction Tuning Library and Benchmark},
+  author={Guo, Haiyang and Zhu, Fei and Zhao, Hongbo and Zeng, Fanhu and Liu, Wenzhuo and Ma, Shijie and Wang, Da-Han and Zhang, Xu-Yao},
+  journal={arXiv preprint arXiv:2508.07307},
+  year={2025}
+}
+```
+
 ## 🤝 Acknowledgments
 
 We thank the following repos providing helpful functions in our work.
