@@ -13,6 +13,7 @@ Welcome to MCITlib — a comprehensive library for continual instruction tuning 
 
 ## 📰 News
 
+- **[2025.09.16]** We have updated the new version of the [paper](https://arxiv.org/pdf/2508.07307) and attached the accuracy matrix of each method for reference. :tada:
 - **[2025.08.12]** Initial [MCITlib](https://arxiv.org/pdf/2508.07307) paper released! :tada:
 - **[2025.08.10]** Initial version of MCITlib is released. :tada:
 
