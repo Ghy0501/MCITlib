@@ -1,4 +1,17 @@
+<p align="center">
+<img src="./resources/MCITlib.png"  width="800px">
+</p>
 <h2 align="center"> <a href="https://arxiv.org/pdf/2508.07307">MCITlib: Multimodal Continual Instruction Tuning Library and Benchmark</a></h2>
+<p align="center">
+  <a href="#-introduction">✨Introduction</a> •
+  <a href="#-methods-provided">🥇 Methods Provided</a> •
+  <a href="#-benchmarks">🏦 Benchmarks</a> •
+  <a href="#-models">🎨 Models</a> <br />
+  <a href="#-how-to-run">🏃 How to run</a> •
+  <a href="#-acknowledgments">🤝 Acknowledgments</a> •
+  <a href="#-contact">🙂 Contact</a>
+</p>
+
 <h5 align="center"> If you like our project, please give us a star ⭐ on GitHub for latest update.  </h2>
 
 <h5 align="center">
@@ -12,15 +25,39 @@
 
 ## ✨ Introduction
 
-Welcome to MCITlib — a comprehensive library for continual instruction tuning based on multimodal large language models. This repository continuously integrates a range of existing methods, including MoELoRA, HiDe-LLaVA, and CL-MoE. In addition, MCITlib provides evaluation results for these methods across diverse benchmarks and model architectures. Through MCITlib, we hope to foster broader interest and engagement in this promising research field.
+Welcome to **MCITlib** — a comprehensive library for continual instruction tuning based on multimodal large language models. This repository continuously integrates a range of existing methods, including MoELoRA, HiDe-LLaVA, and CL-MoE. In addition, MCITlib provides evaluation results for these methods across diverse benchmarks and model architectures. Through MCITlib, we hope to foster broader interest and engagement in this promising research field.
 
-## 📆 TODO
+<details open><summary>🫰 We also have other multimodal continual instruction tuning projects that may interest you 🫰. </summary><p>
+<!--  may -->
+    
+> [**HiDe-LLaVA: Hierarchical Decoupling for Continual Instruction Tuning of Multimodal Large Language Model**](https://arxiv.org/pdf/2503.12941) <br>
+> Haiyang Guo, Fanhu Zeng, Ziwei Xiang, Fei Zhu, Da-Han Wang, Xu-Yao Zhang, Cheng-Lin Liu <br>
+[![github](https://img.shields.io/badge/-Github-black?logo=github)](https://github.com/Ghy0501/HiDe-LLaVA) [![arXiv](https://img.shields.io/badge/Arxiv-2503.12941-b31b1b.svg?logo=arXiv)](https://arxiv.org/pdf/2503.12941) ![](https://img.shields.io/badge/ACL-2025-blue) <br>
 
-- [ ] Updated results and codes on the **MLLM-ACL** dataset using **LLaVA-1.5-7B** as the base model.
-- [ ] Updated results and codes on the **MLLM-DCL** and **UCIT** dataset using **InternVL-Chat-7B** as the base model.
+> [**Federated Continual Instruction Tuning**](https://arxiv.org/pdf/2503.12897) <br>
+> Haiyang Guo, Fanhu Zeng, Fei Zhu, Wenzhuo Liu, Da-Han Wang, Jian Xu, Xu-Yao Zhang, Cheng-Lin Liu <br>
+[![github](https://img.shields.io/badge/-Github-black?logo=github)](https://github.com/Ghy0501/FCIT) [![arXiv](https://img.shields.io/badge/Arxiv-2503.12897-b31b1b.svg?logo=arXiv)](https://arxiv.org/pdf/2503.12897) ![](https://img.shields.io/badge/ICCV-2025-blue) <br>
+
+> [**ModalPrompt: Towards Efficient Multimodal Continual Instruction Tuning with Dual-Modality Guided Prompt**](https://arxiv.org/pdf/2410.05849) <br>
+> Fanhu Zeng, Fei Zhu, Haiyang Guo, Xu-Yao Zhang, Cheng-Lin Liu <br>
+[![github](https://img.shields.io/badge/-Github-black?logo=github)](https://github.com/AuroraZengfh/ModalPrompt) [![arXiv](https://img.shields.io/badge/Arxiv-2410.05849-b31b1b.svg?logo=arXiv)](https://arxiv.org/pdf/2410.05849) ![](https://img.shields.io/badge/EMNLP-2025-blue) <br>
+
+> [**Continual Learning for Generative AI: From LLMs to MLLMs and Beyond**](https://arxiv.org/pdf/2506.13045) <br>
+> Haiyang Guo, Fanhu Zeng, Fei Zhu, Jiayi Wang, Xukai Wang, Jingang Zhou, Hongbo Zhao, <br> Wenzhuo Liu, Shijie Ma, Da-Han Wang, Xu-Yao Zhang, Cheng-Lin Liu <br>
+[![github](https://img.shields.io/badge/-Github-black?logo=github)](https://github.com/Ghy0501/Awesome-Continual-Learning-in-Generative-Models) [![arXiv](https://img.shields.io/badge/Arxiv-2506.13045-b31b1b.svg?logo=arXiv)](https://arxiv.org/pdf/2506.13045) <br>
+
+> [**LLaVA-c: Continual Improved Visual Instruction Tuning**](https://arxiv.org/pdf/2506.08666?) <br>
+> Wenzhuo Liu, Fei Zhu, Haiyang Guo, Longhui Wei, Cheng-Lin Liu <br>
+[![arXiv](https://img.shields.io/badge/Arxiv-2506.08666-b31b1b.svg?logo=arXiv)](https://arxiv.org/pdf/2506.08666?) <br>
+
+
+
+
+</p></details>
 
 ## 📰 News
 
+- **[2025.10.12]** We will update the training and testing codes of all methods InternVL and LLaVA on UCIT, MLLM-DCL and MLLM-ACL next week, so stay tuned! :tada:
 - **[2025.09.16]** We have updated the new version of the [paper](https://arxiv.org/pdf/2508.07307) and attached the accuracy matrix of each method for reference. :tada:
 - **[2025.08.12]** Initial [MCITlib](https://arxiv.org/pdf/2508.07307) paper released! :tada:
 - **[2025.08.10]** Initial version of MCITlib is released. :tada:
@@ -29,7 +66,7 @@ Welcome to MCITlib — a comprehensive library for continual instruction tuning 
 - `LoRA-FT`: Baseline method which simply updates LoRA parameters on new tasks. [[Paper]](https://arxiv.org/pdf/2106.09685v1/1000) ![](https://img.shields.io/badge/ICLR-2022-blue)
 - `O-LoRA`: Orthogonal subspace learning for language model continual learning. [[Paper]](https://arxiv.org/pdf/2310.14152) ![](https://img.shields.io/badge/EMNLP_findings-2023-blue)
 - `MoELoRA`: CoIN: A Benchmark of Continual Instruction Tuning for Multimodal Large Language Models [[Paper]](https://proceedings.neurips.cc/paper_files/paper/2024/file/6a45500d9eda640deed90d8a62742be5-Paper-Datasets_and_Benchmarks_Track.pdf) ![](https://img.shields.io/badge/NeurIPS-2024-blue)
-- `ModalPrompt`: ModalPrompt: Dual-Modality Guided Prompt for Continual Learning of Large Multimodal Models [[Paper]](https://arxiv.org/pdf/2410.05849) ![](https://img.shields.io/badge/arXiv-2024.10-red)
+- `ModalPrompt`: ModalPrompt: Dual-Modality Guided Prompt for Continual Learning of Large Multimodal Models [[Paper]](https://arxiv.org/pdf/2410.05849) ![](https://img.shields.io/badge/EMNLP-2025-blue)
 - `CL-MoE`: CL-MoE: Enhancing Multimodal Large Language Model with Dual Momentum Mixture-of-Experts for Continual Visual Question Answering [[Paper]](https://arxiv.org/pdf/2503.00413?) ![](https://img.shields.io/badge/CVPR-2025-blue)
 - `HiDe`: HiDe-LLaVA: Hierarchical Decoupling for Continual Instruction Tuning of Multimodal Large Language Model [[Paper]](https://arxiv.org/pdf/2503.12941?) ![](https://img.shields.io/badge/ACL-2025-blue)
 - `SEFE`: SEFE: Superficial and Essential Forgetting Eliminator for Multimodal Continual Instruction Tuning [[Paper]](https://arxiv.org/pdf/2505.02486?) ![](https://img.shields.io/badge/ICML-2025-blue)
