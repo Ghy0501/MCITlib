@@ -19,6 +19,7 @@
 [![📑 Paper (arXiv:2508.07307)](https://img.shields.io/badge/arXiv-2508.07307-b31b1b.svg?logo=arXiv)](https://arxiv.org/pdf/2508.07307)
 [![hf_space](https://img.shields.io/badge/🤗-Open%20In%20Spaces-blue.svg)](https://huggingface.co/MLLM-CL)
 [![zhihu](https://img.shields.io/badge/-WeChat@机器之心-000000?logo=wechat&logoColor=07C160)](https://mp.weixin.qq.com/s/FBZw95e_0WibVbV075OyCA)
+[![zhihu](https://img.shields.io/badge/-WeChat@PaperWeekly-000000?logo=wechat&logoColor=07C160)](https://mp.weixin.qq.com/s/8xK7exmEAyDfBzFvvxugig)
 [![zhihu](https://img.shields.io/badge/-知乎-000000?logo=zhihu&logoColor=0084FF)](https://zhuanlan.zhihu.com/p/1947312085248746812)
 
 </h5>
@@ -74,7 +75,7 @@ Welcome to **MCITlib** — a comprehensive library for continual instruction tun
 
 ## 🏦 Benchmarks
 
-We currently report results on the [UCIT](https://github.com/Ghy0501/HiDe-LLaVA) and [MLLM-DCL](https://github.com/bjzhb666/MLLM-CL) benchmarks. Please refer to the provided links to download the corresponding images and instruction sets, and organize them in the following directory structure:
+We currently report results on the [UCIT](https://github.com/Ghy0501/HiDe-LLaVA), [MLLM-DCL](https://github.com/bjzhb666/MLLM-CL) and [MLLM-ACL](https://github.com/bjzhb666/MLLM-CL) benchmarks. Please refer to the provided links to download the corresponding images and instruction sets, and organize them in the following directory structure:
 ```
 |--your_path
     |-- Domain_data
@@ -83,6 +84,15 @@ We currently report results on the [UCIT](https://github.com/Ghy0501/HiDe-LLaVA)
         |-- RS
         |-- Sci
         |-- Fin
+    |-- Ability_data
+        |-- OCR
+        |-- OCR_test
+        |-- Math
+        |-- Math_test
+        |-- APP
+        |-- APP_test
+        |-- VP
+        |-- VP_test
     |-- UCIT
         |-- datasets
         |-- ArxivQA
@@ -92,21 +102,27 @@ We currently report results on the [UCIT](https://github.com/Ghy0501/HiDe-LLaVA)
         |-- ImageNet-R
         |-- VizWiz
 ```
-We also plan to extend our reproduction to other benchmarks in the near future.
+Note: You need to modify the data path in all the scripts to your own path.
 
 ## 🎨 Models
 
-We currently provide a reproduction based on the [LLaVA-1.5-7B](https://arxiv.org/pdf/2310.03744) model. Please download it to your local directory.
+We currently provide a reproduction based on the [LLaVA-1.5-7B](https://github.com/haotian-liu/LLaVA) and [InternVL-Chat-7B](https://github.com/OpenGVLab/InternVL/tree/main/internvl_chat_llava) model. Please download it to your local directory.
 ```
 huggingface-cli download liuhaotian/llava-v1.5-7b --local-dir /your_path/llava-v1.5-7b
 huggingface-cli download openai/clip-vit-large-patch14-336 --local-dir /your_path/clip-vit-large-patch14-336
+
+huggingface-cli download OpenGVLab/InternVL-Chat-ViT-6B-Vicuna-7B --local-dir /your_path/Internvl-chat-7b
+huggingface-cli download OpenGVLab/InternViT-6B-224px --local-dir /your_path/InternViT-6B-224px
 ```
 We also plan to extend our reproduction to other MLLM architectures in the near future.
 
-Note: For methods such as HiDe that require loading an additional `text_tower`, please modify the `config` file in `llava-v1.5-7b` accordingly. For more details, refer to the [HiDe-LLaVA](https://github.com/Ghy0501/HiDe-LLaVA) repository.
-
+Note: To meet the requirements of certain methods, we need to apply additional processing to the config file in the downloaded model. The details are outlined below:
+1. add `"mm_text_select_layer": -1` and `"mm_text_tower": "/your_path/clip-vit-large-patch14-336"` to the `config.py` in your local model weight path `/your_path/llava-v1.5-7b` and `/your_path/Internvl-chat-7b`.
+2. remove `"temperature": 0.9` and `"top_p": 0.6` in the `generation_config.json` of your local model weight path.
 
 ## 🏃 How to run
+
+Note: Our experiment is conducted in a CUDA 11.8 environment, with most libraries in the setup aligned to this CUDA version. Therefore, we recommend using `nvcc -V` to check the CUDA version on your current server. If it does not match, please install CUDA 11.8 before proceeding.
 ### 1. Clone this repository
 ```
 git clone https://github.com/Ghy0501/MCITlib.git
@@ -116,6 +132,7 @@ cd MCITlib
 ```
 conda create -n MCITlib python=3.10 -y
 conda activate MCITlib
+conda install pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 pytorch-cuda=11.8 -c pytorch -c nvidia
 cd LoRA-FT
 pip install --upgrade pip
 pip install -e .
