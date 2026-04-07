@@ -1,0 +1,11 @@
+{
+  "gpu_num": 2,
+  "num_tasks": 8,
+  "cur_task": 2,
+  "prefix_len": 10,
+  "stage": "ModalPrompt-task2",
+  "model_path": "/your_ckpts_path/MCITlib/VideoLLaMA2/ModalPrompt/task2_videollama2",
+  "result_path": "./results/CVU/each_dataset",
+  "text_tower": "/your_model_path/clip-vit-large-patch14-336",
+  "judge_path": "/your_model_path/Qwen3-30B-A3B-Instruct-2507"
+}

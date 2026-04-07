@@ -1,0 +1,4 @@
+{
+  "test_path": "/your_data_path/mmbench/mmbench_dev_20230712.tsv",
+  "result_path": "./results/General_Benchmarks"
+}

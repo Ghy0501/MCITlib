@@ -1,0 +1,13 @@
+{
+  "gpu_num": 2,
+  "rank": 64,
+  "num_tasks": 8,
+  "cur_task": 8,
+  "prefix_len": 10,
+  "output_dir": "/your_ckpts_path/MCITlib/Video-LLaVA/ModalPrompt/task8_videollava",
+  "previous_model": "/your_ckpts_path/MCITlib/Video-LLaVA/ModalPrompt/task7_videollava",
+  "epoch": 1,
+  "batch_size": 4,
+  "grad_acc": 2,
+  "lr": 1e-4
+}

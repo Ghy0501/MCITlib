@@ -1,0 +1,11 @@
+{
+  "gpu_num": 2,
+  "rank": 32,
+  "expert_num": 8,
+  "output_dir": "/your_ckpts_path/MCITlib/Video-LLaVA/MoELoRA/task4_videollava_lora",
+  "previous_model": "/your_ckpts_path/MCITlib/Video-LLaVA/MoELoRA/task3_videollava_lora",
+  "epoch": 1,
+  "batch_size": 2,
+  "grad_acc": 4,
+  "lr": 1e-4
+}

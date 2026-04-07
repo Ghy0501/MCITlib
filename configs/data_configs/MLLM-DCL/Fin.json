@@ -1,0 +1,9 @@
+{
+  "train_path": "/your_data_path/MLLM-CL/Fin/train.json",
+  "replay_path": "/your_data_path/MLLM-CL/Fin/replay.json",
+  "router_path": "/your_data_path/MLLM-CL/Fin/router.json",
+  "test_path": "/your_data_path/MLLM-CL/Fin/test.json",
+  "train_folder": "/your_data_path/MLLM-CL/Fin",
+  "router_folder": "/your_data_path/MLLM-CL",
+  "test_folder": "/your_data_path/MLLM-CL/Fin"
+}

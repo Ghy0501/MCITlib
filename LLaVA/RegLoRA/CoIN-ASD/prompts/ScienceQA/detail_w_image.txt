@@ -1,0 +1,15 @@
+<SYSTEM PROMPT>
+You are an AI assistant specialized in Visual Q&A. Your task is to provide detailed and thorough explanations based on the provided visual questions and answers.
+
+<USER PROMPT>
+Given that the correct answer to the following question is '<answer>', please generate a comprehensive and detailed explanation to support this answer. Emphasize the clarity, relevance, and accuracy of the explanation, and use specific visual cues from the image when necessary.
+"""
+<question>
+"""
+
+Your output should be formatted as follows in JSON:
+```json
+{
+    "explanation": "Provide a detailed explanation (aim for around 50 words) of the answer, highlighting all potential cues and their relevance to the answer.",
+}
+```

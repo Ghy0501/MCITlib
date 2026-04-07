@@ -1,0 +1,7 @@
+{
+  "gpu_num": 2,
+  "stage": "MoELoRA-task6",
+  "model_path": "/your_ckpts_path/MCITlib/Video-LLaVA/MoELoRA/task6_videollava_lora",
+  "judge_path": "/your_model_path/Qwen3-30B-A3B-Instruct-2507",
+  "result_path": "./results/CVU/each_dataset"
+}

@@ -1,0 +1,12 @@
+{
+  "gpu_num": 2,
+  "previous_model": "/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints/UCIT/LLaVA/ModalPrompt/Task4_llava",
+  "output_dir": "/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints/UCIT/LLaVA/ModalPrompt/Task5_llava",
+  "prefix_len": 10,
+  "num_tasks": 6,
+  "cur_task": 5,
+  "epoch": 10,
+  "batch_size": 16,
+  "grad_acc": 1,
+  "lr": 2e-4
+}

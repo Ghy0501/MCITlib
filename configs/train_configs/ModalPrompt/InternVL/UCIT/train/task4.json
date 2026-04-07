@@ -1,0 +1,12 @@
+{
+  "gpu_num": 2,
+  "previous_model": "/your_ckpts_path/MCITlib/UCIT/InternVL/ModalPrompt/Task3_internvl",
+  "output_dir": "/your_ckpts_path/MCITlib/UCIT/InternVL/ModalPrompt/Task4_internvl",
+  "prefix_len": 10,
+  "num_tasks": 6,
+  "cur_task": 4,
+  "epoch": 10,
+  "batch_size": 16,
+  "grad_acc": 1,
+  "lr": 1e-4
+}

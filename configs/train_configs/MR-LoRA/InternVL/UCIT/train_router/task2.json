@@ -1,0 +1,10 @@
+{
+  "gpu_num": 2,
+  "rank": 16,
+  "previous_model": "/your_ckpts_path/MCITlib/UCIT/InternVL/MR-LoRA/Router_task1_internvl_lora",
+  "output_dir": "/your_ckpts_path/MCITlib/UCIT/InternVL/MR-LoRA/Router_task2_internvl_lora",
+  "epoch": 30,
+  "batch_size": 16,
+  "grad_acc": 2,
+  "lr": 1e-4
+}

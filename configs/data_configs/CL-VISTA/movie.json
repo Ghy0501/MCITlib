@@ -1,0 +1,9 @@
+{
+  "train_path": "/your_data_path/CL-VISTA/Movie/train_json_row/movie_train_subtitle_30k.json",
+  "replay_path": "/your_data_path/CL-VISTA/Movie/train_json_row/replay_train.json",
+  "router_path": "/your_data_path/CL-VISTA/Movie/train_json_row/router_data.json",
+  "test_q_path": "/your_data_path/CL-VISTA/Movie/test_json_row/test_question_2k.json",
+  "test_a_path": "/your_data_path/CL-VISTA/Movie/test_json_row/test_answer_2k.json",
+  "train_folder": "/your_data_path/CL-VISTA",
+  "test_folder": "/your_data_path/CL-VISTA"
+}

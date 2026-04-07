@@ -1,0 +1,6 @@
+{
+  "gpu_num": 2,
+  "stage": "KeepLoRA-task3",
+  "model_path": "/your_ckpts_path/MCITlib/MLLM-DCL/LLaVA/KeepLoRA/Task3_llava_lora_merged",
+  "result_path": "./results/DCL/each_dataset"
+}

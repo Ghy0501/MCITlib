@@ -1,0 +1,10 @@
+{
+  "gpu_num": 2,
+  "rank": 32,
+  "previous_model": "/your_ckpts_path/MCITlib/MLLM-DCL/InternVL/KeepLoRA/Task4_internvl_lora",
+  "output_dir": "/your_ckpts_path/MCITlib/MLLM-DCL/InternVL/KeepLoRA/Task5_internvl_lora",
+  "epoch": 1,
+  "batch_size": 8,
+  "grad_acc": 2,
+  "lr": 1e-4
+}

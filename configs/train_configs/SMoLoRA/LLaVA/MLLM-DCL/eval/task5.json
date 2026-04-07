@@ -1,0 +1,6 @@
+{
+  "gpu_num": 2,
+  "stage": "SMoLoRA-task5",
+  "model_path": "/your_ckpts_path/MCITlib/MLLM-DCL/LLaVA/SMoLoRA/Task5_llava_lora",
+  "result_path": "./results/DCL/each_dataset"
+}

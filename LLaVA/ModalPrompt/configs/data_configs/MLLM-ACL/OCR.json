@@ -1,0 +1,6 @@
+{
+  "train_path": "/data/hongbo_zhao/Ability_data/OCR/train.json",
+  "test_path": "/data/hongbo_zhao/Ability_data/OCR_test/test.json",
+  "train_folder": "/data/hongbo_zhao/Ability_data/OCR",
+  "test_folder": "/data/hongbo_zhao/Ability_data/OCR_test"
+}

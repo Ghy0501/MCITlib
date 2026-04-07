@@ -1,0 +1,13 @@
+{
+  "gpu_num": 2,
+  "rank": 256,
+  "expert_num": 8,
+  "previous_model": "/your_ckpts_path/MCITlib/MLLM-DCL/LLaVA/SMoLoRA/Task1_llava_lora",
+  "output_dir": "/your_ckpts_path/MCITlib/MLLM-DCL/LLaVA/SMoLoRA/Task2_llava_lora",
+  "epoch": 3,
+  "batch_size": 4,
+  "grad_acc": 2,
+  "ins_type": 1,
+  "ins_emb": "/your_ckpts_path/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_dcl.pkl",
+  "lr": 2e-4
+}

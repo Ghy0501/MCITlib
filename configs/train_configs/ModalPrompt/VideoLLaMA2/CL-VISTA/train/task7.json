@@ -1,0 +1,13 @@
+{
+  "gpu_num": 2,
+  "rank": 32,
+  "num_tasks": 8,
+  "cur_task": 7,
+  "prefix_len": 10,
+  "output_dir": "/your_ckpts_path/MCITlib/VideoLLaMA2/ModalPrompt/task7_videollama2",
+  "previous_model": "/your_ckpts_path/MCITlib/VideoLLaMA2/ModalPrompt/task6_videollama2",
+  "epoch": 1,
+  "batch_size": 4,
+  "grad_acc": 2,
+  "lr": 1e-4
+}

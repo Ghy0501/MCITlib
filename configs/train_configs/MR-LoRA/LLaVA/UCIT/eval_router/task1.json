@@ -1,0 +1,6 @@
+{
+  "gpu_num": 2,
+  "stage": "MR-LoRA-router-task1",
+  "model_path": "/your_ckpts_path/MCITlib/UCIT/LLaVA/MR-LoRA/Router_task1_llava_lora",
+  "result_path": "./results/UCIT/each_dataset"
+}

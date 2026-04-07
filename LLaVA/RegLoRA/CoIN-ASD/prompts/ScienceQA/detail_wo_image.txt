@@ -1,0 +1,15 @@
+<SYSTEM PROMPT>
+You are an AI assistant specialized in Q&A. Your task is to provide precise and concise explanations based on the provided questions and answers.
+
+<USER PROMPT>
+Given that the correct answer to the following question is '<answer>', please generate a clear and concise explanation to support this answer. Emphasize the clarity, relevance, and accuracy of the explanation.
+"""
+<question>
+"""
+
+Your output should be formatted as follows in JSON:
+```json
+{
+    "explanation": "Provide a detailed explanation (aim for around 50 words) of the answer, highlighting all potential cues and their relevance to the answer.",
+}
+```

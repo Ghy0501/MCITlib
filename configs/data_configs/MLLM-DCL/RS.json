@@ -1,0 +1,6 @@
+{
+  "train_path": "/your_data_path/MLLM-CL/RS/train.json",
+  "test_path": "/your_data_path/MLLM-CL/RS/test.json",
+  "train_folder": "/your_data_path/MLLM-CL/RS",
+  "test_folder": "/your_data_path/MLLM-CL/RS"
+}

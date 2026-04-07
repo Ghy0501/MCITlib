@@ -1,0 +1,10 @@
+{
+  "gpu_num": 2,
+  "stage": "ModalPrompt-task2",
+  "model_path": "/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints/MLLM-DCL/LLaVA/ModalPrompt/Task2_llava",
+  "result_path": "./results/DCL/each_dataset",
+  "text_tower": "/home/hongbo_zhao/ghy-cl-codebase/clip-vit-large-patch14-336",
+  "prefix_len": 20,
+  "num_tasks": 5,
+  "cur_task": 2
+}

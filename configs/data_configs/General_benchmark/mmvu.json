@@ -1,0 +1,6 @@
+{
+    "test_q_path": "/your_data_path/MMVU/MMVU_test_q.json",
+    "test_a_path": "/your_data_path/MMVU/MMVU_test_a.json",
+    "test_folder": "/your_data_path/MMVU/videos"
+  }
+  

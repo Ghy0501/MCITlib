@@ -1,0 +1,10 @@
+{
+  "train_path": "/your_data_path/UCIT/VizWiz-caption/train.json",
+  "replay_path": "/your_data_path/UCIT/VizWiz-caption/replay.json",
+  "router_path": "/your_data_path/UCIT/VizWiz-caption/router.json",
+  "test_path": "/your_data_path/UCIT/VizWiz-caption/test_3000.json",
+  "anno_path": "/your_data_path/UCIT/VizWiz-caption/val_coco_type_3000.json",
+  "train_folder": "/your_data_path/UCIT",
+  "router_folder": "/your_data_path/UCIT",
+  "test_folder": "/your_data_path/UCIT"
+}

@@ -1,0 +1,6 @@
+{
+  "train_path": "/data/hongbo_zhao/Ability_data/Math/train.json",
+  "test_path": "/data/hongbo_zhao/Ability_data/Math_test/test.json",
+  "train_folder": "/data/hongbo_zhao/Ability_data/Math",
+  "test_folder": "/data/hongbo_zhao/Ability_data/Math_test"
+}

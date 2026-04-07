@@ -1,0 +1,12 @@
+{
+  "gpu_num": 2,
+  "rank": 160,
+  "expert_num": 5,
+  "previous_model": "/your_ckpts_path/MCITlib/MLLM-DCL/InternVL/CL-MoE/Task2_internvl_lora",
+  "output_dir": "/your_ckpts_path/MCITlib/MLLM-DCL/InternVL/CL-MoE/Task3_internvl_lora",
+  "epoch": 1,
+  "batch_size": 8,
+  "grad_acc": 2,
+  "lr": 1e-4,
+  "task": "DCL_AD"
+}

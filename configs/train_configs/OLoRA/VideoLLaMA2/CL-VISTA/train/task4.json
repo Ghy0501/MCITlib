@@ -1,0 +1,12 @@
+{
+  "gpu_num": 2,
+  "rank": 256,
+  "expert_num": 8,
+  "output_dir": "/your_ckpts_path/MCITlib/VideoLLaMA2/OLoRA/task4_videollama2_lora",
+  "previous_model": "/your_ckpts_path/MCITlib/VideoLLaMA2/OLoRA/task3_videollama2_lora",
+  "epoch": 1,
+  "batch_size": 4,
+  "grad_acc": 2,
+  "lr": 1e-4,
+  "cur_task": 3
+}

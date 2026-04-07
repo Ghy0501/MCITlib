@@ -1,0 +1,6 @@
+{
+  "gpu_num": 2,
+  "stage": "LoRA-task2",
+  "model_path": "/your_ckpts_path/MCITlib/MLLM-DCL/InternVL/Replay/Task2_internvl_lora",
+  "result_path": "./results/DCL/each_dataset"
+}

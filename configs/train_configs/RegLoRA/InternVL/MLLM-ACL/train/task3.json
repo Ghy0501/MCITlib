@@ -1,0 +1,15 @@
+{
+  "key_id": 1,
+  "key_path": "/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints/MLLM-ACL/InternVL/RegLoRA",
+  "base_model": "internvl",
+  "gpu_num": 2,
+  "rank": 128,
+  "expert_num": 4,
+  "previous_model": "/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints/MLLM-ACL/InternVL/RegLoRA/Task2_internvl_lora",
+  "output_dir": "/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints/MLLM-ACL/InternVL/RegLoRA/Task3_internvl_lora",
+  "epoch": 1,
+  "batch_size": 4,
+  "grad_acc": 2,
+  "cur_task": 2,
+  "lr": 1e-4
+}

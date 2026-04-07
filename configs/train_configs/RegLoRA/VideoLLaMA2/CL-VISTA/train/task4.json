@@ -1,0 +1,13 @@
+{
+  "key_id": 2,
+  "key_path": "/data1/hongbo_zhao/ckpt_VISTA/VideoLLaMA2/RegLoRA",
+  "base_model": "videollama2",
+  "gpu_num": 2,
+  "rank": 32,
+  "output_dir": "/data1/hongbo_zhao/ckpt_VISTA/VideoLLaMA2/RegLoRA/task4_videollama2_lora",
+  "previous_model": "/data1/hongbo_zhao/ckpt_VISTA/VideoLLaMA2/RegLoRA/task3_videollama2_lora_merged",
+  "epoch": 1,
+  "batch_size": 4,
+  "grad_acc": 2,
+  "lr": 1e-4
+}

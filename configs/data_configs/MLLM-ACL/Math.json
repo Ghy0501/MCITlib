@@ -1,0 +1,9 @@
+{
+  "train_path": "/your_data_path/MLLM-CL/Math/train.json",
+  "replay_path": "/your_data_path/MLLM-CL/Math/replay.json",
+  "router_path": "/your_data_path/MLLM-CL/Math/router.json",
+  "test_path": "/your_data_path/MLLM-CL/Math_test/test.json",
+  "train_folder": "/your_data_path/MLLM-CL/Math",
+  "router_folder": "/your_data_path/MLLM-CL",
+  "test_folder": "/your_data_path/MLLM-CL/Math_test"
+}

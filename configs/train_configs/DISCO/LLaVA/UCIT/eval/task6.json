@@ -1,0 +1,8 @@
+{
+  "gpu_num": 2,
+  "stage": "DISCO-task6",
+  "model_path": "/your_ckpts_path/MCITlib/UCIT/LLaVA/DISCO/Task6_llava_lora",
+  "result_path": "./results/UCIT/each_dataset",
+  "text_tower": "/your_model_path/clip-vit-large-patch14-336",
+  "num_task": 6
+}

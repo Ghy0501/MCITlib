@@ -1,0 +1,9 @@
+{
+  "gpu_num": 2,
+  "rank": 32,
+  "output_dir": "/your_ckpts_path/MCITlib/VideoLLaMA2/MR-LoRA/router_task1_videollama2_lora",
+  "epoch": 10,
+  "batch_size": 4,
+  "grad_acc": 2,
+  "lr": 1e-4
+}

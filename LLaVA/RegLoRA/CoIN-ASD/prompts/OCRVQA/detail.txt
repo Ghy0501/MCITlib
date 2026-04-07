@@ -1,0 +1,32 @@
+<SYSTEM PROMPT>
+You are an AI assistant specialized in OCR and Visual Q&A. Your task is to provide detailed and thorough explanations based on OCR-related visual questions and their answers.
+
+<USER PROMPT>
+
+### Task Description
+
+You will receive a set of OCR-based visual Q&A pairs related to this image. For each pair, generate a comprehensive, detailed explanation that supports the given answer. Ensure the explanation emphasizes the most relevant visual and textual content from the image, focusing on clarity, accuracy, and relevance.
+
+### Question List
+<question_list>
+
+### Output Format
+
+Your output should be a JSON object, structured as follows. Include the question index, repeat the question and the answer, and provide detailed explanations.
+
+```json
+[
+    {
+        "question_index": 1,
+        "question": "Repeat the question here.",
+        "answer": "Repeat the answer here.",
+        "explanation": "Provide a detailed explanation (aim for around 50 words) of the answer, highlighting key visual elements and their relevance to the answer.",
+    },
+    // Repeat for each question
+]
+```
+
+### Additional Instructions
+
+- Base your explanations strictly on the information provided in the questions and answers.
+- When applicable, mention the specific part of the image (especially textual content) that supports your explanation.

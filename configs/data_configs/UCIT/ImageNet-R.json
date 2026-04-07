@@ -1,0 +1,6 @@
+{
+  "train_path": "/your_data_path/UCIT/ImageNet-R/train.json",
+  "test_path": "/your_data_path/UCIT/ImageNet-R/test_3000.json",
+  "train_folder": "/your_data_path/UCIT",
+  "test_folder": "/your_data_path/UCIT"
+}

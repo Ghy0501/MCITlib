@@ -1,0 +1,12 @@
+{
+  "gpu_num": 2,
+  "rank": 128,
+  "expert_num": 4,
+  "previous_model": "/your_ckpts_path/MCITlib/MLLM-ACL/LLaVA/CL-MoE/Task3_llava_lora",
+  "output_dir": "/your_ckpts_path/MCITlib/MLLM-ACL/LLaVA/CL-MoE/Task4_llava_lora",
+  "epoch": 3,
+  "batch_size": 4,
+  "grad_acc": 2,
+  "lr": 2e-4,
+  "task": "ACL_APP"
+}

@@ -1,0 +1,13 @@
+{
+  "key_id": 1,
+  "key_path": "/your_ckpts_path/MCITlib/MLLM-DCL/InternVL/RegLoRA",
+  "base_model": "internvl",
+  "gpu_num": 2,
+  "rank": 32,
+  "previous_model": "/your_ckpts_path/MCITlib/MLLM-DCL/InternVL/RegLoRA/Task2_internvl_lora_merged",
+  "output_dir": "/your_ckpts_path/MCITlib/MLLM-DCL/InternVL/RegLoRA/Task3_internvl_lora",
+  "epoch": 1,
+  "batch_size": 4,
+  "grad_acc": 2,
+  "lr": 1e-4
+}

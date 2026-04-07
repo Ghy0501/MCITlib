@@ -1,0 +1,6 @@
+{
+  "train_path": "/data/hongbo_zhao/Ability_data/VP/train.json",
+  "test_path": "/data/hongbo_zhao/Ability_data/CV-Benchv2/test.json",
+  "train_folder": "/data/hongbo_zhao/Ability_data/VP",
+  "test_folder": "/data/hongbo_zhao/Ability_data/CV-Benchv2"
+}

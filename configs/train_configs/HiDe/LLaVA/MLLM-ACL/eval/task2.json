@@ -1,0 +1,8 @@
+{
+  "gpu_num": 2,
+  "stage": "HiDe-task2",
+  "model_path": "/your_ckpts_path/MCITlib/MLLM-ACL/LLaVA/HiDe/Task2_llava_lora",
+  "result_path": "./results/ACL/each_dataset",
+  "text_tower": "/your_model_path/clip-vit-large-patch14-336",
+  "num_task": 4
+}

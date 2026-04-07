@@ -1,0 +1,6 @@
+{
+  "gpu_num": 2,
+  "stage": "SMoLoRA-task4",
+  "model_path": "/your_ckpts_path/MCITlib/MLLM-ACL/InternVL/SMoLoRA/Task4_internvl_lora",
+  "result_path": "./results/ACL/each_dataset"
+}

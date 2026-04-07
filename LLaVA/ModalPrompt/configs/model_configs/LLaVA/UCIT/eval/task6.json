@@ -1,0 +1,9 @@
+{
+  "gpu_num": 4,
+  "stage": "ModalPrompt-task6",
+  "model_path": "/mnt/ShareDB-3TB/ghy/MCITlib/ckpts/UCIT/LLaVA-1.5/ModalPrompt/Task6_llava",
+  "model_base": "/mnt/haiyangguo/mywork/FCIT/pre_trained/llava-v1.5-7b",
+  "prefix_len": 10,
+  "cur_task": 6,
+  "num_task": 6
+}

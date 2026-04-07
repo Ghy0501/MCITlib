@@ -1,0 +1,5 @@
+{
+    "test_path": "/your_data_path/MME/llava_mme.jsonl",
+    "test_folder": "/your_data_path/MME/MME_Benchmark_release_version",
+    "result_path": "./results/General_Benchmarks"
+}  

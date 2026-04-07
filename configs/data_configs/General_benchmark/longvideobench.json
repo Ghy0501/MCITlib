@@ -1,0 +1,9 @@
+{
+    "video_dir": "/your_data_path/LongVideoBench/videos/videos",
+    "question_file":"/your_data_path/LongVideoBench/val_json/longvideobench.json",
+    "subtitle_dir":"/your_data_path/LongVideoBench/subtitles",
+    "test_q_path": "/your_data_path/LongVideoBench/lvb_questions.json",
+    "test_a_path": "/your_data_path/LongVideoBench/lvb_answers.json",
+    "test_folder": "/your_data_path/LongVideoBench/videos"
+}
+

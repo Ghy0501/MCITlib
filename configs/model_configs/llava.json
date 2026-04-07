@@ -1,0 +1,5 @@
+{
+  "model_name": "/your_model_path/llava-v1.5-7b",
+  "mm_projector": "/your_model_path/llava-v1.5-7b/mm_projector.bin",
+  "vision_tower": "/your_model_path/clip-vit-large-patch14-336"
+}

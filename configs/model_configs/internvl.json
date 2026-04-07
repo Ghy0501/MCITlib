@@ -1,0 +1,6 @@
+{
+  "model_name": "/your_model_path/Internvl-chat-7b",
+  "mm_projector": "/your_model_path/Internvl-chat-7b/mm_projector.bin",
+  "vision_tower": "/your_model_path/InternViT-6B-224px",
+  "clip_tower": "/your_model_path/clip-vit-large-patch14-336"
+}

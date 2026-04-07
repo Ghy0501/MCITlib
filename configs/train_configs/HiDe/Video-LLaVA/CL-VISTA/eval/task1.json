@@ -1,0 +1,9 @@
+{
+  "gpu_num": 2,
+  "stage": "HiDe-task1",
+  "num_task": 8,
+  "model_path": "/your_ckpts_path/MCITlib/Video-LLaVA/HiDe/task1_videollava_lora",
+  "judge_path": "/your_model_path/Qwen3-30B-A3B-Instruct-2507",
+  "text_tower": "/your_model_path/clip-vit-large-patch14-336",
+  "result_path": "./results/CVU/each_dataset"
+}

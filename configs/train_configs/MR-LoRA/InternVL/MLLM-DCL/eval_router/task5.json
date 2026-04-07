@@ -1,0 +1,6 @@
+{
+  "gpu_num": 2,
+  "stage": "MR-LoRA-router-task5",
+  "model_path": "/your_ckpts_path/MCITlib/MLLM-DCL/InternVL/MR-LoRA/Router_task5_internvl_lora",
+  "result_path": "./results/DCL/each_dataset"
+}

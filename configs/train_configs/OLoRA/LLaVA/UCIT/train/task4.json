@@ -1,0 +1,13 @@
+{
+  "gpu_num": 2,
+  "rank": 96,
+  "expert_num": 6,
+  "previous_model": "/your_ckpts_path/MCITlib/UCIT/LLaVA/OLoRA/Task3_llava_lora",
+  "output_dir": "/your_ckpts_path/MCITlib/UCIT/LLaVA/OLoRA/Task4_llava_lora",
+  "epoch": 1,
+  "batch_size": 4,
+  "grad_acc": 2,
+  "lr": 2e-4,
+  "cur_task": 3,
+  "gradient_checkpointing": "True"
+}

@@ -1,0 +1,13 @@
+{
+  "gpu_num": 2,
+  "rank": 160,
+  "expert_num": 5,
+  "previous_model": "/your_ckpts_path/MCITlib/MLLM-DCL/InternVL/OLoRA/Task3_internvl_lora",
+  "output_dir": "/your_ckpts_path/MCITlib/MLLM-DCL/InternVL/OLoRA/Task4_internvl_lora",
+  "epoch": 2,
+  "batch_size": 4,
+  "grad_acc": 2,
+  "lr": 1e-4,
+  "cur_task": 3,
+  "gradient_checkpointing": "True"
+}

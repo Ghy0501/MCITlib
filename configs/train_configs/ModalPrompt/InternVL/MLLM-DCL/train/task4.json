@@ -1,0 +1,12 @@
+{
+  "gpu_num": 2,
+  "previous_model": "/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints/MLLM-DCL/InternVL/ModalPrompt/Task3_internvl",
+  "output_dir": "/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints/MLLM-DCL/InternVL/ModalPrompt/Task4_internvl",
+  "prefix_len": 20,
+  "num_tasks": 5,
+  "cur_task": 4,
+  "epoch": 10,
+  "batch_size": 16,
+  "grad_acc": 2,
+  "lr": 1e-4
+}

@@ -1,0 +1,6 @@
+{
+    "test_path": "/your_data_path/pope/llava_pope_test.jsonl",
+    "test_folder": "/your_data_path/pope/val2014",
+    "anno_path": "/your_data_path/pope/coco",
+    "result_path": "./results/General_Benchmarks"
+}  

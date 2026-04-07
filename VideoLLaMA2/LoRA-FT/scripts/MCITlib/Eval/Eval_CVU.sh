@@ -1,0 +1,189 @@
+#!/bin/bash
+
+TASK_ID=$1
+HARD_PATH=/your_path/MCITlib_v3
+
+source /your_conda_path/miniconda3/etc/profile.d/conda.sh
+
+get_task_config() {
+    if [ "$TASK_ID" == "1" ]; then
+        echo "$HARD_PATH/configs/train_configs/LoRA-FT/VideoLLaMA2/CL-VISTA/eval/task1.json"
+    elif [ "$TASK_ID" == "2" ]; then
+        echo "$HARD_PATH/configs/train_configs/LoRA-FT/VideoLLaMA2/CL-VISTA/eval/task2.json"
+    elif [ "$TASK_ID" == "3" ]; then
+        echo "$HARD_PATH/configs/train_configs/LoRA-FT/VideoLLaMA2/CL-VISTA/eval/task3.json"
+    elif [ "$TASK_ID" == "4" ]; then
+        echo "$HARD_PATH/configs/train_configs/LoRA-FT/VideoLLaMA2/CL-VISTA/eval/task4.json"
+    elif [ "$TASK_ID" == "5" ]; then
+        echo "$HARD_PATH/configs/train_configs/LoRA-FT/VideoLLaMA2/CL-VISTA/eval/task5.json"
+    elif [ "$TASK_ID" == "6" ]; then
+        echo "$HARD_PATH/configs/train_configs/LoRA-FT/VideoLLaMA2/CL-VISTA/eval/task6.json"
+    elif [ "$TASK_ID" == "7" ]; then
+        echo "$HARD_PATH/configs/train_configs/LoRA-FT/VideoLLaMA2/CL-VISTA/eval/task7.json"
+    else
+        echo "$HARD_PATH/configs/train_configs/LoRA-FT/VideoLLaMA2/CL-VISTA/eval/task8.json"
+    fi
+}
+
+TASK_CONFIG=$(get_task_config)
+
+echo "=============================================="
+echo "自动切换环境的评估脚本"
+echo "当前用户: $(whoami)"
+echo "Conda路径: /your_conda_path/miniconda3"
+echo "=============================================="
+
+echo "阶段1: 激活 'videollama2' 环境并运行所有 run_qa 脚本"
+echo "=============================================="
+
+conda activate videollama2
+if [ $? -ne 0 ]; then
+    echo "错误: 无法激活 conda 环境 'videollama2'"
+    echo "可用环境列表:"
+    conda env list
+    exit 1
+fi
+
+echo "当前环境: $(conda info --envs | grep '*' | awk '{print $1}')"
+
+if [ "$TASK_ID" == "1" ]; then
+    bash scripts/MCITlib/Eval/run_qa_counting.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/counting.json $TASK_CONFIG
+    
+elif [ "$TASK_ID" == "2" ]; then
+    bash scripts/MCITlib/Eval/run_qa_counting.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/counting.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_space.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/space.json $TASK_CONFIG
+    
+elif [ "$TASK_ID" == "3" ]; then
+    bash scripts/MCITlib/Eval/run_qa_counting.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/counting.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_space.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/space.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_traffic.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/traffic.json $TASK_CONFIG
+    
+elif [ "$TASK_ID" == "4" ]; then
+    bash scripts/MCITlib/Eval/run_qa_counting.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/counting.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_space.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/space.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_traffic.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/traffic.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_movie.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/movie.json $TASK_CONFIG
+    
+elif [ "$TASK_ID" == "5" ]; then
+    bash scripts/MCITlib/Eval/run_qa_counting.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/counting.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_space.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/space.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_traffic.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/traffic.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_movie.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/movie.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_gui.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/gui.json $TASK_CONFIG
+
+elif [ "$TASK_ID" == "6" ]; then
+    bash scripts/MCITlib/Eval/run_qa_counting.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/counting.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_space.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/space.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_traffic.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/traffic.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_movie.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/movie.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_gui.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/gui.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_science.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/science.json $TASK_CONFIG
+
+elif [ "$TASK_ID" == "7" ]; then
+    bash scripts/MCITlib/Eval/run_qa_counting.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/counting.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_space.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/space.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_traffic.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/traffic.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_movie.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/movie.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_gui.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/gui.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_science.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/science.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_sports.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/sports.json $TASK_CONFIG
+
+else
+    bash scripts/MCITlib/Eval/run_qa_counting.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/counting.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_space.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/space.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_traffic.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/traffic.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_movie.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/movie.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_gui.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/gui.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_science.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/science.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_sports.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/sports.json $TASK_CONFIG
+    bash scripts/MCITlib/Eval/run_qa_star.sh $HARD_PATH/configs/model_configs/videollama2.json $HARD_PATH/configs/data_configs/CL-VISTA/star.json $TASK_CONFIG
+
+fi
+
+echo ""
+echo "=============================================="
+echo "所有 run_qa 脚本执行完成！"
+echo "切换到 eval 环境..."
+echo "=============================================="
+
+conda deactivate
+
+EVAL_ENV="transformers"
+conda activate $EVAL_ENV
+if [ $? -ne 0 ]; then
+    echo "警告: 无法激活 eval 环境 '$EVAL_ENV'"
+    echo "可用环境列表:"
+    conda env list
+    echo "请输入正确的 eval 环境名称: "
+    read EVAL_ENV
+    conda activate $EVAL_ENV
+    if [ $? -ne 0 ]; then
+        echo "错误: 仍然无法激活环境 '$EVAL_ENV'"
+        exit 1
+    fi
+fi
+
+echo "当前环境: $(conda info --envs | grep '*' | awk '{print $1}')"
+
+echo "=============================================="
+echo "阶段2: 在 '$EVAL_ENV' 环境中运行所有 eval_qa 脚本"
+echo "=============================================="
+
+if [ "$TASK_ID" == "1" ]; then
+    bash scripts/MCITlib/Eval/eval_qa_counting.sh $TASK_CONFIG
+    
+elif [ "$TASK_ID" == "2" ]; then
+    bash scripts/MCITlib/Eval/eval_qa_counting.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_space.sh $TASK_CONFIG
+    
+elif [ "$TASK_ID" == "3" ]; then
+    bash scripts/MCITlib/Eval/eval_qa_counting.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_space.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_traffic.sh $TASK_CONFIG
+    
+elif [ "$TASK_ID" == "4" ]; then
+    bash scripts/MCITlib/Eval/eval_qa_counting.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_space.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_traffic.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_movie.sh $TASK_CONFIG
+    
+elif [ "$TASK_ID" == "5" ]; then
+    bash scripts/MCITlib/Eval/eval_qa_counting.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_space.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_traffic.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_movie.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_gui.sh $TASK_CONFIG
+
+elif [ "$TASK_ID" == "6" ]; then
+    bash scripts/MCITlib/Eval/eval_qa_counting.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_space.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_traffic.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_movie.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_gui.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_science.sh $TASK_CONFIG
+
+elif [ "$TASK_ID" == "7" ]; then
+    bash scripts/MCITlib/Eval/eval_qa_counting.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_space.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_traffic.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_movie.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_gui.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_science.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_sports.sh $TASK_CONFIG
+
+else
+    bash scripts/MCITlib/Eval/eval_qa_counting.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_space.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_traffic.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_movie.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_gui.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_science.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_sports.sh $TASK_CONFIG
+    bash scripts/MCITlib/Eval/eval_qa_star.sh $TASK_CONFIG
+
+fi
+
+echo "=============================================="
+echo "评估流程全部完成！"
+echo "最终环境: $(conda info --envs | grep '*' | awk '{print $1}')"
+echo "=============================================="

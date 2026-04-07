@@ -1,0 +1,12 @@
+{
+  "gpu_num": 2,
+  "rank": 96,
+  "expert_num": 6,
+  "previous_model": "/your_ckpts_path/MCITlib/UCIT/InternVL/HiDe/Task1_internvl_lora",
+  "output_dir": "/your_ckpts_path/MCITlib/UCIT/InternVL/HiDe/Task2_internvl_lora",
+  "epoch": 1,
+  "batch_size": 16,
+  "grad_acc": 2,
+  "lr": 1e-4,
+  "cur_task": 1
+}

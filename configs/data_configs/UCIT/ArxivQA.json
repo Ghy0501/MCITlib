@@ -1,0 +1,9 @@
+{
+  "train_path": "/your_data_path/UCIT/ArxivQA/train_4w.json",
+  "replay_path": "/your_data_path/UCIT/ArxivQA/replay.json",
+  "router_path": "/your_data_path/UCIT/ArxivQA/router.json",
+  "test_path": "/your_data_path/UCIT/ArxivQA/test_3000.json",
+  "train_folder": "/your_data_path/UCIT",
+  "router_folder": "/your_data_path/UCIT",
+  "test_folder": "/your_data_path/UCIT"
+}

@@ -1,0 +1,12 @@
+{
+  "gpu_num": 2,
+  "rank": 96,
+  "expert_num": 6,
+  "output_dir": "/your_ckpts_path/MCITlib/UCIT/LLaVA/SMoLoRA/Task1_llava_lora",
+  "epoch": 1,
+  "batch_size": 16,
+  "grad_acc": 2,
+  "ins_type": 0,
+  "ins_emb": "/your_ckpts_path/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_ucit.pkl",
+  "lr": 2e-4
+}

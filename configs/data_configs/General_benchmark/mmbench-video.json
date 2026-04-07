@@ -1,0 +1,5 @@
+{
+    "test_q_path": "/your_data_path/MMBench-Video/MMBench-Video_q.json",
+    "test_a_path": "/your_data_path/MMBench-Video/MMBench-Video_a.json",
+    "test_folder": "/your_data_path/MMBench-Video/video_pkl/mp4_out"
+  }

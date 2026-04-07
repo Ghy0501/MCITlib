@@ -1,0 +1,6 @@
+{
+  "train_path": "/your_data_path/MLLM-CL/OCR/train.json",
+  "test_path": "/your_data_path/MLLM-CL/OCR_test/test.json",
+  "train_folder": "/your_data_path/MLLM-CL/OCR",
+  "test_folder": "/your_data_path/MLLM-CL/OCR_test"
+}

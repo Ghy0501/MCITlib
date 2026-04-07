@@ -1,0 +1,63 @@
+# --- Secrets (never commit) ---
+.env
+**/.env
+.env.*
+!.env.example
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+.ipynb_checkpoints/
+
+# --- Environments / packaging ---
+.venv/
+venv/
+env/
+ENV/
+conda/
+*.egg-info/
+build/
+dist/
+.pdm-build/
+
+# --- Training artifacts / logs ---
+wandb/
+mlruns/
+lightning_logs/
+logs/
+log/
+*.log
+*.out
+*.err
+
+# --- Datasets / outputs / checkpoints ---
+data/
+datasets/
+dataset/
+outputs/
+output/
+results/
+result/
+runs/
+checkpoints/
+checkpoint/
+ckpt/
+*.ckpt
+*.pt
+*.pth
+*.bin
+*.safetensors
+
+# --- Nested git dirs (vendored repos) ---
+**/.git/

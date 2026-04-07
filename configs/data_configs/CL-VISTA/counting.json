@@ -1,0 +1,10 @@
+{
+    "train_path": "/your_data_path/CL-VISTA/Counting/json_row/train_data_20k.json",
+    "replay_path": "/your_data_path/CL-VISTA/Counting/json_row/train_data_20k.json",
+    "router_path": "/your_data_path/CL-VISTA/Counting/json_row/router_data_100.json",
+    "test_q_path": "/your_data_path/CL-VISTA/Counting/json_row/test_questions_2k.json",
+    "test_a_path": "/your_data_path/CL-VISTA/Counting/json_row/test_answers_2k.json",
+    "train_folder": "/your_data_path/CL-VISTA",
+    "test_folder": "/your_data_path/CL-VISTA"
+  }
+  

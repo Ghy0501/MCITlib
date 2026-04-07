@@ -1,0 +1,6 @@
+{
+    "test_q_path": "/your_data_path/nextqa/scripts/val.q.json",
+    "test_a_path": "/your_data_path/nextqa/scripts/val.a.json",
+    "test_folder": "/your_data_path/nextqa/NExTVideo"
+  }
+  

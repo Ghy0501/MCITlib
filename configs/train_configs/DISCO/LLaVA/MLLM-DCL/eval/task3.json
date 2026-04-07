@@ -1,0 +1,8 @@
+{
+  "gpu_num": 2,
+  "stage": "DISCO-task3",
+  "model_path": "/your_ckpts_path/MCITlib/MLLM-DCL/LLaVA/DISCO/Task3_llava_lora",
+  "result_path": "./results/DCL/each_dataset",
+  "text_tower": "/your_model_path/clip-vit-large-patch14-336",
+  "num_task": 5
+}

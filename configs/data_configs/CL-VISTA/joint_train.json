@@ -1,0 +1,4 @@
+{
+    "train_path": "/your_data_path/CL-VISTA/train_VISTA_joint.json",
+    "train_folder": "/your_data_path/CL-VISTA"
+}

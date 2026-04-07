@@ -1,0 +1,9 @@
+{
+  "gpu_num": 2,
+  "rank": 32,
+  "output_dir": "/your_ckpts_path/MCITlib/MLLM-ACL/LLaVA/RegLoRA/Task1_llava_lora",
+  "epoch": 3,
+  "batch_size": 4,
+  "grad_acc": 2,
+  "lr": 5e-5
+}

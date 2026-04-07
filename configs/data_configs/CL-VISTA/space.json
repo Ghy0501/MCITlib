@@ -1,0 +1,9 @@
+{
+  "train_path": "/your_data_path/CL-VISTA/Space/json_row/train_30k.json",
+  "replay_path": "/your_data_path/CL-VISTA/Space/json_row/replay_train.json",
+  "router_path": "/your_data_path/CL-VISTA/Space/json_row/router_data.json",
+  "test_q_path": "/your_data_path/CL-VISTA/Space/json_row/test_questions_2k.json",
+  "test_a_path": "/your_data_path/CL-VISTA/Space/json_row/test_answers_2k.json",
+  "train_folder": "/your_data_path/CL-VISTA",
+  "test_folder": "/your_data_path/CL-VISTA"
+}

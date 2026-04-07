@@ -1,0 +1,11 @@
+{
+  "gpu_num": 2,
+  "rank": 128,
+  "expert_num": 4,
+  "output_dir": "/your_ckpts_path/MCITlib/MLLM-ACL/InternVL/DISCO/Task1_internvl_lora",
+  "epoch": 3,
+  "batch_size": 4,
+  "grad_acc": 2,
+  "lr": 1e-4,
+  "cur_task": 0
+}

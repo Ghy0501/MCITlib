@@ -1,0 +1,13 @@
+{
+  "gpu_num": 2,
+  "rank": 256,
+  "output_dir": "/your_ckpts_path/MCITlib/VideoLLaMA2/SMoLoRA/task7_videollama2_lora",
+  "previous_model": "/your_ckpts_path/MCITlib/VideoLLaMA2/SMoLoRA/task6_videollama2_lora",
+  "epoch": 1,
+  "batch_size": 4,
+  "grad_acc": 2,
+  "lr": 1e-4,
+  "expert_num": 8,
+  "ins_type": 6,
+  "ins_emb": "/your_ckpts_path/MCITlib_v3/VideoLLaMA2/SMoLoRA/ins_emb_multi.pkl"
+}

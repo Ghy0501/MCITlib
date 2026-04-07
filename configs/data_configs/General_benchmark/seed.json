@@ -1,0 +1,6 @@
+{
+    "test_path": "/your_data_path/seed_bench/llava-seed-bench-modified.jsonl",
+    "test_folder": "/your_data_path/seed_bench",
+    "anno_path": "/your_data_path/seed_bench/SEED-Bench.json",
+    "result_path": "./results/General_Benchmarks"
+}  
