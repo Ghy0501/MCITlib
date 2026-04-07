@@ -19,6 +19,7 @@
 [![📑 Paper (arXiv:2508.07307)](https://img.shields.io/badge/arXiv-2508.07307-b31b1b.svg?logo=arXiv)](https://arxiv.org/pdf/2508.07307)
 [![GitHub](https://img.shields.io/badge/-GitHub-000000?logo=github&logoColor=white)](https://github.com/Ghy0501/MCITlib)
 [![hf_space](https://img.shields.io/badge/🤗-Open%20In%20Spaces-blue.svg)](https://huggingface.co/MLLM-CL)
+[![ModelScope](https://img.shields.io/badge/🤖-ModelScope-624aff.svg)](https://www.modelscope.cn/organization/MLLM-CL)
 [![zhihu](https://img.shields.io/badge/-WeChat@机器之心-000000?logo=wechat&logoColor=07C160)](https://mp.weixin.qq.com/s/FBZw95e_0WibVbV075OyCA)
 [![zhihu](https://img.shields.io/badge/-WeChat@PaperWeekly-000000?logo=wechat&logoColor=07C160)](https://mp.weixin.qq.com/s/8xK7exmEAyDfBzFvvxugig)
 [![zhihu](https://img.shields.io/badge/-知乎-000000?logo=zhihu&logoColor=0084FF)](https://zhuanlan.zhihu.com/p/1947312085248746812)
