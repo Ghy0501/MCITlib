@@ -1,8 +1,8 @@
 {
   "gpu_num": 2,
-  "stage": "KeepKeepLoRA-task1",
-  "model_path": "/mnt/haiyangguo/mywork/FCIT/pre_trained/llava-v1.5-7b",
-  "rank": 32,
+  "stage": "KeepLoRA-task1",
+  "model_path": "/your_model_path/llava-v1.5-7b",
+  "rank": 64,
   "space_path": "/your_ckpts_path/MCITlib/MLLM-DCL/LLaVA/KeepLoRA/Task0_llava_lora_gradients",
   "output_dir": "/your_ckpts_path/MCITlib/MLLM-DCL/LLaVA/KeepLoRA/Task1_llava_lora_gradients"
 }

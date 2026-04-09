@@ -1,7 +1,7 @@
 {
   "gpu_num": 2,
-  "rank": 32,
-  "previous_model": "/your_ckpts_path/MCITlib/MLLM-ACL/LLaVA/KeepLoRA/Task3_llava_lora",
+  "rank": 64,
+  "previous_model": "/your_ckpts_path/MCITlib/MLLM-ACL/LLaVA/KeepLoRA/Task3_llava_lora_merged",
   "output_dir": "/your_ckpts_path/MCITlib/MLLM-ACL/LLaVA/KeepLoRA/Task4_llava_lora",
   "epoch": 3,
   "batch_size": 4,

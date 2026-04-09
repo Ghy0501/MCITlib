@@ -1,6 +1,6 @@
 {
   "gpu_num": 2,
-  "stage": "KeepKeepLoRA-task1",
+  "stage": "KeepLoRA-task1",
   "model_path": "/your_ckpts_path/MCITlib/MLLM-DCL/LLaVA/KeepLoRA/Task1_llava_lora_merged",
   "space_path": "/your_ckpts_path/MCITlib/MLLM-DCL/LLaVA/KeepLoRA/Task0_llava_lora_gradients",
   "energy_threshold": 0.99,

@@ -1,7 +1,7 @@
 {
   "gpu_num": 4,
-  "model_name": "/mnt/haiyangguo/mywork/FCIT/pre_trained/llava-v1.5-7b",
-  "mm_projector": "/mnt/haiyangguo/mywork/FCIT/pre_trained/llava-v1.5-7b/mm_projector.bin",
+  "model_name": "/your_model_path/llava-v1.5-7b",
+  "mm_projector": "/your_model_path/llava-v1.5-7b/mm_projector.bin",
   "previous_model": "/mnt/ShareDB-3TB/ghy/MCITlib/ckpts/UCIT/LLaVA-1.5/ModalPrompt/Task5_llava",
   "vision_tower": "/home/hongbo_zhao/ghy-cl-codebase/clip-vit-large-patch14-336",
   "output_dir": "/mnt/ShareDB-3TB/ghy/MCITlib/ckpts/UCIT/LLaVA-1.5/ModalPrompt/Task6_llava",

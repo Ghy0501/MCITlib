@@ -1,9 +1,9 @@
 {
   "gpu_num": 2,
-  "rank": 32,
+  "rank": 64,
   "output_dir": "/your_ckpts_path/MCITlib/MLLM-ACL/InternVL/KeepLoRA/Task1_internvl_lora",
   "epoch": 3,
   "batch_size": 4,
   "grad_acc": 2,
-  "lr": 1e-4
+  "lr": 5e-5
 }

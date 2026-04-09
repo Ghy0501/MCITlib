@@ -1,0 +1,8 @@
+{
+  "gpu_num": 2,
+  "stage": "KeepLoRA-task2",
+  "model_path": "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task2_llava_lora_merged",
+  "space_path": "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task1_llava_lora_gradients",
+  "energy_threshold": 0.99,
+  "output_dir": "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task2_llava_lora_gradients"
+}

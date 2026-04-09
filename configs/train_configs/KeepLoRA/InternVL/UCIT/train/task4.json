@@ -1,10 +1,10 @@
 {
   "gpu_num": 2,
-  "rank": 16,
-  "previous_model": "/your_ckpts_path/MCITlib/UCIT/InternVL/KeepLoRA/Task3_internvl_lora",
+  "rank": 32,
+  "previous_model": "/your_ckpts_path/MCITlib/UCIT/InternVL/KeepLoRA/Task3_internvl_lora_merged",
   "output_dir": "/your_ckpts_path/MCITlib/UCIT/InternVL/KeepLoRA/Task4_internvl_lora",
   "epoch": 1,
   "batch_size": 16,
   "grad_acc": 2,
-  "lr": 1e-4
+  "lr": 2e-4
 }

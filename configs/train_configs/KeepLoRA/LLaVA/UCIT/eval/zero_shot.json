@@ -1,6 +1,0 @@
-{
-  "gpu_num": 2,
-  "stage": "zero-shot",
-  "model_path": "/mnt/haiyangguo/mywork/FCIT/pre_trained/llava-v1.5-7b",
-  "result_path": "./results/UCIT/each_dataset"
-}

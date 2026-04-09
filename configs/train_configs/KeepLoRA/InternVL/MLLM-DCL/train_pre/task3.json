@@ -1,6 +1,6 @@
 {
   "gpu_num": 2,
-  "stage": "KeepKeepLoRA-task3",
+  "stage": "KeepLoRA-task3",
   "model_path": "/your_ckpts_path/MCITlib/MLLM-DCL/InternVL/KeepLoRA/Task2_internvl_lora_merged",
   "rank": 32,
   "space_path": "/your_ckpts_path/MCITlib/MLLM-DCL/InternVL/KeepLoRA/Task2_internvl_lora_gradients",

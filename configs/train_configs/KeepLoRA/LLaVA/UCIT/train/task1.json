@@ -1,6 +1,6 @@
 {
   "gpu_num": 2,
-  "rank": 16,
+  "rank": 32,
   "output_dir": "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task1_llava_lora",
   "epoch": 1,
   "batch_size": 16,

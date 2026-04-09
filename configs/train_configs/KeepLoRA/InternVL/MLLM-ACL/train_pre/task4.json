@@ -1,0 +1,8 @@
+{
+  "gpu_num": 2,
+  "stage": "KeepLoRA-task4",
+  "model_path": "/your_ckpts_path/MCITlib/MLLM-ACL/InternVL/KeepLoRA/Task3_internvl_lora_merged",
+  "rank": 64,
+  "space_path": "/your_ckpts_path/MCITlib/MLLM-ACL/InternVL/KeepLoRA/Task3_internvl_lora_gradients",
+  "output_dir": "/your_ckpts_path/MCITlib/MLLM-ACL/InternVL/KeepLoRA/Task4_internvl_lora_gradients"
+}

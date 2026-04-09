@@ -1,6 +1,6 @@
 {
   "gpu_num": 2,
   "stage": "KeepLoRA-task2",
-  "model_path": "/your_ckpts_path/MCITlib/UCIT/InternVL/KeepLoRA/Task2_internvl_lora",
+  "model_path": "/your_ckpts_path/MCITlib/UCIT/InternVL/KeepLoRA/Task2_internvl_lora_merged",
   "result_path": "./results/UCIT/each_dataset"
 }
