@@ -33,7 +33,6 @@ RESULT_DIR="$RESULT_PATH/$TASK"
 for IDX in $(seq 0 $((CHUNKS-1))); do
     CUDA_VISIBLE_DEVICES=${GPULIST[$IDX]} python -m llava.eval.CoIN.model_ai2d \
         --model-path $MODELPATH \
-        --model-base $MODELBASE \
         --question-file $DATA_PATH \
         --image-folder $IMAGE \
         --answers-file $RESULT_DIR/$STAGE/${CHUNKS}_${IDX}.jsonl \
