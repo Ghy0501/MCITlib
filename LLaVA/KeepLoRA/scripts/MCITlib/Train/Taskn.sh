@@ -77,5 +77,5 @@ deepspeed --include localhost:$GPU_LIST --master_port 9001 llava/train/train_mem
 SAVE_PATH="${OUTPUT_DIR}_merged"
 python scripts/merge_lora_weights.py \
     --model-path $OUTPUT_DIR \
-    --model-base $MODEL_NAME \
+    --model-base $PREVIOUS \
     --save-model-path $SAVE_PATH
