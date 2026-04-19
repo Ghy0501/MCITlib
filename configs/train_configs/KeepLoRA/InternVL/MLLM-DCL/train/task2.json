@@ -1,7 +1,7 @@
 {
   "gpu_num": 2,
   "rank": 32,
-  "previous_model": "/your_ckpts_path/MCITlib/MLLM-DCL/InternVL/KeepLoRA/Task1_internvl_lora",
+  "previous_model": "/your_ckpts_path/MCITlib/MLLM-DCL/InternVL/KeepLoRA/Task1_internvl_lora_merged",
   "output_dir": "/your_ckpts_path/MCITlib/MLLM-DCL/InternVL/KeepLoRA/Task2_internvl_lora",
   "epoch": 3,
   "batch_size": 8,
