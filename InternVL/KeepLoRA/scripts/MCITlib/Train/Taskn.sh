@@ -76,5 +76,5 @@ torchrun --nnodes=${NNODES} --nproc_per_node=${GPU_NUM} --master_port 9001 llava
 SAVE_PATH="${OUTPUT_DIR}_merged"
 python scripts/merge_lora_weights.py \
     --model-path $OUTPUT_DIR \
-    --model-base $MODEL_NAME \
+    --model-base $PREVIOUS \
     --save-model-path $SAVE_PATH
