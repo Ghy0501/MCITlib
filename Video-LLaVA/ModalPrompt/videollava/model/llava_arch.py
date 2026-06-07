@@ -260,7 +260,6 @@ class LlavaMetaForCausalLM(ABC):
         # print(len(image_features), image_features[0].shape)
         # ====================================================================================================
         
-        # assert image_features.shape[1] == 576, 'vision tower not a withprojection version.'
         text_tower = self.get_text_tower()
 
         input_pad = np.where(input_ids.cpu().detach().numpy()!=-200,input_ids.cpu().detach().numpy(),self.tokenizer.pad_token_id)
