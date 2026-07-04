@@ -43,6 +43,8 @@ from .tuners import (
     AdaptionPromptModel,
     LoraConfig,
     LoraModel,
+    DoraConfig,
+    DoraModel,
     IA3Config,
     IA3Model,
     AdaLoraConfig,

@@ -57,6 +57,22 @@ def get_peft_model_state_dict(model, state_dict=None, adapter_name="default"):
                 config.rank_pattern = rank_pattern
                 to_return = model.resize_state_dict_by_rank_pattern(rank_pattern, to_return, adapter_name)
 
+    elif config.peft_type == PeftType.DORA:
+        bias = config.bias
+        if bias == "none":
+            to_return = {k: state_dict[k] for k in state_dict if ("lora_" in k or "weight_m_wdecomp" in k)}
+        elif bias == "all":
+            to_return = {k: state_dict[k] for k in state_dict if ("lora_" in k or "weight_m_wdecomp" in k or "bias" in k)}
+        elif bias == "lora_only":
+            raise NotImplementedError
+        else:
+            raise NotImplementedError
+        to_return = {
+            k: v
+            for k, v in to_return.items()
+            if (("lora_" in k and adapter_name in k) or ("weight_m_wdecomp" in k and adapter_name in k) or ("bias" in k))
+        }
+
     elif config.peft_type == PeftType.ADAPTION_PROMPT:
         to_return = {k: state_dict[k] for k in state_dict if k.split(".")[-1].startswith("adaption_")}
     elif isinstance(config, PromptLearningConfig):
@@ -118,6 +134,26 @@ def set_peft_model_state_dict(model, peft_model_state_dict, adapter_name="defaul
             rank_pattern = config.rank_pattern
             if rank_pattern is not None:
                 model.resize_modules_by_rank_pattern(rank_pattern, adapter_name)
+
+    elif config.peft_type == PeftType.DORA:
+        peft_model_state_dict = {}
+        for k, v in state_dict.items():
+            if "lora_" in k:
+                suffix = k.split("lora_")[1]
+                if "." in suffix:
+                    suffix_to_replace = ".".join(suffix.split(".")[1:])
+                    k = k.replace(suffix_to_replace, f"{adapter_name}.{suffix_to_replace}")
+                else:
+                    k = f"{k}.{adapter_name}"
+            elif "weight_m_wdecomp" in k:
+                suffix = k.split("weight_m_wdecomp")[1]
+                if "." in suffix:
+                    suffix_to_replace = ".".join(suffix.split(".")[1:])
+                    k = k.replace(suffix_to_replace, f"{adapter_name}.{suffix_to_replace}")
+                else:
+                    k = f"{k}.{adapter_name}"
+            peft_model_state_dict[k] = v
+
     elif isinstance(config, PromptLearningConfig) or config.peft_type == PeftType.ADAPTION_PROMPT:
         peft_model_state_dict = state_dict
     else:

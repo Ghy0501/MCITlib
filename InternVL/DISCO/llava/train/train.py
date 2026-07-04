@@ -113,6 +113,7 @@ class TrainingArguments(transformers.TrainingArguments):
         metadata={"help": "How many bits to use."}
     )
     lora_enable: bool = False
+    dora_enable: bool = False
     lora_r: int = 64
     lora_alpha: int = 16
     lora_dropout: float = 0.05
@@ -138,15 +139,15 @@ def maybe_zero_3(param, ignore_status=False, name=None):
 # Borrowed from peft.utils.get_peft_model_state_dict
 def get_peft_state_maybe_zero_3(named_params, bias):
     if bias == "none":
-        to_return = {k: t for k, t in named_params if "lora_" in k}
+        to_return = {k: t for k, t in named_params if ("lora_" in k or "weight_m_wdecomp" in k)}
     elif bias == "all":
-        to_return = {k: t for k, t in named_params if "lora_" in k or "bias" in k}
+        to_return = {k: t for k, t in named_params if ("lora_" in k or "weight_m_wdecomp" in k or "bias" in k)}
     elif bias == "lora_only":
         to_return = {}
         maybe_lora_bias = {}
         lora_bias_names = set()
         for k, t in named_params:
-            if "lora_" in k:
+            if "lora_" in k or "weight_m_wdecomp" in k:
                 to_return[k] = t
                 bias_name = k.split("lora_")[0] + "bias"
                 lora_bias_names.add(bias_name)
@@ -162,7 +163,7 @@ def get_peft_state_maybe_zero_3(named_params, bias):
 
 
 def get_peft_state_non_lora_maybe_zero_3(named_params, require_grad_only=True):
-    to_return = {k: t for k, t in named_params if "lora_" not in k}
+    to_return = {k: t for k, t in named_params if "lora_" not in k and "weight_m_wdecomp" not in k}
     if require_grad_only:
         to_return = {k: t for k, t in to_return.items() if t.requires_grad}
     to_return = {k: maybe_zero_3(v, ignore_status=True).cpu() for k, v in to_return.items()}
@@ -793,6 +794,8 @@ def train(attn_implementation=None):
     parser = transformers.HfArgumentParser(
         (ModelArguments, DataArguments, TrainingArguments))
     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
+    if training_args.lora_enable and training_args.dora_enable:
+        raise ValueError("DoRA and LoRA cannot be enabled at the same time.")
     local_rank = training_args.local_rank
     training_args._frozen = False  # compatible with transformers==4.32.0
     data_args._frozen = False  # compatible with transformers==4.32.0
@@ -861,6 +864,41 @@ def train(attn_implementation=None):
             def make_inputs_require_grad(module, input, output):
                 output.requires_grad_(True)
             model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
+
+    if training_args.dora_enable:
+        if model_args.expert_num == None:
+            from peft import DoraConfig, get_peft_model
+            dora_config = DoraConfig(
+                r=training_args.lora_r,
+                lora_alpha=training_args.lora_alpha,
+                target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],  # find_all_linear_names(model),
+                lora_dropout=training_args.lora_dropout,
+                bias=training_args.lora_bias,
+                task_type="CAUSAL_LM",
+            )
+        else:
+            sys.path.append('/home/chencheng/Code/Slim_Train')
+            from CoIN.peft import PeftModel, TaskType, get_peft_model, CoINMOELoraConfig, WEIGHTS_NAME, set_peft_model_state_dict
+            kwargs = { 
+                "task_embedding_dim": model_args.task_embedding_dim,
+                "expert_num": model_args.expert_num,
+                "cur_task": model_args.cur_task,
+            }
+            dora_config = DoraConfig(
+                r=training_args.lora_r,
+                lora_alpha=training_args.lora_alpha,
+                target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+                lora_dropout=training_args.lora_dropout,
+                bias=training_args.lora_bias,
+                task_type="CAUSAL_LM",
+            )
+        if training_args.bits == 16:
+            if training_args.bf16:
+                model.to(torch.bfloat16)
+            if training_args.fp16:
+                model.to(torch.float16)
+        rank0_print("Adding DoRA adapters...")
+        model = get_peft_model(model, dora_config)
 
     if training_args.lora_enable:
         if model_args.expert_num == None:
