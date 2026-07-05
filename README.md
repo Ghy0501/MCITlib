@@ -75,7 +75,7 @@ Whether you are exploring continual learning for MLLMs for the first time or ben
 </p></details>
 
 ## 📰 News
-
+- **[2026.07]** We support DoRA for LLaVA and InternVL to facilitate advanced and stable PEFT continual learning since it has become the most popular techniques for MCIT methods. 
 - **[2026.04]** 🔥🔥🔥 **MCITlib-v3** is released! This version adds **new continual instruction tuning methods**, **broader model support**, and extends the library to the **video** modality with **video benchmarks ([CL-VISTA](https://arxiv.org/pdf/2604.00677))** and **video-capable base models (Video-LLaVA & VideoLLaMA2)**—enabling continual instruction tuning and evaluation beyond classic image–text settings.
 - **[2026.01]** 🔥🔥🔥 We have updated the paper in [MCITlib](https://arxiv.org/pdf/2508.07307) with the latest results. Please feel free to check it out. 🎉🎉🎉
 - **[2025.10]** 🔥🔥🔥 **MCITlib-v2** has been updated! The latest version includes training and testing code for **8 mainstream multimodal continual instruction tuning methods**, compatible with **2 base models** and **3 continual instruction tuning datasets**. 🎉🎉🎉
