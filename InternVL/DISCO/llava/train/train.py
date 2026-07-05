@@ -867,7 +867,7 @@ def train(attn_implementation=None):
 
     if training_args.dora_enable:
         if model_args.expert_num == None:
-            from peft import DoraConfig, get_peft_model
+            from CoIN.peft import DoraConfig, get_peft_model
             dora_config = DoraConfig(
                 r=training_args.lora_r,
                 lora_alpha=training_args.lora_alpha,

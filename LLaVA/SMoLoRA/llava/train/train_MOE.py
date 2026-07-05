@@ -876,7 +876,7 @@ def train():
             model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
 
     if training_args.dora_enable:
-        from peft import DoraConfig, get_peft_model
+        from CoIN.peft import DoraConfig, get_peft_model
         with open(model_args.ins_emb, 'rb') as f:
             ins_emb = pickle.load(f)
         ins_emb = ins_emb.tolist()

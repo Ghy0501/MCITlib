@@ -929,7 +929,7 @@ def train(attn_implementation=None):
             model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
 
     if training_args.dora_enable:
-        from peft import DoraConfig, get_peft_model
+        from CoIN.peft import DoraConfig, get_peft_model
         dora_config = DoraConfig(
             r=training_args.lora_r,
             lora_alpha=training_args.lora_alpha,

@@ -884,7 +884,7 @@ def train():
             model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
 
     if training_args.dora_enable:
-        from peft import DoraConfig, get_peft_model
+        from CoIN.peft import DoraConfig, get_peft_model
         kwargs = { 
             "task_embedding_dim": model_args.task_embedding_dim,
             "expert_num": model_args.expert_num,
