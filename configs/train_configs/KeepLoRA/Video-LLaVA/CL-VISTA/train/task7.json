@@ -1,0 +1,10 @@
+{
+  "gpu_num": 2,
+  "rank": 64,
+  "output_dir": "./MCITlib/Video-LLaVA/KeepLoRA/Task7_videollava_lora",
+  "previous_model": "./MCITlib/Video-LLaVA/KeepLoRA/Task6_videollava_lora_merged",
+  "epoch": 1,
+  "batch_size": 4,
+  "grad_acc": 2,
+  "lr": 1e-4
+}
