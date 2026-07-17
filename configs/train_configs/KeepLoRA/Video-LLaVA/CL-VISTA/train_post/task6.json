@@ -1,0 +1,8 @@
+{
+  "gpu_num": 2,
+  "stage": "KeepLoRA-task6",
+  "model_path": "./MCITlib/Video-LLaVA/KeepLoRA/Task6_videollava_lora_merged",
+  "space_path": "./MCITlib/Video-LLaVA/KeepLoRA/Task5_videollava_lora_gradients",
+  "energy_threshold": 0.99,
+  "output_dir": "./MCITlib/Video-LLaVA/KeepLoRA/Task6_videollava_lora_gradients"
+}

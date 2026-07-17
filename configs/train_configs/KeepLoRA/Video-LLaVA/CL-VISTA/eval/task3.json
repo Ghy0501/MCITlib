@@ -1,0 +1,7 @@
+{
+  "gpu_num": 2,
+  "stage": "KeepLoRA-task3",
+  "model_path": "./MCITlib/Video-LLaVA/KeepLoRA/Task3_videollava_lora_merged",
+  "judge_path": "/root/blockdata1/Models/Qwen3-30B-A3B-Instruct-2507",
+  "result_path": "./results/CVU/each_dataset"
+}
