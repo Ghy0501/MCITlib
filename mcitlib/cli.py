@@ -50,21 +50,29 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "metrics":
         print(json.dumps({"run_dir": str(args.run_dir), "status": "metrics implementation lands in L5"}, ensure_ascii=False))
         return 0
-    # Keep dry-run side-effect free while the L2 adapter is being installed.
-    payload = {
-        "command": args.command,
-        "backbone": args.backbone,
-        "method": args.method,
-        "benchmark": args.benchmark,
-        "dry_run": args.dry_run,
-        "status": "adapter command builder lands in L2",
-    }
-    if args.command == "train" and args.task is not None:
-        payload["task"] = args.task
-    if args.command == "eval" and args.after_task is not None:
-        payload["after_task"] = args.after_task
-    print(json.dumps(payload, ensure_ascii=False))
-    return 0 if args.dry_run else 2
+    if not args.dry_run:
+        print("actual execution is installed in the GPU runner phase; use --dry-run for a command preview")
+        return 2
+    from .runner import build_sequence_commands
+    paths = None
+    if args.paths:
+        from .paths import PathResolver
+        paths = PathResolver.from_file(args.paths, repo_root=Path.cwd())
+    try:
+        commands = build_sequence_commands(
+            args.config_root,
+            args.backbone,
+            args.method,
+            args.benchmark,
+            paths=paths,
+            task_id=args.task if args.command == "train" else args.after_task,
+            only_eval=args.command == "eval",
+        )
+    except (KeyError, ValueError, FileNotFoundError) as error:
+        print(f"mcitlib: {error}", file=sys.stderr)
+        return 2
+    print(json.dumps([command.as_dict() for command in commands], ensure_ascii=False, indent=2))
+    return 0
 
 
 if __name__ == "__main__":

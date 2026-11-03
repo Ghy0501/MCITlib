@@ -41,6 +41,7 @@ class TaskSpec:
     train_config: str
     eval_config: str | None = None
     router: bool = False
+    data: DataSource | None = None
 
     @property
     def task_key(self) -> str:

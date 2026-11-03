@@ -1,32 +1,90 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2025-2026 MCITlib authors
-"""Continual-learning orchestration interfaces.
-
-The LLaVA command builder is installed in L2. L1 deliberately keeps execution
-behind this small interface so configuration and command-dump tooling can be
-tested without importing torch or transformers.
-"""
+"""Build ordered continual-learning command sequences without executing them."""
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
-from .config.schema import Command, RunConfig, TaskSpec
+from .config.loader import load_layered_config
+from .config.schema import Command, DataSource, RunConfig, TaskSpec
+from .registry import get_backbone, get_benchmark, get_method
+
+
+def _task(benchmark: Any, task_id: int, name: str, values: dict[str, Any]) -> TaskSpec:
+    source = values["source"]
+    return TaskSpec(
+        benchmark=benchmark.id,
+        task_id=task_id,
+        name=name,
+        model_config=source["model_config"],
+        data_config=source["data_config"],
+        train_config=source["train_config"],
+        eval_config=source.get("eval_config"),
+        data=DataSource.from_dict(values["data_config"]),
+    )
+
+
+def _recorded_commands(values: dict[str, Any], task: TaskSpec, include_extra: bool = True) -> list[Command]:
+    result: list[Command] = []
+    kinds = [("eval_commands", "eval")]
+    if include_extra:
+        kinds.append(("extra_commands", "extra"))
+    for key, kind in kinds:
+        for item in values.get(key, []):
+            result.append(Command(
+                argv=list(item["argv"]),
+                kind=kind,
+                task_id=task.task_id,
+                metadata={"order": item.get("order", -1), "source": "v3-command-dump"},
+            ))
+    return result
+
+
+def build_sequence_commands(
+    config_root: str | Path,
+    backbone_id: str,
+    method_id: str,
+    benchmark_id: str,
+    paths: Any = None,
+    task_id: int | None = None,
+    only_eval: bool = False,
+) -> list[Command]:
+    """Build v3-ordered commands; NB-5 install commands are never emitted."""
+    backbone = get_backbone(backbone_id)
+    if not backbone.v4_supported:
+        raise ValueError(f"backbone is not migrated yet: {backbone_id}")
+    method = get_method(method_id)
+    benchmark = get_benchmark(benchmark_id)
+    if backbone_id != "llava":
+        raise ValueError(f"unsupported backbone: {backbone_id}")
+    from .backbones.llava.adapter import LlavaAdapter
+    adapter = LlavaAdapter()
+    commands: list[Command] = []
+    for current_id, task_name in enumerate(benchmark.tasks, start=1):
+        if task_id is not None and current_id != task_id:
+            continue
+        values = load_layered_config(config_root, backbone_id, benchmark.id, method.id, task_id=current_id)
+        values = {**values, "repo_root": str(Path(config_root).resolve().parent)}
+        task = _task(benchmark, current_id, task_name, values)
+        if not only_eval:
+            run_cfg = RunConfig(backbone_id, method.id, benchmark.id, task=task, values=values, paths=paths)
+            train = adapter.build_command(run_cfg, method, task)
+            train.metadata["order"] = values["train_command"].get("order", -1)
+            commands.append(train)
+        commands.extend(_recorded_commands(values, task, include_extra=not only_eval))
+    commands.sort(key=lambda command: (command.task_id or 0, command.metadata.get("order", -1)))
+    return commands
 
 
 def build_commands(run_cfg: RunConfig, tasks: list[TaskSpec], dry_run: bool = True) -> list[Command]:
-    """Build commands through the selected backbone adapter.
-
-    Adapters register a ``build_commands`` callable on the run configuration in
-    later phases. No shell command is executed by this function.
-    """
     builder: Any = run_cfg.values.get("command_builder")
     if builder is None:
-        raise NotImplementedError("the LLaVA adapter command builder is installed in L2")
+        raise NotImplementedError("use build_sequence_commands with the LLaVA adapter")
     return list(builder(run_cfg, tasks, dry_run=dry_run))
 
 
 def run(*args: Any, **kwargs: Any) -> list[Command]:
-    """Execution entry point; L2 adds the actual deepspeed runner."""
     if not kwargs.get("dry_run", True):
-        raise NotImplementedError("actual training execution is installed after the L2 adapter")
+        raise NotImplementedError("actual training execution is installed in the GPU runner phase")
     return build_commands(*args, **kwargs)
