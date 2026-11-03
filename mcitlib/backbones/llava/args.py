@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2025-2026 MCITlib authors
+"""Construct deepspeed argv without changing v3 training arguments."""
+from __future__ import annotations
+
+import os
+from pathlib import Path
+from typing import Any
+
+from ...config.schema import Command, RunConfig, TaskSpec
+
+ENTRY_MODULE = "mcitlib.backbones.llava.train_entry"
+
+
+def _resolve(value: Any, run_cfg: RunConfig) -> Any:
+    paths = run_cfg.paths
+    if isinstance(value, list):
+        return [_resolve(item, run_cfg) for item in value]
+    if not isinstance(value, str) or paths is None:
+        return value
+    replacements = {
+        "${model_root}": str(paths.paths.model_root),
+        "${data_root}": str(paths.paths.data_root),
+        "${ckpt_root}": str(paths.paths.ckpt_root),
+        "${repo_root}": str(paths.paths.repo_root),
+    }
+    for source, target in replacements.items():
+        if value.startswith(source):
+            return target + value[len(source):]
+    return value
+
+
+def build_train_command(run_cfg: RunConfig, task: TaskSpec, entry: str) -> Command:
+    try:
+        original = list(run_cfg.values["train_command"]["argv"])
+    except (KeyError, TypeError) as error:
+        raise ValueError("merged task config lacks train_command.argv") from error
+    entry_index = next((i for i, value in enumerate(original) if value.endswith(".py")), None)
+    if entry_index is None:
+        raise ValueError(f"v3 training entry not found in argv: {original}")
+    argv = original[:entry_index] + ["python", "-m", ENTRY_MODULE] + original[entry_index + 1:]
+    argv = _resolve(argv, run_cfg)
+    repo_root = Path(run_cfg.values.get("repo_root", ".")).resolve()
+    pythonpath = os.pathsep.join((str(repo_root / "third_party/LLaVA"), str(repo_root / "third_party/peft")))
+    return Command(
+        argv=argv,
+        cwd=str(repo_root),
+        env={"MCITLIB_TRAIN_ENTRY": entry, "PYTHONPATH": pythonpath},
+        kind="train",
+        task_id=task.task_id,
+        metadata={"source_entry": original[entry_index], "entry": entry},
+    )

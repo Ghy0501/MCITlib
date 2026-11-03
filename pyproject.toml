@@ -34,3 +34,11 @@ target-version = "py310"
 [tool.ruff.lint]
 select = ["E", "F", "I"]
 ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+# These files intentionally retain upstream implementation style while imports
+# and ownership boundaries are migrated; new adapter code remains fully linted.
+"mcitlib/backbones/llava/standard_train.py" = ["E", "F", "I"]
+"mcitlib/backbones/llava/moe_train.py" = ["E", "F", "I"]
+"mcitlib/backbones/llava/trainer.py" = ["E", "F", "I"]
+"mcitlib/tuners/mcit_expert_lora.py" = ["E", "F", "I"]
