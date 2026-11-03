@@ -28,6 +28,12 @@ from mcitlib.registry import BENCHMARKS, METHODS, get_benchmark, get_method
 
 ROOT_PLACEHOLDER = "__V3_ROOT__"
 V3_PLACEHOLDER = "/your_path/MCITlib_v3"
+HARD_CODED_PATH_PLACEHOLDERS = {
+    "/home/hongbo_zhao/ghy-cl-codebase/clip-vit-large-patch14-336": "/your_model_path/clip-vit-large-patch14-336",
+    "/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints": "/your_ckpts_path",
+    "/home/hongbo_zhao/ghy-cl-codebase/MCITlib": "/your_path/MCITlib_v3",
+    "/mnt/cache/guohaiyang/miniconda3/envs/coin/bin/python": "/your_python_path",
+}
 
 SHIM = r'''#!/usr/bin/env python3
 import json
@@ -59,6 +65,19 @@ try:
 except ImportError:
     with open(log, "ab") as handle:
         handle.write(line)
+
+# Let shell concatenation steps proceed without running a model. Only relative
+# answer files inside the temporary working directory are created.
+if name in {"python", "python3"}:
+    args = sys.argv[1:]
+    for index, arg in enumerate(args[:-1]):
+        if arg == "--answers-file":
+            output = args[index + 1]
+            if output and not os.path.isabs(output):
+                parent = os.path.dirname(output)
+                if parent:
+                    os.makedirs(parent, exist_ok=True)
+                open(output, "ab").close()
 '''
 
 
@@ -81,8 +100,35 @@ def _copy_tree_with_root(source: Path, destination: Path, temp_root: Path) -> No
         except (UnicodeDecodeError, OSError):
             continue
         rewritten = text.replace(V3_PLACEHOLDER, str(temp_root))
+        for source, target in HARD_CODED_PATH_PLACEHOLDERS.items():
+            rewritten = rewritten.replace(source, target)
         if rewritten != text:
             path.write_text(rewritten, encoding="utf-8")
+
+
+def _repair_commented_tasks(script: Path) -> list[int]:
+    """Restore author-approved commented task blocks in the temporary script."""
+    lines = script.read_text(encoding="utf-8").splitlines(keepends=True)
+    targets = [
+        index for index, line in enumerate(lines)
+        if "train/task" in line and ".json" in line and line.lstrip().startswith("#")
+    ]
+    repaired: set[int] = set()
+    for target in targets:
+        start = target
+        while start > 0 and lines[start - 1].lstrip().startswith("#"):
+            start -= 1
+        end = target
+        while end + 1 < len(lines) and lines[end + 1].lstrip().startswith("#"):
+            end += 1
+        for index in range(start, end + 1):
+            lines[index] = re.sub(r"^(\s*)#\s?", r"\1", lines[index])
+        match = re.search(r"train/task(\d+)\.json", lines[target])
+        if match:
+            repaired.add(int(match.group(1)))
+    if repaired:
+        script.write_text("".join(lines), encoding="utf-8")
+    return sorted(repaired)
 
 
 def _apply_config_aliases(scripts_root: Path, method_id: str) -> dict[str, str]:
@@ -97,6 +143,44 @@ def _apply_config_aliases(scripts_root: Path, method_id: str) -> dict[str, str]:
         if rewritten != text:
             path.write_text(rewritten, encoding="utf-8")
     return {source: target}
+
+
+def _apply_router_compat(scripts_root: Path, configs_root: Path, benchmark_id: str) -> tuple[dict[str, str], dict[str, Any]]:
+    """Fill explicitly authorized router placeholders in the temporary copy."""
+    benchmark = get_benchmark(benchmark_id)
+    script_aliases = {
+        "scripts/MCITlib/Eval_UCIT/Eval_finetune1.sh": "scripts/MCITlib/Eval_UCIT/Eval_ucit.sh",
+        "scripts/MCITlib/Eval_MLLM_ACL/Eval_finetune1.sh": "scripts/MCITlib/Eval_MLLM_ACL/Eval_acl.sh",
+    }
+    for path in scripts_root.rglob("*.sh"):
+        text = path.read_text(encoding="utf-8")
+        rewritten = text
+        for source, target in script_aliases.items():
+            rewritten = rewritten.replace(source, target)
+        if rewritten != text:
+            path.write_text(rewritten, encoding="utf-8")
+
+    placeholders: dict[str, Any] = {}
+    data_root = configs_root / "data_configs" / benchmark.v3_name
+    for path in sorted(data_root.glob("*.json")):
+        values = json.loads(path.read_text(encoding="utf-8"))
+        added: dict[str, str] = {}
+        if "router_path" not in values:
+            # Router data is deliberately independent of train_path. This is a
+            # replaceable placeholder following the other v3 router configs.
+            values["router_path"] = values["train_path"].rsplit("/", 1)[0] + "/router.json"
+            added["router_path"] = values["router_path"]
+        if "router_folder" not in values:
+            values["router_folder"] = (
+                values["train_folder"]
+                if benchmark_id == "ucit"
+                else values["train_folder"].rsplit("/", 1)[0]
+            )
+            added["router_folder"] = values["router_folder"]
+        if added:
+            path.write_text(json.dumps(values, indent=2) + "\n", encoding="utf-8")
+            placeholders[str(path.relative_to(configs_root))] = added
+    return script_aliases, placeholders
 
 
 def _classify(argv: list[str]) -> str:
@@ -137,7 +221,7 @@ def _normalise(record: dict[str, Any], temp_root: Path, sequence: str, order: in
     }
 
 
-def _read_commands(log: Path, temp_root: Path, sequence: str) -> list[dict[str, Any]]:
+def _read_commands(log: Path, temp_root: Path, sequence: str, method_id: str = "") -> list[dict[str, Any]]:
     if not log.is_file():
         return []
     records = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines() if line.strip()]
@@ -145,8 +229,13 @@ def _read_commands(log: Path, temp_root: Path, sequence: str) -> list[dict[str, 
     current_task = 0 if sequence == "extract" else 1
     for order, record in enumerate(records):
         text = " ".join(record["argv"])
+        cur_task = re.search(r"--cur_task\s+(\d+)", text)
         matches = re.findall(r"[Tt]ask(\d+)", text)
-        if matches:
+        if method_id == "modalprompt" and cur_task:
+            # ModalPrompt uses one-based cur_task; its UCIT task2 JSON has a
+            # copy/paste output_dir pointing at Task1, so path inference fails.
+            current_task = int(cur_task.group(1))
+        elif matches:
             # Taskn argv contains both previous_task_model_path and the
             # current output_dir; the current task is the last occurrence.
             current_task = int(matches[-1])
@@ -176,6 +265,17 @@ def run_sequence(
         _copy_tree_with_root(source_method / "scripts", temp_root / "scripts", temp_root)
         _copy_tree_with_root(v3_root / "configs", temp_root / "configs", temp_root)
         config_aliases = _apply_config_aliases(temp_root / "scripts", method.id)
+        sequence_repairs: list[int] = []
+        if not router:
+            sequence_repairs = _repair_commented_tasks(
+                temp_root / "scripts" / "MCITlib" / "Train" / script_name
+            )
+        script_aliases: dict[str, str] = {}
+        config_placeholders: dict[str, Any] = {}
+        if router:
+            script_aliases, config_placeholders = _apply_router_compat(
+                temp_root / "scripts", temp_root / "configs", benchmark.id
+            )
         shim_bin = temp_root / ".shim-bin"
         _write_shims(shim_bin)
         log = temp_root / "commands.jsonl"
@@ -192,7 +292,7 @@ def run_sequence(
             text=True,
             check=False,
         )
-        commands = _read_commands(log, temp_root, sequence)
+        commands = _read_commands(log, temp_root, sequence, method.id)
         if not commands:
             raise RuntimeError(
                 f"no commands recorded for {method_id}/{benchmark_id}: "
@@ -209,6 +309,10 @@ def run_sequence(
             "source_script": f"scripts/MCITlib/Train/{script_name}",
             "root_placeholder": ROOT_PLACEHOLDER,
             "config_aliases": config_aliases,
+            "script_aliases": script_aliases,
+            "config_placeholders": config_placeholders,
+            "sequence_repairs": sequence_repairs,
+            "path_placeholders": HARD_CODED_PATH_PLACEHOLDERS,
             "runner_exit_code": completed.returncode,
             "commands": commands,
         }
