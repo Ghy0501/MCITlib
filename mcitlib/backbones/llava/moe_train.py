@@ -27,7 +27,7 @@ from typing import Dict, Optional, Sequence, List
 import torch
 import sys
 import transformers
-import subprocess
+from mcitlib.backbones.llava.cleanup import remove_checkpoint_dirs
 
 from mcitlib.backbones.llava.trainer import LLaVATrainer
 from llava.constants import IGNORE_INDEX, IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN
@@ -1008,8 +1008,7 @@ def train():
         safe_save_model_for_hf_trainer(trainer=trainer,
                                        output_dir=training_args.output_dir)
 
-    remove_dir = training_args.output_dir
-    subprocess.run(f"find {remove_dir} -maxdepth 1 -type d -name 'checkpoint-*' -exec rm -rf {{}} +", shell=True)
+    remove_checkpoint_dirs(training_args.output_dir)
 
 if __name__ == "__main__":
     train()
