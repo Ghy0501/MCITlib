@@ -1,0 +1,13 @@
+id: mllm_acl
+v3_name: MLLM-ACL
+train_script: train_ACL.sh
+eval_dir: Eval_MLLM_ACL
+tasks:
+- task_id: 1
+  name: OCR
+- task_id: 2
+  name: Math
+- task_id: 3
+  name: VP
+- task_id: 4
+  name: APP

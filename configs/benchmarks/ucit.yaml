@@ -1,0 +1,17 @@
+id: ucit
+v3_name: UCIT
+train_script: train_UCIT.sh
+eval_dir: Eval_UCIT
+tasks:
+- task_id: 1
+  name: ImageNet-R
+- task_id: 2
+  name: ArxivQA
+- task_id: 3
+  name: VizWiz
+- task_id: 4
+  name: IconQA
+- task_id: 5
+  name: CLEVR-Math
+- task_id: 6
+  name: Flickr30k

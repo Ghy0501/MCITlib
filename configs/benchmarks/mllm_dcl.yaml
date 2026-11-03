@@ -1,0 +1,15 @@
+id: mllm_dcl
+v3_name: MLLM-DCL
+train_script: train_DCL.sh
+eval_dir: Eval_MLLM_DCL
+tasks:
+- task_id: 1
+  name: RS
+- task_id: 2
+  name: Med
+- task_id: 3
+  name: AD
+- task_id: 4
+  name: Sci
+- task_id: 5
+  name: Fin
