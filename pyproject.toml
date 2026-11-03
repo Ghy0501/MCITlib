@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcitlib"
+version = "0.1.0"
+description = "MCITlib continual multimodal instruction tuning library"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+authors = [{name = "MCITlib authors"}]
+dependencies = ["PyYAML>=6.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "ruff>=0.6"]
+
+[project.scripts]
+mcitlib = "mcitlib.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["mcitlib*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "env: required runtime environment (llava or llava-t437)",
+]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501"]

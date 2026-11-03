@@ -1,0 +1,4 @@
+# Copy to paths.yaml and adjust these three roots for your machine.
+model_root: ./models
+data_root: ./data
+ckpt_root: ./ckpts
