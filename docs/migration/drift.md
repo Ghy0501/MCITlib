@@ -114,11 +114,23 @@ v4 的评测任务集合、模块选择和参数顺序应由 `v3_command_dump.py
 
 `LLaVA/RegLoRA/scripts/MCITlib/` 中的 Train 和 Eval 脚本引用 `configs/train_configs/SEFE/...`，全仓共 61 处；但 `v3.0-final` 的 `configs/train_configs/` 只有 `RegLoRA/`，没有 `SEFE/`。例如 `SEFE/LLaVA/UCIT/train/task1.json` 不存在，而 `RegLoRA/LLaVA/UCIT/train/task1.json` 存在。
 
-v3 shell 未设置 `set -e`，所以 `read_config` 的 `FileNotFoundError` 不会阻止后续命令。shim dump 因而能返回 0，但会产生无效 argv，例如空的 `--lora_r`、`--include localhost:0,-1`、空的 `--model-path` 和 `_merged`。该产物不能作为 T0/T3 期望值，也不能用“SEFE 就是 RegLoRA 别名”擅自替换路径；需要宏观 Agent/作者确认实际实验配置来源。
+v3 shell 未设置 `set -e`，所以 `read_config` 的 `FileNotFoundError` 不会阻止后续命令。未做别名处理时，shim dump 虽能返回 0，但会产生无效 argv，例如空的 `--lora_r`、`--include localhost:0,-1`、空的 `--model-path` 和 `_merged`。
+
+**解决授权（2026-11-03）：**作者明确确认“SEFE 就是 RegLoRA”。因此 `v3_command_dump.py` 只在临时副本中把 `configs/train_configs/SEFE` 映射为 `configs/train_configs/RegLoRA`，并在每个 JSON 的 `config_aliases` 中记录；v3 原树不修改。该映射是配置来源兼容，不改变方法算法。
 
 诊断产物：`/tmp/p0/v3_commands_test/sefe/ucit.json`（不入库，包含无效参数，仅用于定位）。
 
-## 12. 当前不能宣称的事项
+## 12. MR-LoRA router 的配置与评测入口断链（L1 停止条件 S1）
+
+在生成 3 条 router 序列时发现：
+
+1. `Task1_router.sh` 无条件读取 `router_path`，但 `configs/data_configs/UCIT/ImageNet-R.json` 和 `configs/data_configs/MLLM-ACL/OCR.json` 没有该键，只有 `train_path`、`test_path` 等字段，导致 `KeyError` 和空训练参数。
+2. `train_UCIT_router.sh` 调用 `scripts/MCITlib/Eval_UCIT/Eval_finetune1.sh`，但 MR-LoRA 目录实际提供的是 `Eval_ucit.sh`；ACL router 同样调用 `Eval_MLLM_ACL/Eval_finetune1.sh`，目录提供的是 `Eval_acl.sh`。
+3. DCL router 的 35 条 argv 可记录，但后续 `cat` 错误来自 shim 不生成模型输出文件；这与前两项的真实配置/入口断链不同，后续可在 dump shim 中仅为临时答案文件创建空文件以消除噪声。
+
+这些不是 v4 目录组织差异。不能自行推断 `router_path=train_path`，也不能自行把 v3 的评测入口改成同名文件。需要作者/宏观 Agent 提供 router 数据和评测入口的参考来源，或明确授权相应映射。
+
+## 13. 当前不能宣称的事项
 
 - 尚未完成 T0–T3，因此不能宣称 v4 与 v3 数值等价。
 - 尚未在 GPU 上执行 T4/T5。
