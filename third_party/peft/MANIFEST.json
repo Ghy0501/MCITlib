@@ -1,0 +1,27 @@
+{
+  "component": "peft",
+  "files": {
+    "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "peft/__init__.py": "c30a6fb62091534af0441f1093e504907198d46f7aaa4f8921d94fca545202e9",
+    "peft/auto.py": "8eceac3bb7ca93a20895ecc3ca99a855dc697ae01deb5c272aeee4147cf3b705",
+    "peft/import_utils.py": "3e733b1972c6b3ddd4beb0f4c5811737fccbaa2870f7bc423aaf5deb2c6a1cb5",
+    "peft/mapping.py": "4192a51f68d033ae0691f00c4c43b65b1302c5125b6fed514837af97f1bdc9dc",
+    "peft/peft_model.py": "cf776e133b9772f07ab9be1412f66e02e8a99d43df275bfc930a4efe1742d142",
+    "peft/py.typed": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "peft/tuners/__init__.py": "fa3a8e7f2f90f7b0573106626477c8df1b642610999f9f029f161844dc6d4dbf",
+    "peft/tuners/adalora.py": "0e39e40568edc86addca48bc5dadbb63c4fb81e3103a3622b98ddf2b7eb0faf1",
+    "peft/tuners/adaption_prompt.py": "7222b6c9a165ae4d437c89c82b4da7cd2500e339d3fb564e5584ab958bc3228f",
+    "peft/tuners/ia3.py": "1a8a1dbb0e780d89b906a1cf7e185559812acc002c7f890661391cf4b6dec374",
+    "peft/tuners/lora.py": "dc1d551bdcae014cd99906479e716c58a39f2661f71ea62d4262ff9e55a67a40",
+    "peft/tuners/p_tuning.py": "db8bbd6a0d5484c93e8e6f68ea4fbeac27cb4a851b26b7feacf16a30a374708f",
+    "peft/tuners/prefix_tuning.py": "ea4f31a4b210d115a877926babb9c850b1789a36737cebff4a00791d7400d96d",
+    "peft/tuners/prompt_tuning.py": "141071a5db404f500be163fbcfe476e2c6f72ea933d929264585ec3a12c38069",
+    "peft/utils/__init__.py": "f0040eec7e3bfefe0e148d2643895fe66f54d46d149ef92adb9d88438ec79464",
+    "peft/utils/config.py": "e1298021e322f2fa90347ecc366fe43d0c4041d17f59e59ea11ca6c2bcabda6b",
+    "peft/utils/hub_utils.py": "ef8f245c8d6c6e882889f97ba3c390857c16101dc6ebae8cf275051125878cf0",
+    "peft/utils/other.py": "7d6a7f73789037cb28344fa131c26da247825b95f5e35e51e6fb3d050425506f",
+    "peft/utils/save_and_load.py": "31115567cc810fc4122fe3816085ac5b8691c99fef99cb0c852cc3c706a725b5"
+  },
+  "schema_version": 1,
+  "upstream_commit": "v0.4.0"
+}
