@@ -146,9 +146,15 @@ v3 shell 未设置 `set -e`，所以 `read_config` 的 `FileNotFoundError` 不�
 
 **处理授权（2026-11-03）：**作者明确授权统一这些因 v3 集成不完整而注释的训练段，并将硬编码路径改为占位符。dump 在临时副本中恢复 SMoLoRA DCL Task1、ModalPrompt ACL Task1–4，保持同一 benchmark 的顺序；恢复任务写入 `sequence_repairs`。ModalPrompt UCIT 的 output_dir 配置错误未被修复，仅修正任务编号推断。占位符的目的和 GPU 替换要求见 `placeholders.md`。
 
-## 14. 当前不能宣称的事项
+## 14. O-LoRA v3 的 `sys` 导入缺陷
 
-- L1 的 T0（36 条普通序列及 router 配置检查）已通过；T1–T3 尚未完成，因此不能宣称 v4 与 v3 数值等价。
+`LLaVA/OLoRA/llava/train/train_MOE.py` 第 37 行调用 `sys.path.append`，但文件没有 `import sys`，直接 import 会抛出 `NameError`。v4 已删除该硬编码路径，因此不依赖这个缺陷。
+
+T2 的 v3 参考子进程只注入 `builtins.sys` 使数据模块可导入；这不修改 v3 文件，也不证明 O-LoRA 的原始训练入口可直接运行。该可复现性风险需在 GPU 阶段单独确认。
+
+## 15. 当前不能宣称的事项
+
+- L1 的 T0（36 条普通序列及 router 配置检查）已通过；L3 的 LoRA-FT、Replay、O-LoRA、HiDe 已完成其 CPU T1–T3 覆盖，其余 8 个方法及真实模型/GPU 数值等价仍未完成，不能宣称 v4 整体与 v3 数值等价。
 - 尚未在 GPU 上执行 T4/T5。
 - 尚未证明所有 LLaVA 方法可以共享一个上游快照或一个 transformers 环境。
 - 尚未确定 CL-MoE、HiDe-LLaVA、ModalPrompt 的上游再发布许可证。
