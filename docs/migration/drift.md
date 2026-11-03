@@ -130,7 +130,23 @@ v3 shell 未设置 `set -e`，所以 `read_config` 的 `FileNotFoundError` 不�
 
 这些不是 v4 目录组织差异。不能自行推断 `router_path=train_path`，也不能自行把 v3 的评测入口改成同名文件。需要作者/宏观 Agent 提供 router 数据和评测入口的参考来源，或明确授权相应映射。
 
-## 13. 当前不能宣称的事项
+**处理授权（2026-11-03）：**作者确认 router 使用独立的新数据路径，并允许先用占位符，后续在 GPU 节点替换。dump 因而按其他任务的惯例补 `任务目录/router.json` 和对应数据根目录，绝不使用 `train_path`；UCIT/ACL 的缺失评测入口在临时副本中映射到现有的 `Eval_ucit.sh`/`Eval_acl.sh`。这些值和映射写入 JSON 的 `config_placeholders`、`script_aliases`，最终仍需 GPU 运行确认。
+
+## 13. 训练脚本中被注释的任务（L1 停止条件 S1）
+
+全量检查 36 条普通序列的训练命令后发现：
+
+| 方法 × 基准 | v3 实际情况 | 缺失/异常 |
+|---|---|---|
+| SMoLoRA × MLLM-DCL | `train_DCL.sh` 中 Task1 的 Task1.sh 和 Eval 调用均注释，脚本从 Task2 开始 | 缺 Task1，仅 4 个训练命令 |
+| ModalPrompt × UCIT | Task2 训练段注释 | dump 中 Task1 两次、Task2 缺失 |
+| ModalPrompt × MLLM-ACL | Task1–4 训练段全部注释，只保留四次 Eval | 没有任何训练命令 |
+
+此外 ModalPrompt 的多个训练/评测配置使用 `/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints/...` 硬编码 checkpoint 路径，需要迁移时转成路径根占位符。
+
+这些缺任务问题不能用路径占位符解决；恢复/补写训练段会改变 v3 实际执行序列，必须取得作者明确参考或授权后才能继续宣称 36 条序列的 T0/T3。
+
+## 14. 当前不能宣称的事项
 
 - 尚未完成 T0–T3，因此不能宣称 v4 与 v3 数值等价。
 - 尚未在 GPU 上执行 T4/T5。
