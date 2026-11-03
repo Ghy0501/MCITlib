@@ -9,6 +9,7 @@ from ...config.schema import Command, DataSource, RunConfig, TaskSpec
 from ..base import BackboneAdapter
 from .args import build_train_command
 from .data import build_dataset
+from .overrides import install_model_override
 
 
 class LlavaAdapter(BackboneAdapter):
@@ -17,11 +18,12 @@ class LlavaAdapter(BackboneAdapter):
     capabilities: ClassVar[frozenset[str]] = frozenset({"text_tower", "clip_features", "layer_index", "model_class_override"})
 
     def build_command(self, run_cfg: RunConfig, method: Any, task: TaskSpec) -> Command:
-        return build_train_command(run_cfg, task, getattr(method, "train_entry", "standard"))
+        return build_train_command(
+            run_cfg, task, getattr(method, "train_entry", "standard"), getattr(method, "model_override", None)
+        )
 
     def load_base(self, model_cfg: Any, override_cls: type | None = None) -> Any:
-        if override_cls is not None:
-            raise NotImplementedError("method-private model overrides are installed with SEFE/KeepLoRA")
+        install_model_override(override_cls)
         from llava.model.builder import load_pretrained_model
         values = model_cfg if isinstance(model_cfg, dict) else vars(model_cfg)
         model_name = values["model_name"]

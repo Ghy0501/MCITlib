@@ -7,9 +7,12 @@ import os
 
 from llava.train.llama_flash_attn_monkey_patch import replace_llama_attn_with_flash_attn
 
+from .overrides import install_model_override
+
 
 def main() -> None:
     replace_llama_attn_with_flash_attn()
+    install_model_override(os.environ.get("MCITLIB_MODEL_OVERRIDE"))
     entry = os.environ.get("MCITLIB_TRAIN_ENTRY", "standard")
     if entry == "standard":
         from .standard_train import train

@@ -30,7 +30,7 @@ def _resolve(value: Any, run_cfg: RunConfig) -> Any:
     return value
 
 
-def build_train_command(run_cfg: RunConfig, task: TaskSpec, entry: str) -> Command:
+def build_train_command(run_cfg: RunConfig, task: TaskSpec, entry: str, model_override: str | None = None) -> Command:
     try:
         original = list(run_cfg.values["train_command"]["argv"])
     except (KeyError, TypeError) as error:
@@ -42,10 +42,13 @@ def build_train_command(run_cfg: RunConfig, task: TaskSpec, entry: str) -> Comma
     argv = _resolve(argv, run_cfg)
     repo_root = Path(run_cfg.values.get("repo_root", ".")).resolve()
     pythonpath = os.pathsep.join((str(repo_root / "third_party/LLaVA"), str(repo_root / "third_party/peft")))
+    env = {"MCITLIB_TRAIN_ENTRY": entry, "PYTHONPATH": pythonpath}
+    if model_override:
+        env["MCITLIB_MODEL_OVERRIDE"] = model_override
     return Command(
         argv=argv,
         cwd=str(repo_root),
-        env={"MCITLIB_TRAIN_ENTRY": entry, "PYTHONPATH": pythonpath},
+        env=env,
         kind="train",
         task_id=task.task_id,
         metadata={"source_entry": original[entry_index], "entry": entry},

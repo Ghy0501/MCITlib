@@ -19,6 +19,7 @@ class ContinualMethod(ABC):
     train_entry: ClassVar[str] = "standard"
     deepspeed_config: ClassVar[str] = "zero2"
     separate_train_and_infer: ClassVar[bool] = False
+    model_override: ClassVar[str | None] = None
 
     @abstractmethod
     def select_train_data(self, task: TaskSpec) -> DataSource:
