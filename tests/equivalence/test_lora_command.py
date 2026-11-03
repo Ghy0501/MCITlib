@@ -14,7 +14,8 @@ from mcitlib.backbones.llava.adapter import LlavaAdapter
 from mcitlib.backbones.llava.args import ENTRY_MODULE
 from mcitlib.config.loader import load_layered_config
 from mcitlib.config.schema import RunConfig, TaskSpec
-from mcitlib.registry import BENCHMARKS
+from mcitlib.registry import BENCHMARKS, METHODS
+from mcitlib.runner import build_sequence_commands
 
 
 def normalise(value: Any) -> Any:
@@ -36,13 +37,14 @@ def normalise(value: Any) -> Any:
     return value
 
 
+@pytest.mark.parametrize("method_spec", [m for m in METHODS if m.id in {"lora_ft", "replay", "olora", "hide"}], ids=lambda item: item.id)
 @pytest.mark.parametrize("benchmark", BENCHMARKS, ids=lambda item: item.id)
-def test_lora_ft_command_matches_v3(repo_root: Path, benchmark: Any) -> None:
-    payload = json.loads((repo_root / "tests/fixtures/v3_commands/llava/lora_ft" / f"{benchmark.id}.json").read_text())
+def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spec: Any) -> None:
+    payload = json.loads((repo_root / "tests/fixtures/v3_commands/llava" / method_spec.id / f"{benchmark.id}.json").read_text())
     adapter = LlavaAdapter()
-    method = SimpleNamespace(train_entry="standard")
+    method = SimpleNamespace(train_entry=method_spec.train_entry, model_override="hide" if method_spec.id == "hide" else None)
     for task_id, task_name in enumerate(benchmark.tasks, start=1):
-        values = load_layered_config(repo_root / "configs", "llava", benchmark.id, "lora_ft", task_id=task_id)
+        values = load_layered_config(repo_root / "configs", "llava", benchmark.id, method_spec.id, task_id=task_id)
         task = TaskSpec(
             benchmark=benchmark.id,
             task_id=task_id,
@@ -51,14 +53,38 @@ def test_lora_ft_command_matches_v3(repo_root: Path, benchmark: Any) -> None:
             data_config="",
             train_config="",
         )
-        run_cfg = RunConfig("llava", "lora_ft", benchmark.id, task=task, values={**values, "repo_root": str(repo_root)})
+        run_cfg = RunConfig("llava", method_spec.id, benchmark.id, task=task, values={**values, "repo_root": str(repo_root)})
         command = adapter.build_command(run_cfg, method, task)
         expected = next(c for c in payload["commands"] if c["kind"] == "train" and c["task_id"] == task_id)["argv"]
         entry_index = next(i for i, value in enumerate(expected) if value.endswith(".py"))
         expected = expected[:entry_index] + ["python", "-m", ENTRY_MODULE] + expected[entry_index + 1:]
         assert command.argv == normalise(expected)
-        assert command.env["MCITLIB_TRAIN_ENTRY"] == "standard"
+        assert command.env["MCITLIB_TRAIN_ENTRY"] == method_spec.train_entry
+        if method_spec.id == "hide":
+            assert command.env["MCITLIB_MODEL_OVERRIDE"] == "hide"
         assert command.kind == "train"
+
+    def signature(commands: list[Any]) -> list[tuple[Any, ...]]:
+        return [(c.kind, c.task_id, normalise(c.argv)) for c in commands]
+
+    expected_commands = []
+    for item in payload["commands"]:
+        if item["kind"] == "install":
+            continue  # NB-5: installation is environment setup, not a task step.
+        argv = list(item["argv"])
+        if item["kind"] == "train":
+            entry_index = next(i for i, value in enumerate(argv) if value.endswith(".py"))
+            argv = argv[:entry_index] + ["python", "-m", ENTRY_MODULE] + argv[entry_index + 1:]
+        expected_commands.append(SimpleNamespace(kind=item["kind"], task_id=item["task_id"], argv=argv))
+    actual_commands = build_sequence_commands(repo_root / "configs", "llava", method_spec.id, benchmark.id)
+    assert signature(actual_commands) == signature(expected_commands)
+
+    for task_id in range(1, len(benchmark.tasks) + 1):
+        expected_eval = [c for c in expected_commands if c.kind == "eval" and c.task_id == task_id]
+        actual_eval = build_sequence_commands(
+            repo_root / "configs", "llava", method_spec.id, benchmark.id, task_id=task_id, only_eval=True
+        )
+        assert signature(actual_eval) == signature(expected_eval)
 
 
 def test_moe_entry_is_selected_without_importing_torch(repo_root: Path) -> None:

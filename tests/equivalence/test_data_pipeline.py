@@ -35,10 +35,10 @@ def make_fixture(root: Path, multi_image: bool = False) -> tuple[Path, Path]:
     return data, image_dir
 
 
-def run_harness(repo_root: Path, v3_root: Path, implementation: str, entry: str, data: Path, images: Path, out: Path, stub: Path) -> None:
+def run_harness(repo_root: Path, v3_root: Path, implementation: str, entry: str, data: Path, images: Path, out: Path, stub: Path, method_dir: str | None = None) -> None:
     harness = repo_root / "tests/equivalence/_v3_harness.py"
     if implementation == "v3":
-        method_dir = "LoRA-FT" if entry == "standard" else "MoELoRA"
+        method_dir = method_dir or ("LoRA-FT" if entry == "standard" else "MoELoRA")
         pythonpath = os.pathsep.join((str(v3_root / "LLaVA" / method_dir), str(v3_root / "LLaVA/LoRA-FT"), str(stub)))
     else:
         pythonpath = os.pathsep.join((str(repo_root), str(repo_root / "third_party/LLaVA"), str(repo_root / "third_party/peft"), str(stub)))
@@ -82,6 +82,21 @@ def test_standard_multi_image_data_matches_v3(repo_root: Path, v3_root: Path, tm
     v3_output, v4_output = tmp_path / "v3.pt", tmp_path / "v4.pt"
     run_harness(repo_root, v3_root, "v3", "standard", data, images, v3_output, stub)
     run_harness(repo_root, v3_root, "v4", "standard", data, images, v4_output, stub)
+    v3 = torch.load(v3_output, map_location="cpu")
+    v4 = torch.load(v4_output, map_location="cpu")
+    for key in v3:
+        assert torch.equal(v3[key], v4[key]), key
+
+
+@pytest.mark.parametrize("method_dir", ["OLoRA", "HiDe"])
+def test_olora_hide_data_matches_their_v3_directories(repo_root: Path, v3_root: Path, tmp_path: Path, method_dir: str) -> None:
+    data, images = make_fixture(tmp_path)
+    stub = tmp_path / "stubs"
+    stub.mkdir()
+    (stub / "deepspeed.py").write_text("# import-only stub for data tests\n", encoding="utf-8")
+    v3_output, v4_output = tmp_path / "v3.pt", tmp_path / "v4.pt"
+    run_harness(repo_root, v3_root, "v3", "moe", data, images, v3_output, stub, method_dir=method_dir)
+    run_harness(repo_root, v3_root, "v4", "moe", data, images, v4_output, stub)
     v3 = torch.load(v3_output, map_location="cpu")
     v4 = torch.load(v4_output, map_location="cpu")
     for key in v3:

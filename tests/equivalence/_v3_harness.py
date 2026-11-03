@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 import argparse
+import builtins
 import random
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -45,6 +47,8 @@ def main() -> None:
     random.seed(1234)
     torch.manual_seed(1234)
     if args.implementation == "v3":
+        # O-LoRA's v3 train_MOE.py uses sys.path.append without importing sys.
+        builtins.sys = sys
         module_name = "llava.train.train" if args.entry == "standard" else "llava.train.train_MOE"
     else:
         module_name = "mcitlib.backbones.llava.standard_train" if args.entry == "standard" else "mcitlib.backbones.llava.moe_train"

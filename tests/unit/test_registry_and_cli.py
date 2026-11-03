@@ -3,6 +3,7 @@
 """Registry, layering, paths and CLI smoke tests."""
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from mcitlib.cli import main
@@ -44,3 +45,16 @@ def test_cli_list(capsys) -> None:
     output = capsys.readouterr().out
     assert "method\tbackbone\tbenchmark" in output
     assert "hide\tllava\tucit\tTrue" in output
+
+
+def test_cli_train_and_eval_dry_run(capsys) -> None:
+    assert main(["train", "--backbone", "llava", "--method", "lora_ft", "--benchmark", "ucit", "--task", "1", "--dry-run"]) == 0
+    train = json.loads(capsys.readouterr().out)
+    assert any(command["kind"] == "train" for command in train)
+    assert any(command["kind"] == "eval" for command in train)
+    assert all(command["kind"] != "install" for command in train)
+
+    assert main(["eval", "--backbone", "llava", "--method", "lora_ft", "--benchmark", "ucit", "--after-task", "1", "--dry-run"]) == 0
+    evaluate = json.loads(capsys.readouterr().out)
+    assert evaluate
+    assert all(command["kind"] == "eval" for command in evaluate)
