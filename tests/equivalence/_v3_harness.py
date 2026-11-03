@@ -55,6 +55,8 @@ def main() -> None:
         is_multimodal=True,
         image_aspect_ratio="pad",
     )
+    data_args.mm_use_im_start_end = False
+    data_args.mm_use_im_patch_token = False
     data_args.image_processor = ToyProcessor()
     tokenizer = ToyTokenizer()
     module = module.make_supervised_data_module(tokenizer=tokenizer, data_args=data_args)

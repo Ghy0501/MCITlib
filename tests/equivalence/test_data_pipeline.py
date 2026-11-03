@@ -25,7 +25,7 @@ def make_fixture(root: Path, multi_image: bool = False) -> tuple[Path, Path]:
             {"from": "human", "value": "<image>\nWhat is shown?"},
             {"from": "gpt", "value": "A small colored square."},
         ]},
-        {"id": "two", "image": "b.png", "conversations": [
+        {"id": "two", "image": ["a.png", "b.png"] if multi_image else "b.png", "conversations": [
             {"from": "human", "value": "Describe the second image."},
             {"from": "gpt", "value": "Another rectangle."},
         ]},
@@ -38,7 +38,8 @@ def make_fixture(root: Path, multi_image: bool = False) -> tuple[Path, Path]:
 def run_harness(repo_root: Path, v3_root: Path, implementation: str, entry: str, data: Path, images: Path, out: Path, stub: Path) -> None:
     harness = repo_root / "tests/equivalence/_v3_harness.py"
     if implementation == "v3":
-        pythonpath = os.pathsep.join((str(v3_root / "LLaVA/LoRA-FT"), str(stub)))
+        method_dir = "LoRA-FT" if entry == "standard" else "MoELoRA"
+        pythonpath = os.pathsep.join((str(v3_root / "LLaVA" / method_dir), str(v3_root / "LLaVA/LoRA-FT"), str(stub)))
     else:
         pythonpath = os.pathsep.join((str(repo_root), str(repo_root / "third_party/LLaVA"), str(repo_root / "third_party/peft"), str(stub)))
     env = os.environ.copy()

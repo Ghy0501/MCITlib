@@ -21,7 +21,18 @@ def normalise(value: Any) -> Any:
     if isinstance(value, list):
         return [normalise(item) for item in value]
     if isinstance(value, str):
-        return value.replace("__V3_ROOT__", "${repo_root}")
+        for source, target in (
+            ("/your_model_path", "${model_root}"),
+            ("/your_data_path", "${data_root}"),
+            ("/your_ckpts_path", "${ckpt_root}"),
+            ("/your_path/MCITlib_v3", "${repo_root}"),
+            ("__V3_ROOT__", "${repo_root}"),
+        ):
+            if value == source:
+                return target
+            if value.startswith(source + "/"):
+                return target + value[len(source):]
+        return value
     return value
 
 
