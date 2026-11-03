@@ -110,7 +110,15 @@ v4 的评测任务集合、模块选择和参数顺序应由 `v3_command_dump.py
 
 对仓库内 `.py` 和 `.sh` 检索 `MFT`、`MFN`、`MAA`、`BWT` 未发现计算脚本命中。论文指标计算需要 v4 新增 `mcitlib/eval/metrics.py`，但这属于复现已报告指标，不是新增算法功能；期望值只能来自论文附录矩阵，并需注明来源和矩阵布局。
 
-## 11. 当前不能宣称的事项
+## 11. SEFE 配置目录断链（L1 停止条件 S1）
+
+`LLaVA/RegLoRA/scripts/MCITlib/` 中的 Train 和 Eval 脚本引用 `configs/train_configs/SEFE/...`，全仓共 61 处；但 `v3.0-final` 的 `configs/train_configs/` 只有 `RegLoRA/`，没有 `SEFE/`。例如 `SEFE/LLaVA/UCIT/train/task1.json` 不存在，而 `RegLoRA/LLaVA/UCIT/train/task1.json` 存在。
+
+v3 shell 未设置 `set -e`，所以 `read_config` 的 `FileNotFoundError` 不会阻止后续命令。shim dump 因而能返回 0，但会产生无效 argv，例如空的 `--lora_r`、`--include localhost:0,-1`、空的 `--model-path` 和 `_merged`。该产物不能作为 T0/T3 期望值，也不能用“SEFE 就是 RegLoRA 别名”擅自替换路径；需要宏观 Agent/作者确认实际实验配置来源。
+
+诊断产物：`/tmp/p0/v3_commands_test/sefe/ucit.json`（不入库，包含无效参数，仅用于定位）。
+
+## 12. 当前不能宣称的事项
 
 - 尚未完成 T0–T3，因此不能宣称 v4 与 v3 数值等价。
 - 尚未在 GPU 上执行 T4/T5。
