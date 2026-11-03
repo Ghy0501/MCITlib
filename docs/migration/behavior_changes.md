@@ -16,3 +16,16 @@
 - NB 项不得与方法迁移混交；每个 NB 项独立提交。
 - 每个 NB 项完成后，在对应 `llava-L<n>-report.md` 中填写提交哈希、测试命令和产物路径。
 - 若验证发现数值或评测协议差异，立即按 S1 停止，不得用“非数值变更”解释带过。
+
+## 后续作者明确授权的配置集成修复
+
+以下不是实现方自行添加的 NB 项，而是作者在 L1 诊断后明确授权的配置/序列处理，单独记录以避免与 NB-1…NB-6 混淆：
+
+| ID | 授权内容 | 实现范围 | 验证/交付说明 |
+|---|---|---|---|
+| AR-1 | SEFE 与 RegLoRA 使用同一配置来源 | 仅在 dump 临时副本映射 `train_configs/SEFE` → `RegLoRA` | JSON `config_aliases`；v3 原树不变 |
+| AR-2 | router 使用独立新数据路径，允许先用占位符 | 补 `router.json` 和数据根目录占位；不套用 `train_path` | `placeholders.md`；GPU 节点替换并核对真实数据 |
+| AR-3 | 统一因 v3 集成不完整而注释的训练段 | 临时副本恢复 SMoLoRA DCL Task1、ModalPrompt ACL Task1–4，保持 benchmark 顺序 | JSON `sequence_repairs`；36 条序列训练覆盖测试 |
+| AR-4 | 硬编码机器路径统一改为占位符 | checkpoint、CLIP 模型和旧 Python 路径转为根目录占位符 | `placeholders.md`；YAML 无 `/home`/`/mnt` 可执行路径值 |
+
+这些授权修复不代表对应 GPU 数值已经验证，T4/T5 仍是必要条件。
