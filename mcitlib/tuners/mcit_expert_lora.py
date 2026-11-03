@@ -118,7 +118,9 @@ class MCITExpertLoraModel(LoraModel):
                     lora_config.init_lora_weights,
                 )
             else:
-                new_module = self._create_new_module(lora_config, adapter_name, target)
+                new_module = self._create_new_module(
+                    lora_config, adapter_name, target, **self._module_context(key)
+                )
                 self._replace_module(parent, target_name, new_module, target)
         if not is_target_modules_in_base_model:
             raise ValueError(
@@ -126,7 +128,16 @@ class MCITExpertLoraModel(LoraModel):
                 f"Please check the target modules and try again."
             )
 
-    def _create_new_module(self, lora_config, adapter_name, target):
+    def _module_context(self, key):
+        return {}
+
+    def _extra_module_kwargs(self, lora_config):
+        return {}
+
+    def _linear_class(self):
+        return MCITExpertLoraLinear
+
+    def _create_new_module(self, lora_config, adapter_name, target, **context):
         bias = hasattr(target, "bias") and target.bias is not None
         kwargs = {
             "r": lora_config.r,
@@ -137,6 +148,8 @@ class MCITExpertLoraModel(LoraModel):
             "task_embedding_dim": lora_config.task_embedding_dim,
             "expert_num": lora_config.expert_num,
         }
+        kwargs.update(self._extra_module_kwargs(lora_config))
+        kwargs.update(context)
         loaded_in_4bit = getattr(self.model, "is_loaded_in_4bit", False)
         loaded_in_8bit = getattr(self.model, "is_loaded_in_8bit", False)
 
@@ -199,7 +212,7 @@ class MCITExpertLoraModel(LoraModel):
                     f"Target module {target} is not supported. "
                     f"Currently, only `torch.nn.Linear` and `Conv1D` are supported."
                 )
-            new_module = MCITExpertLoraLinear(adapter_name, in_features, out_features, 
+            new_module = self._linear_class()(adapter_name, in_features, out_features,
                                                     bias=bias, **kwargs)
 
         return new_module
