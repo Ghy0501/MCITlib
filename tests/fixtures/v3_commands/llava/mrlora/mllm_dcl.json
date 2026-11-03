@@ -1,0 +1,1447 @@
+{
+  "schema_version": 1,
+  "backbone": "llava",
+  "method": "mrlora",
+  "v3_method": "MR-LoRA",
+  "benchmark": "mllm_dcl",
+  "v3_benchmark": "MLLM-DCL",
+  "sequence": "train",
+  "source_script": "scripts/MCITlib/Train/train_DCL.sh",
+  "root_placeholder": "__V3_ROOT__",
+  "config_aliases": {},
+  "script_aliases": {},
+  "config_placeholders": {},
+  "sequence_repairs": [],
+  "path_placeholders": {
+    "/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints": "/your_ckpts_path",
+    "/home/hongbo_zhao/ghy-cl-codebase/MCITlib": "/your_path/MCITlib_v3",
+    "/mnt/cache/guohaiyang/miniconda3/envs/coin/bin/python": "/your_python_path"
+  },
+  "runner_exit_code": 0,
+  "commands": [
+    {
+      "order": 0,
+      "argv": [
+        "deepspeed",
+        "--include",
+        "localhost:0,1",
+        "--master_port",
+        "9001",
+        "llava/train/train_mem.py",
+        "--deepspeed",
+        "./scripts/zero2.json",
+        "--lora_enable",
+        "True",
+        "--lora_r",
+        "32",
+        "--lora_alpha",
+        "64",
+        "--mm_projector_lr",
+        "2e-5",
+        "--model_name_or_path",
+        "/your_model_path/llava-v1.5-7b",
+        "--pretrain_mm_mlp_adapter",
+        "/your_model_path/llava-v1.5-7b/mm_projector.bin",
+        "--version",
+        "v1",
+        "--data_path",
+        "/your_data_path/MLLM-CL/RS/train.json",
+        "--image_folder",
+        "/your_data_path/MLLM-CL/RS",
+        "--vision_tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--mm_projector_type",
+        "mlp2x_gelu",
+        "--mm_vision_select_layer",
+        "-2",
+        "--mm_use_im_start_end",
+        "False",
+        "--mm_use_im_patch_token",
+        "False",
+        "--image_aspect_ratio",
+        "pad",
+        "--group_by_modality_length",
+        "True",
+        "--bf16",
+        "True",
+        "--output_dir",
+        "/your_ckpts_path/MCITlib/MLLM-DCL/LLaVA/MR-LoRA/Task1_llava_lora",
+        "--num_train_epochs",
+        "1",
+        "--per_device_train_batch_size",
+        "4",
+        "--per_device_eval_batch_size",
+        "16",
+        "--gradient_accumulation_steps",
+        "2",
+        "--evaluation_strategy",
+        "no",
+        "--save_strategy",
+        "steps",
+        "--save_steps",
+        "50000",
+        "--learning_rate",
+        "0.0002",
+        "--weight_decay",
+        "0.",
+        "--warmup_ratio",
+        "0.03",
+        "--lr_scheduler_type",
+        "cosine",
+        "--logging_steps",
+        "1",
+        "--tf32",
+        "True",
+        "--model_max_length",
+        "2048",
+        "--gradient_checkpointing",
+        "True",
+        "--dataloader_num_workers",
+        "4",
+        "--lazy_preprocess",
+        "True",
+        "--report_to",
+        "none"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "train",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 1,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 2,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_ai2d",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/AD/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/AD/MR-LoRA-task1/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/AD/MR-LoRA-task1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 3,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 4,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_ai2d",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/RS/MR-LoRA-task1/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/RS/MR-LoRA-task1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 5,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 6,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_pvqa",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Med/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Med/MR-LoRA-task1/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Med/MR-LoRA-task1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 7,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 8,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_sci",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Sci/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Sci/MR-LoRA-task1/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Sci/MR-LoRA-task1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 9,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 10,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_finvis",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Fin/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Fin/MR-LoRA-task1/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Fin/MR-LoRA-task1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 11,
+      "argv": [
+        "deepspeed",
+        "--include",
+        "localhost:0,1",
+        "--master_port",
+        "9001",
+        "llava/train/train_mem.py",
+        "--deepspeed",
+        "./scripts/zero2.json",
+        "--lora_enable",
+        "True",
+        "--lora_r",
+        "32",
+        "--lora_alpha",
+        "64",
+        "--mm_projector_lr",
+        "2e-5",
+        "--model_name_or_path",
+        "/your_model_path/llava-v1.5-7b",
+        "--pretrain_mm_mlp_adapter",
+        "/your_model_path/llava-v1.5-7b/mm_projector.bin",
+        "--version",
+        "v1",
+        "--data_path",
+        "/your_data_path/MLLM-CL/Med/train.json",
+        "--image_folder",
+        "/your_data_path/MLLM-CL/Med",
+        "--vision_tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--mm_projector_type",
+        "mlp2x_gelu",
+        "--mm_vision_select_layer",
+        "-2",
+        "--mm_use_im_start_end",
+        "False",
+        "--mm_use_im_patch_token",
+        "False",
+        "--image_aspect_ratio",
+        "pad",
+        "--group_by_modality_length",
+        "True",
+        "--bf16",
+        "True",
+        "--output_dir",
+        "/your_ckpts_path/MCITlib/MLLM-DCL/LLaVA/MR-LoRA/Task2_llava_lora",
+        "--num_train_epochs",
+        "3",
+        "--per_device_train_batch_size",
+        "4",
+        "--per_device_eval_batch_size",
+        "16",
+        "--gradient_accumulation_steps",
+        "2",
+        "--evaluation_strategy",
+        "no",
+        "--save_strategy",
+        "steps",
+        "--save_steps",
+        "50000",
+        "--learning_rate",
+        "0.0002",
+        "--weight_decay",
+        "0.",
+        "--warmup_ratio",
+        "0.03",
+        "--lr_scheduler_type",
+        "cosine",
+        "--logging_steps",
+        "1",
+        "--tf32",
+        "True",
+        "--model_max_length",
+        "2048",
+        "--gradient_checkpointing",
+        "True",
+        "--dataloader_num_workers",
+        "4",
+        "--lazy_preprocess",
+        "True",
+        "--report_to",
+        "none"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "train",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 12,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 13,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_ai2d",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/AD/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/AD/MR-LoRA-task2/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/AD/MR-LoRA-task2"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 14,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 15,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_ai2d",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/RS/MR-LoRA-task2/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/RS/MR-LoRA-task2"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 16,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 17,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_pvqa",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Med/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Med/MR-LoRA-task2/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Med/MR-LoRA-task2"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 18,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 19,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_sci",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Sci/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Sci/MR-LoRA-task2/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Sci/MR-LoRA-task2"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 20,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 21,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_finvis",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Fin/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Fin/MR-LoRA-task2/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Fin/MR-LoRA-task2"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 22,
+      "argv": [
+        "deepspeed",
+        "--include",
+        "localhost:0,1",
+        "--master_port",
+        "9001",
+        "llava/train/train_mem.py",
+        "--deepspeed",
+        "./scripts/zero2.json",
+        "--lora_enable",
+        "True",
+        "--lora_r",
+        "32",
+        "--lora_alpha",
+        "64",
+        "--mm_projector_lr",
+        "2e-5",
+        "--model_name_or_path",
+        "/your_model_path/llava-v1.5-7b",
+        "--pretrain_mm_mlp_adapter",
+        "/your_model_path/llava-v1.5-7b/mm_projector.bin",
+        "--version",
+        "v1",
+        "--data_path",
+        "/your_data_path/MLLM-CL/AD/train.json",
+        "--image_folder",
+        "/your_data_path/MLLM-CL/AD",
+        "--vision_tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--mm_projector_type",
+        "mlp2x_gelu",
+        "--mm_vision_select_layer",
+        "-2",
+        "--mm_use_im_start_end",
+        "False",
+        "--mm_use_im_patch_token",
+        "False",
+        "--image_aspect_ratio",
+        "pad",
+        "--group_by_modality_length",
+        "True",
+        "--bf16",
+        "True",
+        "--output_dir",
+        "/your_ckpts_path/MCITlib/MLLM-DCL/LLaVA/MR-LoRA/Task3_llava_lora",
+        "--num_train_epochs",
+        "1",
+        "--per_device_train_batch_size",
+        "4",
+        "--per_device_eval_batch_size",
+        "16",
+        "--gradient_accumulation_steps",
+        "2",
+        "--evaluation_strategy",
+        "no",
+        "--save_strategy",
+        "steps",
+        "--save_steps",
+        "50000",
+        "--learning_rate",
+        "0.0002",
+        "--weight_decay",
+        "0.",
+        "--warmup_ratio",
+        "0.03",
+        "--lr_scheduler_type",
+        "cosine",
+        "--logging_steps",
+        "1",
+        "--tf32",
+        "True",
+        "--model_max_length",
+        "2048",
+        "--gradient_checkpointing",
+        "True",
+        "--dataloader_num_workers",
+        "4",
+        "--lazy_preprocess",
+        "True",
+        "--report_to",
+        "none"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "train",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 23,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 24,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_ai2d",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/AD/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/AD/MR-LoRA-task3/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/AD/MR-LoRA-task3"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 25,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 26,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_ai2d",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/RS/MR-LoRA-task3/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/RS/MR-LoRA-task3"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 27,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 28,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_pvqa",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Med/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Med/MR-LoRA-task3/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Med/MR-LoRA-task3"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 29,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 30,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_sci",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Sci/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Sci/MR-LoRA-task3/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Sci/MR-LoRA-task3"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 31,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 32,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_finvis",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Fin/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Fin/MR-LoRA-task3/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Fin/MR-LoRA-task3"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 33,
+      "argv": [
+        "deepspeed",
+        "--include",
+        "localhost:0,1",
+        "--master_port",
+        "9001",
+        "llava/train/train_mem.py",
+        "--deepspeed",
+        "./scripts/zero2.json",
+        "--lora_enable",
+        "True",
+        "--lora_r",
+        "32",
+        "--lora_alpha",
+        "64",
+        "--mm_projector_lr",
+        "2e-5",
+        "--model_name_or_path",
+        "/your_model_path/llava-v1.5-7b",
+        "--pretrain_mm_mlp_adapter",
+        "/your_model_path/llava-v1.5-7b/mm_projector.bin",
+        "--version",
+        "v1",
+        "--data_path",
+        "/your_data_path/MLLM-CL/Sci/train.json",
+        "--image_folder",
+        "/your_data_path/MLLM-CL/Sci",
+        "--vision_tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--mm_projector_type",
+        "mlp2x_gelu",
+        "--mm_vision_select_layer",
+        "-2",
+        "--mm_use_im_start_end",
+        "False",
+        "--mm_use_im_patch_token",
+        "False",
+        "--image_aspect_ratio",
+        "pad",
+        "--group_by_modality_length",
+        "True",
+        "--bf16",
+        "True",
+        "--output_dir",
+        "/your_ckpts_path/MCITlib/MLLM-DCL/LLaVA/MR-LoRA/Task4_llava_lora",
+        "--num_train_epochs",
+        "2",
+        "--per_device_train_batch_size",
+        "4",
+        "--per_device_eval_batch_size",
+        "16",
+        "--gradient_accumulation_steps",
+        "2",
+        "--evaluation_strategy",
+        "no",
+        "--save_strategy",
+        "steps",
+        "--save_steps",
+        "50000",
+        "--learning_rate",
+        "0.0002",
+        "--weight_decay",
+        "0.",
+        "--warmup_ratio",
+        "0.03",
+        "--lr_scheduler_type",
+        "cosine",
+        "--logging_steps",
+        "1",
+        "--tf32",
+        "True",
+        "--model_max_length",
+        "2048",
+        "--gradient_checkpointing",
+        "True",
+        "--dataloader_num_workers",
+        "4",
+        "--lazy_preprocess",
+        "True",
+        "--report_to",
+        "none"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "train",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 34,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 35,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_ai2d",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/AD/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/AD/MR-LoRA-task4/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/AD/MR-LoRA-task4"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 36,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 37,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_ai2d",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/RS/MR-LoRA-task4/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/RS/MR-LoRA-task4"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 38,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 39,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_pvqa",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Med/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Med/MR-LoRA-task4/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Med/MR-LoRA-task4"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 40,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 41,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_sci",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Sci/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Sci/MR-LoRA-task4/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Sci/MR-LoRA-task4"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 42,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 43,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_finvis",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Fin/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Fin/MR-LoRA-task4/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Fin/MR-LoRA-task4"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 44,
+      "argv": [
+        "deepspeed",
+        "--include",
+        "localhost:0,1",
+        "--master_port",
+        "9001",
+        "llava/train/train_mem.py",
+        "--deepspeed",
+        "./scripts/zero2.json",
+        "--lora_enable",
+        "True",
+        "--lora_r",
+        "32",
+        "--lora_alpha",
+        "64",
+        "--mm_projector_lr",
+        "2e-5",
+        "--model_name_or_path",
+        "/your_model_path/llava-v1.5-7b",
+        "--pretrain_mm_mlp_adapter",
+        "/your_model_path/llava-v1.5-7b/mm_projector.bin",
+        "--version",
+        "v1",
+        "--data_path",
+        "/your_data_path/MLLM-CL/Fin/train.json",
+        "--image_folder",
+        "/your_data_path/MLLM-CL/Fin",
+        "--vision_tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--mm_projector_type",
+        "mlp2x_gelu",
+        "--mm_vision_select_layer",
+        "-2",
+        "--mm_use_im_start_end",
+        "False",
+        "--mm_use_im_patch_token",
+        "False",
+        "--image_aspect_ratio",
+        "pad",
+        "--group_by_modality_length",
+        "True",
+        "--bf16",
+        "True",
+        "--output_dir",
+        "/your_ckpts_path/MCITlib/MLLM-DCL/LLaVA/MR-LoRA/Task5_llava_lora",
+        "--num_train_epochs",
+        "1",
+        "--per_device_train_batch_size",
+        "4",
+        "--per_device_eval_batch_size",
+        "16",
+        "--gradient_accumulation_steps",
+        "2",
+        "--evaluation_strategy",
+        "no",
+        "--save_strategy",
+        "steps",
+        "--save_steps",
+        "50000",
+        "--learning_rate",
+        "0.0002",
+        "--weight_decay",
+        "0.",
+        "--warmup_ratio",
+        "0.03",
+        "--lr_scheduler_type",
+        "cosine",
+        "--logging_steps",
+        "1",
+        "--tf32",
+        "True",
+        "--model_max_length",
+        "2048",
+        "--gradient_checkpointing",
+        "True",
+        "--dataloader_num_workers",
+        "4",
+        "--lazy_preprocess",
+        "True",
+        "--report_to",
+        "none"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "train",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 45,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 46,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_ai2d",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/AD/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/AD/MR-LoRA-task5/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/AD/MR-LoRA-task5"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 47,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 48,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_ai2d",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/RS/MR-LoRA-task5/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/RS/MR-LoRA-task5"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 49,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 50,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_pvqa",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Med/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Med/MR-LoRA-task5/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Med/MR-LoRA-task5"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 51,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 52,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_sci",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Sci/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Sci/MR-LoRA-task5/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Sci/MR-LoRA-task5"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 53,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 54,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_finvis",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Fin/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Fin/MR-LoRA-task5/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Fin/MR-LoRA-task5"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 55,
+      "argv": [
+        "python",
+        "scripts/DCL_extract_router_result.py"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "other",
+      "task_id": 5,
+      "sequence": "train"
+    }
+  ]
+}

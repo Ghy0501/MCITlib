@@ -1,0 +1,3940 @@
+{
+  "schema_version": 1,
+  "backbone": "llava",
+  "method": "keeplora",
+  "v3_method": "KeepLoRA",
+  "benchmark": "ucit",
+  "v3_benchmark": "UCIT",
+  "sequence": "train",
+  "source_script": "scripts/MCITlib/Train/train_UCIT.sh",
+  "root_placeholder": "__V3_ROOT__",
+  "config_aliases": {},
+  "script_aliases": {},
+  "config_placeholders": {},
+  "sequence_repairs": [],
+  "path_placeholders": {
+    "/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints": "/your_ckpts_path",
+    "/home/hongbo_zhao/ghy-cl-codebase/MCITlib": "/your_path/MCITlib_v3",
+    "/mnt/cache/guohaiyang/miniconda3/envs/coin/bin/python": "/your_python_path"
+  },
+  "runner_exit_code": 0,
+  "commands": [
+    {
+      "order": 0,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_weights",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task0_llava_lora_gradients",
+        "--energy-threshold",
+        "0.6"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 0,
+      "sequence": "train"
+    },
+    {
+      "order": 1,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/ImageNet-R.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_pre/task1.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task1_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 2,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/ImageNet-R.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_pre/task1.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task1_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 3,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/ImageNet-R.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_pre/task1.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task1_llava_lora_gradients",
+        "--num-chunks",
+        "2",
+        "--merge-only",
+        "--svd-mode",
+        "fixed_rank"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 4,
+      "argv": [
+        "deepspeed",
+        "--include",
+        "localhost:0,1",
+        "--master_port",
+        "9001",
+        "llava/train/train_mem.py",
+        "--deepspeed",
+        "./scripts/zero2.json",
+        "--lora_enable",
+        "True",
+        "--lora_r",
+        "32",
+        "--lora_alpha",
+        "64",
+        "--mm_projector_lr",
+        "2e-5",
+        "--freeze_lora_A",
+        "True",
+        "--init_lora_from_gradients",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task1_llava_lora_gradients/gradients_merged.pt",
+        "--model_name_or_path",
+        "/your_model_path/llava-v1.5-7b",
+        "--pretrain_mm_mlp_adapter",
+        "/your_model_path/llava-v1.5-7b/mm_projector.bin",
+        "--version",
+        "v1",
+        "--data_path",
+        "/your_data_path/UCIT/ImageNet-R/train.json",
+        "--image_folder",
+        "/your_data_path/UCIT",
+        "--vision_tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--mm_projector_type",
+        "mlp2x_gelu",
+        "--mm_vision_select_layer",
+        "-2",
+        "--mm_use_im_start_end",
+        "False",
+        "--mm_use_im_patch_token",
+        "False",
+        "--image_aspect_ratio",
+        "pad",
+        "--group_by_modality_length",
+        "True",
+        "--bf16",
+        "True",
+        "--output_dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task1_llava_lora",
+        "--num_train_epochs",
+        "1",
+        "--per_device_train_batch_size",
+        "16",
+        "--per_device_eval_batch_size",
+        "16",
+        "--gradient_accumulation_steps",
+        "2",
+        "--evaluation_strategy",
+        "no",
+        "--save_strategy",
+        "steps",
+        "--save_steps",
+        "50000",
+        "--learning_rate",
+        "0.0002",
+        "--weight_decay",
+        "0.",
+        "--warmup_ratio",
+        "0.03",
+        "--lr_scheduler_type",
+        "cosine",
+        "--logging_steps",
+        "1",
+        "--tf32",
+        "True",
+        "--model_max_length",
+        "2048",
+        "--gradient_checkpointing",
+        "True",
+        "--dataloader_num_workers",
+        "4",
+        "--lazy_preprocess",
+        "True",
+        "--report_to",
+        "none"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "train",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 5,
+      "argv": [
+        "python",
+        "scripts/merge_lora_weights.py",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task1_llava_lora",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--save-model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task1_llava_lora_merged"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 6,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/ImageNet-R.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_post/task1.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task1_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 7,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/ImageNet-R.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_post/task1.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task1_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 8,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/ImageNet-R.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_post/task1.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task1_llava_lora_gradients",
+        "--num-chunks",
+        "2",
+        "--merge-only",
+        "--svd-mode",
+        "energy"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 9,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 10,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task1_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ImageNet-R/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task1/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 11,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task1_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ImageNet-R/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task1/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 12,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_deepseek_r1",
+        "--annotation-file",
+        "/your_data_path/UCIT/ImageNet-R/test_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task1/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 13,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/ArxivQA.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_pre/task2.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task2_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 14,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/ArxivQA.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_pre/task2.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task2_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 15,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/ArxivQA.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_pre/task2.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task2_llava_lora_gradients",
+        "--num-chunks",
+        "2",
+        "--merge-only",
+        "--svd-mode",
+        "fixed_rank"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 16,
+      "argv": [
+        "deepspeed",
+        "--include",
+        "localhost:0,1",
+        "--master_port",
+        "9001",
+        "llava/train/train_mem.py",
+        "--deepspeed",
+        "./scripts/zero2.json",
+        "--lora_enable",
+        "True",
+        "--lora_r",
+        "32",
+        "--lora_alpha",
+        "64",
+        "--mm_projector_lr",
+        "2e-5",
+        "--model_name_or_path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task1_llava_lora_merged",
+        "--freeze_lora_A",
+        "True",
+        "--init_lora_from_gradients",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task2_llava_lora_gradients/gradients_merged.pt",
+        "--version",
+        "v1",
+        "--data_path",
+        "/your_data_path/UCIT/ArxivQA/train_4w.json",
+        "--image_folder",
+        "/your_data_path/UCIT",
+        "--vision_tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--mm_projector_type",
+        "mlp2x_gelu",
+        "--mm_vision_select_layer",
+        "-2",
+        "--mm_use_im_start_end",
+        "False",
+        "--mm_use_im_patch_token",
+        "False",
+        "--image_aspect_ratio",
+        "pad",
+        "--group_by_modality_length",
+        "True",
+        "--bf16",
+        "True",
+        "--output_dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task2_llava_lora",
+        "--num_train_epochs",
+        "1",
+        "--per_device_train_batch_size",
+        "16",
+        "--per_device_eval_batch_size",
+        "16",
+        "--gradient_accumulation_steps",
+        "2",
+        "--evaluation_strategy",
+        "no",
+        "--save_strategy",
+        "steps",
+        "--save_steps",
+        "50000",
+        "--learning_rate",
+        "0.0002",
+        "--weight_decay",
+        "0.",
+        "--warmup_ratio",
+        "0.03",
+        "--lr_scheduler_type",
+        "cosine",
+        "--logging_steps",
+        "1",
+        "--tf32",
+        "True",
+        "--model_max_length",
+        "2048",
+        "--gradient_checkpointing",
+        "True",
+        "--dataloader_num_workers",
+        "4",
+        "--lazy_preprocess",
+        "True",
+        "--report_to",
+        "none"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "train",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 17,
+      "argv": [
+        "python",
+        "scripts/merge_lora_weights.py",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task2_llava_lora",
+        "--model-base",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task1_llava_lora_merged",
+        "--save-model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task2_llava_lora_merged"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 18,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/VizWiz.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_post/task2.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task2_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 19,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/VizWiz.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_post/task2.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task2_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 20,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/VizWiz.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_post/task2.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task2_llava_lora_gradients",
+        "--num-chunks",
+        "2",
+        "--merge-only",
+        "--svd-mode",
+        "energy"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 21,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 22,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task2_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ImageNet-R/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task2/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 23,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task2_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ImageNet-R/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task2/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 24,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_deepseek_r1",
+        "--annotation-file",
+        "/your_data_path/UCIT/ImageNet-R/test_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task2/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task2"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 25,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 26,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task2_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ArxivQA/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task2/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 27,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task2_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ArxivQA/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task2/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 28,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_deepseek_r1",
+        "--annotation-file",
+        "/your_data_path/UCIT/ArxivQA/test_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task2/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task2"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 29,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/VizWiz.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_pre/task3.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task3_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 30,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/VizWiz.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_pre/task3.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task3_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 31,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/VizWiz.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_pre/task3.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task3_llava_lora_gradients",
+        "--num-chunks",
+        "2",
+        "--merge-only",
+        "--svd-mode",
+        "fixed_rank"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 32,
+      "argv": [
+        "deepspeed",
+        "--include",
+        "localhost:0,1",
+        "--master_port",
+        "9001",
+        "llava/train/train_mem.py",
+        "--deepspeed",
+        "./scripts/zero2.json",
+        "--lora_enable",
+        "True",
+        "--lora_r",
+        "32",
+        "--lora_alpha",
+        "64",
+        "--mm_projector_lr",
+        "2e-5",
+        "--model_name_or_path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task2_llava_lora_merged",
+        "--freeze_lora_A",
+        "True",
+        "--init_lora_from_gradients",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task3_llava_lora_gradients/gradients_merged.pt",
+        "--version",
+        "v1",
+        "--data_path",
+        "/your_data_path/UCIT/VizWiz-caption/train.json",
+        "--image_folder",
+        "/your_data_path/UCIT",
+        "--vision_tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--mm_projector_type",
+        "mlp2x_gelu",
+        "--mm_vision_select_layer",
+        "-2",
+        "--mm_use_im_start_end",
+        "False",
+        "--mm_use_im_patch_token",
+        "False",
+        "--image_aspect_ratio",
+        "pad",
+        "--group_by_modality_length",
+        "True",
+        "--bf16",
+        "True",
+        "--output_dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task3_llava_lora",
+        "--num_train_epochs",
+        "1",
+        "--per_device_train_batch_size",
+        "16",
+        "--per_device_eval_batch_size",
+        "16",
+        "--gradient_accumulation_steps",
+        "2",
+        "--evaluation_strategy",
+        "no",
+        "--save_strategy",
+        "steps",
+        "--save_steps",
+        "50000",
+        "--learning_rate",
+        "0.0002",
+        "--weight_decay",
+        "0.",
+        "--warmup_ratio",
+        "0.03",
+        "--lr_scheduler_type",
+        "cosine",
+        "--logging_steps",
+        "1",
+        "--tf32",
+        "True",
+        "--model_max_length",
+        "2048",
+        "--gradient_checkpointing",
+        "True",
+        "--dataloader_num_workers",
+        "4",
+        "--lazy_preprocess",
+        "True",
+        "--report_to",
+        "none"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "train",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 33,
+      "argv": [
+        "python",
+        "scripts/merge_lora_weights.py",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task3_llava_lora",
+        "--model-base",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task2_llava_lora_merged",
+        "--save-model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task3_llava_lora_merged"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 34,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/VizWiz.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_post/task3.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task3_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 35,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/VizWiz.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_post/task3.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task3_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 36,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/VizWiz.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_post/task3.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task3_llava_lora_gradients",
+        "--num-chunks",
+        "2",
+        "--merge-only",
+        "--svd-mode",
+        "energy"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 37,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 38,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task3_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ImageNet-R/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task3/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 39,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task3_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ImageNet-R/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task3/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 40,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_deepseek_r1",
+        "--annotation-file",
+        "/your_data_path/UCIT/ImageNet-R/test_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task3/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task3"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 41,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 42,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task3_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ArxivQA/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task3/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 43,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task3_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ArxivQA/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task3/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 44,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_deepseek_r1",
+        "--annotation-file",
+        "/your_data_path/UCIT/ArxivQA/test_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task3/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task3"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 45,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 46,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task3_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/VizWiz-caption/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/VizWiz/KeepLoRA-task3/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 47,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task3_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/VizWiz-caption/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/VizWiz/KeepLoRA-task3/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 48,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_caption",
+        "--annotation-file",
+        "/your_data_path/UCIT/VizWiz-caption/val_coco_type_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/VizWiz/KeepLoRA-task3/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/VizWiz/KeepLoRA-task3"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 49,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/IconQA.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_pre/task4.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 50,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/IconQA.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_pre/task4.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 51,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/IconQA.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_pre/task4.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora_gradients",
+        "--num-chunks",
+        "2",
+        "--merge-only",
+        "--svd-mode",
+        "fixed_rank"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 52,
+      "argv": [
+        "deepspeed",
+        "--include",
+        "localhost:0,1",
+        "--master_port",
+        "9001",
+        "llava/train/train_mem.py",
+        "--deepspeed",
+        "./scripts/zero2.json",
+        "--lora_enable",
+        "True",
+        "--lora_r",
+        "32",
+        "--lora_alpha",
+        "64",
+        "--mm_projector_lr",
+        "2e-5",
+        "--model_name_or_path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task3_llava_lora_merged",
+        "--freeze_lora_A",
+        "True",
+        "--init_lora_from_gradients",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora_gradients/gradients_merged.pt",
+        "--version",
+        "v1",
+        "--data_path",
+        "/your_data_path/UCIT/IconQA/train.json",
+        "--image_folder",
+        "/your_data_path/UCIT",
+        "--vision_tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--mm_projector_type",
+        "mlp2x_gelu",
+        "--mm_vision_select_layer",
+        "-2",
+        "--mm_use_im_start_end",
+        "False",
+        "--mm_use_im_patch_token",
+        "False",
+        "--image_aspect_ratio",
+        "pad",
+        "--group_by_modality_length",
+        "True",
+        "--bf16",
+        "True",
+        "--output_dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora",
+        "--num_train_epochs",
+        "1",
+        "--per_device_train_batch_size",
+        "16",
+        "--per_device_eval_batch_size",
+        "16",
+        "--gradient_accumulation_steps",
+        "2",
+        "--evaluation_strategy",
+        "no",
+        "--save_strategy",
+        "steps",
+        "--save_steps",
+        "50000",
+        "--learning_rate",
+        "0.0002",
+        "--weight_decay",
+        "0.",
+        "--warmup_ratio",
+        "0.03",
+        "--lr_scheduler_type",
+        "cosine",
+        "--logging_steps",
+        "1",
+        "--tf32",
+        "True",
+        "--model_max_length",
+        "2048",
+        "--gradient_checkpointing",
+        "True",
+        "--dataloader_num_workers",
+        "4",
+        "--lazy_preprocess",
+        "True",
+        "--report_to",
+        "none"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "train",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 53,
+      "argv": [
+        "python",
+        "scripts/merge_lora_weights.py",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora",
+        "--model-base",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task3_llava_lora_merged",
+        "--save-model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora_merged"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 54,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/IconQA.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_post/task4.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 55,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/IconQA.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_post/task4.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 56,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/IconQA.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_post/task4.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora_gradients",
+        "--num-chunks",
+        "2",
+        "--merge-only",
+        "--svd-mode",
+        "energy"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 57,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 58,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ImageNet-R/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task4/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 59,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ImageNet-R/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task4/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 60,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_deepseek_r1",
+        "--annotation-file",
+        "/your_data_path/UCIT/ImageNet-R/test_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task4/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task4"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 61,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 62,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ArxivQA/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task4/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 63,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ArxivQA/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task4/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 64,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_deepseek_r1",
+        "--annotation-file",
+        "/your_data_path/UCIT/ArxivQA/test_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task4/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task4"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 65,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 66,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/VizWiz-caption/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/VizWiz/KeepLoRA-task4/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 67,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/VizWiz-caption/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/VizWiz/KeepLoRA-task4/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 68,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_caption",
+        "--annotation-file",
+        "/your_data_path/UCIT/VizWiz-caption/val_coco_type_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/VizWiz/KeepLoRA-task4/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/VizWiz/KeepLoRA-task4"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 69,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 70,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/IconQA/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/IconQA/KeepLoRA-task4/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 71,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/IconQA/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/IconQA/KeepLoRA-task4/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 72,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_deepseek_r1",
+        "--annotation-file",
+        "/your_data_path/UCIT/IconQA/test_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/IconQA/KeepLoRA-task4/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/IconQA/KeepLoRA-task4"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 73,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/CLEVR-Math.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_pre/task5.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 74,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/CLEVR-Math.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_pre/task5.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 75,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/CLEVR-Math.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_pre/task5.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_gradients",
+        "--num-chunks",
+        "2",
+        "--merge-only",
+        "--svd-mode",
+        "fixed_rank"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 76,
+      "argv": [
+        "deepspeed",
+        "--include",
+        "localhost:0,1",
+        "--master_port",
+        "9001",
+        "llava/train/train_mem.py",
+        "--deepspeed",
+        "./scripts/zero2.json",
+        "--lora_enable",
+        "True",
+        "--lora_r",
+        "32",
+        "--lora_alpha",
+        "64",
+        "--mm_projector_lr",
+        "2e-5",
+        "--model_name_or_path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora_merged",
+        "--freeze_lora_A",
+        "True",
+        "--init_lora_from_gradients",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_gradients/gradients_merged.pt",
+        "--version",
+        "v1",
+        "--data_path",
+        "/your_data_path/UCIT/CLEVR-Math/train_4w.json",
+        "--image_folder",
+        "/your_data_path/UCIT",
+        "--vision_tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--mm_projector_type",
+        "mlp2x_gelu",
+        "--mm_vision_select_layer",
+        "-2",
+        "--mm_use_im_start_end",
+        "False",
+        "--mm_use_im_patch_token",
+        "False",
+        "--image_aspect_ratio",
+        "pad",
+        "--group_by_modality_length",
+        "True",
+        "--bf16",
+        "True",
+        "--output_dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora",
+        "--num_train_epochs",
+        "1",
+        "--per_device_train_batch_size",
+        "16",
+        "--per_device_eval_batch_size",
+        "16",
+        "--gradient_accumulation_steps",
+        "2",
+        "--evaluation_strategy",
+        "no",
+        "--save_strategy",
+        "steps",
+        "--save_steps",
+        "50000",
+        "--learning_rate",
+        "0.0002",
+        "--weight_decay",
+        "0.",
+        "--warmup_ratio",
+        "0.03",
+        "--lr_scheduler_type",
+        "cosine",
+        "--logging_steps",
+        "1",
+        "--tf32",
+        "True",
+        "--model_max_length",
+        "2048",
+        "--gradient_checkpointing",
+        "True",
+        "--dataloader_num_workers",
+        "4",
+        "--lazy_preprocess",
+        "True",
+        "--report_to",
+        "none"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "train",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 77,
+      "argv": [
+        "python",
+        "scripts/merge_lora_weights.py",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora",
+        "--model-base",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task4_llava_lora_merged",
+        "--save-model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_merged"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 78,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/CLEVR-Math.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_post/task5.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 79,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/CLEVR-Math.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_post/task5.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 80,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/CLEVR-Math.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_post/task5.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_gradients",
+        "--num-chunks",
+        "2",
+        "--merge-only",
+        "--svd-mode",
+        "energy"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 81,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 82,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ArxivQA/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task5/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 83,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ArxivQA/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task5/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 84,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_deepseek_r1",
+        "--annotation-file",
+        "/your_data_path/UCIT/ArxivQA/test_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task5/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task5"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 85,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 86,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ImageNet-R/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task5/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 87,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ImageNet-R/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task5/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 88,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_deepseek_r1",
+        "--annotation-file",
+        "/your_data_path/UCIT/ImageNet-R/test_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task5/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task5"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 89,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 90,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/VizWiz-caption/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/VizWiz/KeepLoRA-task5/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 91,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/VizWiz-caption/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/VizWiz/KeepLoRA-task5/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 92,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_caption",
+        "--annotation-file",
+        "/your_data_path/UCIT/VizWiz-caption/val_coco_type_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/VizWiz/KeepLoRA-task5/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/VizWiz/KeepLoRA-task5"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 93,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 94,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/IconQA/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/IconQA/KeepLoRA-task5/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 95,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/IconQA/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/IconQA/KeepLoRA-task5/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 96,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_deepseek_r1",
+        "--annotation-file",
+        "/your_data_path/UCIT/IconQA/test_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/IconQA/KeepLoRA-task5/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/IconQA/KeepLoRA-task5"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 97,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 98,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/CLEVR-Math/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/CLEVR-Math/KeepLoRA-task5/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 99,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/CLEVR-Math/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/CLEVR-Math/KeepLoRA-task5/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 100,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_deepseek_r1",
+        "--annotation-file",
+        "/your_data_path/UCIT/CLEVR-Math/test_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/CLEVR-Math/KeepLoRA-task5/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/CLEVR-Math/KeepLoRA-task5"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 101,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/Flickr30k.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_pre/task6.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 102,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/Flickr30k.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_pre/task6.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 103,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/Flickr30k.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_pre/task6.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_gradients",
+        "--num-chunks",
+        "2",
+        "--merge-only",
+        "--svd-mode",
+        "fixed_rank"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 104,
+      "argv": [
+        "deepspeed",
+        "--include",
+        "localhost:0,1",
+        "--master_port",
+        "9001",
+        "llava/train/train_mem.py",
+        "--deepspeed",
+        "./scripts/zero2.json",
+        "--lora_enable",
+        "True",
+        "--lora_r",
+        "32",
+        "--lora_alpha",
+        "64",
+        "--mm_projector_lr",
+        "2e-5",
+        "--model_name_or_path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_merged",
+        "--freeze_lora_A",
+        "True",
+        "--init_lora_from_gradients",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_gradients/gradients_merged.pt",
+        "--version",
+        "v1",
+        "--data_path",
+        "/your_data_path/UCIT/Flickr30k-cap/train_brief_4w.json",
+        "--image_folder",
+        "/your_data_path/UCIT",
+        "--vision_tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--mm_projector_type",
+        "mlp2x_gelu",
+        "--mm_vision_select_layer",
+        "-2",
+        "--mm_use_im_start_end",
+        "False",
+        "--mm_use_im_patch_token",
+        "False",
+        "--image_aspect_ratio",
+        "pad",
+        "--group_by_modality_length",
+        "True",
+        "--bf16",
+        "True",
+        "--output_dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora",
+        "--num_train_epochs",
+        "1",
+        "--per_device_train_batch_size",
+        "16",
+        "--per_device_eval_batch_size",
+        "16",
+        "--gradient_accumulation_steps",
+        "2",
+        "--evaluation_strategy",
+        "no",
+        "--save_strategy",
+        "steps",
+        "--save_steps",
+        "50000",
+        "--learning_rate",
+        "0.0002",
+        "--weight_decay",
+        "0.",
+        "--warmup_ratio",
+        "0.03",
+        "--lr_scheduler_type",
+        "cosine",
+        "--logging_steps",
+        "1",
+        "--tf32",
+        "True",
+        "--model_max_length",
+        "2048",
+        "--gradient_checkpointing",
+        "True",
+        "--dataloader_num_workers",
+        "4",
+        "--lazy_preprocess",
+        "True",
+        "--report_to",
+        "none"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "train",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 105,
+      "argv": [
+        "python",
+        "scripts/merge_lora_weights.py",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora",
+        "--model-base",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task5_llava_lora_merged",
+        "--save-model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_merged"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 106,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/Flickr30k.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_post/task6.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 107,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/Flickr30k.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_post/task6.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_gradients",
+        "--data-ratio",
+        "0.2",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 108,
+      "argv": [
+        "python",
+        "-m",
+        "llava.train.extract_gradients",
+        "--data-config",
+        "__V3_ROOT__/configs/data_configs/UCIT/Flickr30k.json",
+        "--model-config",
+        "__V3_ROOT__/configs/model_configs/llava.json",
+        "--train-config",
+        "__V3_ROOT__/configs/train_configs/KeepLoRA/LLaVA/UCIT/train_post/task6.json",
+        "--output-dir",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_gradients",
+        "--num-chunks",
+        "2",
+        "--merge-only",
+        "--svd-mode",
+        "energy"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "extra",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 109,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 110,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ImageNet-R/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task6/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 111,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ImageNet-R/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task6/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 112,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_deepseek_r1",
+        "--annotation-file",
+        "/your_data_path/UCIT/ImageNet-R/test_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task6/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/ImageNet-R/KeepLoRA-task6"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 113,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 114,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ArxivQA/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task6/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 115,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/ArxivQA/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task6/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 116,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_deepseek_r1",
+        "--annotation-file",
+        "/your_data_path/UCIT/ArxivQA/test_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task6/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/ArxivQA/KeepLoRA-task6"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 117,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 118,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/VizWiz-caption/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/VizWiz/KeepLoRA-task6/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 119,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/VizWiz-caption/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/VizWiz/KeepLoRA-task6/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 120,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_caption",
+        "--annotation-file",
+        "/your_data_path/UCIT/VizWiz-caption/val_coco_type_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/VizWiz/KeepLoRA-task6/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/VizWiz/KeepLoRA-task6"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 121,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 122,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/IconQA/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/IconQA/KeepLoRA-task6/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 123,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/IconQA/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/IconQA/KeepLoRA-task6/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 124,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_deepseek_r1",
+        "--annotation-file",
+        "/your_data_path/UCIT/IconQA/test_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/IconQA/KeepLoRA-task6/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/IconQA/KeepLoRA-task6"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 125,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 126,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/CLEVR-Math/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/CLEVR-Math/KeepLoRA-task6/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 127,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/CLEVR-Math/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/CLEVR-Math/KeepLoRA-task6/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 128,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_deepseek_r1",
+        "--annotation-file",
+        "/your_data_path/UCIT/CLEVR-Math/test_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/CLEVR-Math/KeepLoRA-task6/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/CLEVR-Math/KeepLoRA-task6"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 129,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "kind": "install",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 130,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/Flickr30k-cap/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/Flickr30k/KeepLoRA-task6/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 131,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.model_others",
+        "--model-path",
+        "/your_ckpts_path/MCITlib/UCIT/LLaVA/KeepLoRA/Task6_llava_lora_merged",
+        "--question-file",
+        "/your_data_path/UCIT/Flickr30k-cap/test_3000.json",
+        "--image-folder",
+        "/your_data_path/UCIT",
+        "--answers-file",
+        "./results/UCIT/each_dataset/Flickr30k/KeepLoRA-task6/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 6,
+      "sequence": "train"
+    },
+    {
+      "order": 132,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.CoIN.eval_caption",
+        "--annotation-file",
+        "/your_data_path/UCIT/Flickr30k-cap/val_coco_type_3000.json",
+        "--result-file",
+        "./results/UCIT/each_dataset/Flickr30k/KeepLoRA-task6/merge.jsonl",
+        "--output-dir",
+        "./results/UCIT/each_dataset/Flickr30k/KeepLoRA-task6"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "PYTHONPATH": "."
+      },
+      "kind": "eval",
+      "task_id": 6,
+      "sequence": "train"
+    }
+  ]
+}
