@@ -22,7 +22,7 @@ def owned_files(root: Path) -> list[Path]:
 
 
 def has_header(text: str) -> bool:
-    return "SPDX-License-Identifier:" in "\n".join(text.splitlines()[:8])
+    return "SPDX-License-Identifier:" in "\n".join(text.splitlines()[:40])
 
 
 def add_header(text: str) -> str:
@@ -34,6 +34,12 @@ def add_header(text: str) -> str:
         index = 1
     if index < len(lines) and "coding" in lines[index] and lines[index].startswith("#"):
         index += 1
+    # Third-party files keep their original license first; append MCITlib's
+    # notice after the upstream license block rather than before it.
+    for line_index, line in enumerate(lines[:40]):
+        if "limitations under the License." in line:
+            index = line_index + 1
+            break
     return "".join(lines[:index]) + HEADER + "".join(lines[index:])
 
 

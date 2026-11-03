@@ -17,6 +17,8 @@ jobs:
 
   test-llava:
     runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: .:third_party/LLaVA:third_party/peft
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -29,6 +31,8 @@ jobs:
 
   test-llava-t437:
     runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: .:third_party/LLaVA:third_party/peft
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
