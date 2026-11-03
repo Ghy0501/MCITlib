@@ -105,7 +105,6 @@ class TrainingArguments(transformers.TrainingArguments):
         metadata={"help": "How many bits to use."}
     )
     lora_enable: bool = False
-    dora_enable: bool = False
     lora_r: int = 64
     lora_alpha: int = 16
     lora_dropout: float = 0.05
@@ -839,8 +838,6 @@ def train():
     parser = transformers.HfArgumentParser(
         (ModelArguments, DataArguments, TrainingArguments))
     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
-    if training_args.lora_enable and training_args.dora_enable:
-        raise ValueError("DoRA and LoRA cannot be enabled at the same time.")
     local_rank = training_args.local_rank
     compute_dtype = (torch.float16 if training_args.fp16 else (torch.bfloat16 if training_args.bf16 else torch.float32))
     
@@ -902,24 +899,6 @@ def train():
             def make_inputs_require_grad(module, input, output):
                 output.requires_grad_(True)
             model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
-
-    if training_args.dora_enable:
-        from peft import DoraConfig, get_peft_model
-        dora_config = DoraConfig(
-            r=training_args.lora_r,
-            lora_alpha=training_args.lora_alpha,
-            target_modules=find_all_linear_names(model),
-            lora_dropout=training_args.lora_dropout,
-            bias=training_args.lora_bias,
-            task_type="CAUSAL_LM",
-        )
-        if training_args.bits == 16:
-            if training_args.bf16:
-                model.to(torch.bfloat16)
-            if training_args.fp16:
-                model.to(torch.float16)
-        rank0_print("Adding DoRA adapters...")
-        model = get_peft_model(model, dora_config)
 
     if training_args.lora_enable:
         from peft import LoraConfig, get_peft_model
@@ -1039,7 +1018,7 @@ def train():
 
     model.config.use_cache = True
 
-    if training_args.lora_enable or training_args.dora_enable:
+    if training_args.lora_enable:
         state_dict = get_peft_state_maybe_zero_3(
             model.named_parameters(), training_args.lora_bias
         )
