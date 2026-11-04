@@ -39,7 +39,7 @@ def run_harness(repo_root: Path, v3_root: Path, implementation: str, entry: str,
     harness = repo_root / "tests/equivalence/_v3_harness.py"
     if implementation == "v3":
         method_dir = method_dir or ("LoRA-FT" if entry == "standard" else "MoELoRA")
-        pythonpath = os.pathsep.join((str(v3_root / "LLaVA" / method_dir), str(v3_root / "LLaVA/LoRA-FT"), str(stub)))
+        pythonpath = os.pathsep.join((str(v3_root / "LLaVA" / method_dir), str(v3_root / "LLaVA/LoRA-FT"), str(stub), str(repo_root)))
     else:
         pythonpath = os.pathsep.join((str(repo_root), str(repo_root / "third_party/LLaVA"), str(repo_root / "third_party/peft"), str(stub)))
     env = os.environ.copy()

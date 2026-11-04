@@ -22,6 +22,12 @@ def normalise(value: Any) -> Any:
     if isinstance(value, list):
         return [normalise(item) for item in value]
     if isinstance(value, str):
+        script_aliases = {
+            "key_elements_identification.py": "mcitlib/methods/_sefe/key_elements.py",
+            "scripts/merge_lora_weights.py": "mcitlib/methods/_sefe/merge.py",
+        }
+        if value in script_aliases:
+            return script_aliases[value]
         asset_prefix = "/your_ckpts_path/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_"
         if value.startswith(asset_prefix):
             return "${repo_root}/assets/smolora/ins_emb_multi_" + value[len(asset_prefix):]
@@ -40,14 +46,14 @@ def normalise(value: Any) -> Any:
     return value
 
 
-@pytest.mark.parametrize("method_spec", [m for m in METHODS if m.id in {"lora_ft", "replay", "moelora", "mrlora", "clmoe", "smolora", "disco", "modalprompt", "olora", "hide"}], ids=lambda item: item.id)
+@pytest.mark.parametrize("method_spec", [m for m in METHODS if m.id in {"lora_ft", "replay", "moelora", "mrlora", "clmoe", "smolora", "disco", "modalprompt", "sefe", "olora", "hide"}], ids=lambda item: item.id)
 @pytest.mark.parametrize("benchmark", BENCHMARKS, ids=lambda item: item.id)
 def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spec: Any) -> None:
     payload = json.loads((repo_root / "tests/fixtures/v3_commands/llava" / method_spec.id / f"{benchmark.id}.json").read_text())
     adapter = LlavaAdapter()
     method = SimpleNamespace(
         train_entry=method_spec.train_entry,
-        model_override=method_spec.id if method_spec.id in {"disco", "modalprompt", "hide"} else None,
+        model_override=method_spec.id if method_spec.id in {"disco", "modalprompt", "sefe", "hide"} else None,
     )
     for task_id, task_name in enumerate(benchmark.tasks, start=1):
         values = load_layered_config(repo_root / "configs", "llava", benchmark.id, method_spec.id, task_id=task_id)
@@ -66,7 +72,7 @@ def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spe
         expected = expected[:entry_index] + ["python", "-m", ENTRY_MODULE] + expected[entry_index + 1:]
         assert command.argv == normalise(expected)
         assert command.env["MCITLIB_TRAIN_ENTRY"] == method_spec.train_entry
-        if method_spec.id in {"disco", "modalprompt", "hide"}:
+        if method_spec.id in {"disco", "modalprompt", "sefe", "hide"}:
             assert command.env["MCITLIB_MODEL_OVERRIDE"] == method_spec.id
         assert command.kind == "train"
 
