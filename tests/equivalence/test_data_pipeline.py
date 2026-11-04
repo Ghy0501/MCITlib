@@ -88,8 +88,8 @@ def test_standard_multi_image_data_matches_v3(repo_root: Path, v3_root: Path, tm
         assert torch.equal(v3[key], v4[key]), key
 
 
-@pytest.mark.parametrize("method_dir", ["OLoRA", "HiDe"])
-def test_olora_hide_data_matches_their_v3_directories(repo_root: Path, v3_root: Path, tmp_path: Path, method_dir: str) -> None:
+@pytest.mark.parametrize("method_dir", ["OLoRA", "HiDe", "CL-MoE"])
+def test_moe_variant_data_matches_their_v3_directories(repo_root: Path, v3_root: Path, tmp_path: Path, method_dir: str) -> None:
     data, images = make_fixture(tmp_path)
     stub = tmp_path / "stubs"
     stub.mkdir()

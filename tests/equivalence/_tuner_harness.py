@@ -31,7 +31,7 @@ class Toy(nn.Module):
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--implementation", choices=["v3", "v4"], required=True)
-    parser.add_argument("--method", choices=["moelora", "olora", "hide"], required=True)
+    parser.add_argument("--method", choices=["moelora", "mrlora", "clmoe", "olora", "hide"], required=True)
     parser.add_argument("--out", required=True)
     args = parser.parse_args()
     torch.manual_seed(1234)
@@ -41,6 +41,9 @@ def main() -> None:
             from CoIN.peft import CoINMOELoraConfig, get_peft_model
             extra = {} if args.method == "moelora" else {"cur_task": 1}
             config = CoINMOELoraConfig(r=4, lora_alpha=8, target_modules=["q_proj"], expert_num=4, **extra)
+        elif args.method == "clmoe":
+            from CLMoE.peft import CLMoEMOELoraConfig, get_peft_model
+            config = CLMoEMOELoraConfig(r=4, lora_alpha=8, target_modules=["q_proj"], expert_num=4)
         else:
             from HiDe.peft import HiDeMOELoraConfig, get_peft_model
             config = HiDeMOELoraConfig(r=4, lora_alpha=8, target_modules=["q_proj"], cur_task=1, expert_num=4)
@@ -57,12 +60,36 @@ def main() -> None:
             from mcitlib.tuners.variants.olora import MCITOrthogonalLoraConfig, MCITOrthogonalLoraModel
             config = MCITOrthogonalLoraConfig(r=4, lora_alpha=8, target_modules=["q_proj"], cur_task=1, expert_num=4)
             context = tuner_model_context("MOE_LORA_CoIN", MCITOrthogonalLoraModel)
+        elif args.method == "clmoe":
+            from pathlib import Path
+
+            from mcitlib.tuners.variants.clmoe import MCITClMoELoraConfig, MCITClMoELoraModel
+            from mcitlib.utils.router_stats import RouterStats
+            config = MCITClMoELoraConfig(r=4, lora_alpha=8, target_modules=["q_proj"], expert_num=4)
+            config._mcit_router_stats = RouterStats(task_id=1, output_dir=Path("."))
+            context = tuner_model_context("MOE_LORA_CLMoE", MCITClMoELoraModel)
         else:
             from mcitlib.tuners.variants.hide import MCITHiDeLoraConfig, MCITHiDeLoraModel
             config = MCITHiDeLoraConfig(r=4, lora_alpha=8, target_modules=["q_proj"], cur_task=1, expert_num=4)
             context = tuner_model_context("MOE_LORA_HiDe", MCITHiDeLoraModel)
         with context:
             model = get_peft_model(model, config)
+
+    if args.implementation == "v3" and args.method == "clmoe":
+        import builtins
+        import io
+        import sys
+        real_open = builtins.open
+
+        def reference_open(path, *open_args, **open_kwargs):
+            if str(path) == "/your_path/MCITlib_v3/LLaVA/CL-MoE/task.txt":
+                return io.StringIO("1")
+            return real_open(path, *open_args, **open_kwargs)
+
+        builtins.open = reference_open
+        sys.modules["datetime"] = SimpleNamespace(
+            datetime=SimpleNamespace(now=lambda: SimpleNamespace(second=0))
+        )
 
     x = torch.randn(2, 3, 8)
     model.train()

@@ -37,7 +37,7 @@ def normalise(value: Any) -> Any:
     return value
 
 
-@pytest.mark.parametrize("method_spec", [m for m in METHODS if m.id in {"lora_ft", "replay", "moelora", "mrlora", "olora", "hide"}], ids=lambda item: item.id)
+@pytest.mark.parametrize("method_spec", [m for m in METHODS if m.id in {"lora_ft", "replay", "moelora", "mrlora", "clmoe", "olora", "hide"}], ids=lambda item: item.id)
 @pytest.mark.parametrize("benchmark", BENCHMARKS, ids=lambda item: item.id)
 def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spec: Any) -> None:
     payload = json.loads((repo_root / "tests/fixtures/v3_commands/llava" / method_spec.id / f"{benchmark.id}.json").read_text())

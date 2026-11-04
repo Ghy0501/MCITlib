@@ -8,6 +8,7 @@ from types import SimpleNamespace
 import torch
 
 from mcitlib.config.schema import DataSource, TaskSpec
+from mcitlib.methods.clmoe import CLMoEMethod
 from mcitlib.methods.hide import HiDeMethod
 from mcitlib.methods.moelora import MoELoRAMethod
 from mcitlib.methods.olora import OLoRAMethod
@@ -76,3 +77,17 @@ def test_moelora_plugin_builds_shared_expert_tuner() -> None:
     assert config.expert_num == 4
     assert config.peft_type == "MOE_LORA_CoIN"
     get_model.assert_called_once()
+
+
+def test_clmoe_context_and_default_diagnostics(tmp_path) -> None:
+    from unittest.mock import patch
+
+    method = CLMoEMethod({"diagnostics_dir": str(tmp_path), "target_modules": ["q_proj"]})
+    assert method.router_stats.task_id == 0
+    assert not method.router_stats.enabled
+    method.before_task(SimpleNamespace(task_id=3))
+    assert method.router_stats.task_id == 3
+    with patch("peft.get_peft_model", side_effect=lambda model, config: config):
+        config = method.build_trainable(SimpleNamespace(), None)
+    assert config.peft_type == "MOE_LORA_CLMoE"
+    assert config._mcit_router_stats is method.router_stats
