@@ -25,6 +25,8 @@ MR-LoRA router 使用**独立的新数据**，不是 `train_path` 的别名。v3
 
 这些补值记录在每份 router JSON 的 `config_placeholders` 中。GPU 运行前必须确认 router JSON 的真实内容、字段格式和图像目录，不能仅凭文件名开始正式实验。
 
+Replay 的 v3 脚本读取同一数据 JSON 中原本不存在的 `replay_path` 和 `router_folder`。L4.5 按同类占位规则补为任务目录下的 `replay.json` 及相应图像根目录；它与 MR-LoRA 的 `router.json` 是不同文件。真实运行前必须分别确认 replay 数据内容，不能把任一文件当作 `train.json` 的别名。
+
 ## 3. 配置和脚本别名
 
 - `config_aliases`：作者已确认 `SEFE` 就是 `RegLoRA`，因此临时参考副本将 `train_configs/SEFE` 映射到 `train_configs/RegLoRA`。这是配置来源映射，不是算法替换。
@@ -55,3 +57,10 @@ ModalPrompt × UCIT 的 Task2 并非注释缺失：其 v3 JSON 的 `output_dir` 
 - KeepLoRA 的 Task0 权重子空间写入 `${ckpt_root}/.../Task0_llava_lora_gradients/`；每个任务的 pre/post 梯度、fixed-rank 初始化、累计子空间和 merge 输出同样位于 `${ckpt_root}` 下。Task0 在每个 benchmark 完整序列中只执行一次。
 - KeepLoRA 的 `CUDA_VISIBLE_DEVICES` 白名单保留 v3 各 chunk 的 GPU 分配；它只是命令环境记录，当前 dry-run 不会启动并行任务。真实执行时仍需按顺序等待 chunk 完成后再 merge/SVD。
 - 这些目录在 GPU 节点必须可写且有足够空间；占位符替换后仍需确认旧子空间文件属于正确的上一任务，不能混用不同 benchmark 或方法的 checkpoint。
+
+## 7. 结果目录与通用基准
+
+- CoIN 推理和打分结果仍写 `./results/...`，与 v3 argv 一致；`mcitlib metrics --run-dir results/<基准目录> --benchmark <id>` 从 `each_dataset` 下恢复矩阵。
+- MR-LoRA 的三个 router 结果脚本使用 `MCITLIB_RESULTS_ROOT`，默认当前工作目录的 `results`；若修改该变量，必须指向包含 `UCIT`、`DCL`、`MLLM-ACL` 子目录的根。
+- 通用基准使用 `configs/data_configs/General_benchmark/{pope,mme,mm_bench,seed}.json`，默认结果根为 `./results/General_Benchmarks`。`mcitlib eval --benchmark general` 默认读取 MLLM-DCL Task5 的 eval 配置，也可用 `--model-path`/`--model-base` 覆盖。
+- 路径替换和真实数据核对仍是 GPU 运行前置条件；离线 fixture 通过不代表这些文件已存在。

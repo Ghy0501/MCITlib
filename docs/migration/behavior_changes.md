@@ -9,7 +9,7 @@
 | NB-3 | 删除 vendored peft 等文件中的调试 `print` | 只改变标准输出，不改变张量、参数或控制流 | T1/T3 数值和 argv 比对；检查没有 print 影响异常路径 | 无需额外改动：vendor 为 pristine peft 0.4.0，未带入 v3 调试 print |
 | NB-4 | 用 Python 清理训练结束时的 `checkpoint-*`，仅限当前 `output_dir` 直接子目录并校验前缀，不用 `shell=True` | 删除目录集合和时机与 v3 相同 | 单元测试构造嵌套/越界目录，验证删除集合；T3 检查调用时机 | 已实施：`e76ca89`，`tests/unit/test_cleanup.py` 通过 |
 | NB-5 | 移除所有运行时 `pip install`，包括 RegLoRA 的 `transformers==4.37.2` | 由 `llava` 或 `llava-t437` 环境预先保证依赖，训练过程不改变环境 | 环境检查测试；T3 白名单列出被移除的安装命令；运行时不调用 pip | 已实施；L4 的 36 条普通序列 + 3 条 router T3 均排除 install，原 argv 仅保存在 YAML `removed_install_commands` 供审计 |
-| NB-6 | 骨干适配器加载时注入 `mm_text_tower`、`mm_text_select_layer` 等配置，替代手改模型文件 | 注入值与 `examples/` 参考配置完全一致 | T2/T3 比较注入后的 config/generation config 与参考文件 | 已批准，待实施 |
+| NB-6 | 骨干适配器加载时注入 `mm_text_tower`、`mm_text_select_layer` 等配置，替代手改模型文件 | 注入值与 `examples/` 参考配置完全一致 | `test_model_config.py` 比较参考 config/generation config 并验证 adapter 转发；S1 共享 CLIP 能力测试保持等价 | 已实施：`a342915` |
 
 ## 提交和报告要求
 

@@ -23,16 +23,25 @@ tools/regression/run_short.sh --execute
 
 任务 2 及之后先用 v3 完整执行之前任务及当前任务所需的训练前依赖，结果缓存到 `regression_out/shared-checkpoints/`。共享准备只在全部依赖成功后写完成标记；v3/v4 当前任务分别写入各自 `v3-checkpoints/`、`v4-checkpoints/`，不会互相覆盖。
 
-## T5：训练 loss 全任务预检
+## T5：训练 loss 预检与完整序列
 
 ```bash
+# 旧工具：仅做全任务训练 loss 预检，不执行 extra/eval
 # 默认组合：lora_ft:ucit、hide:mllm_dcl、sefe:mllm_acl
 tools/regression/run_full.sh --execute
+
+# 新统一 runner：完整执行训练、方法 extra 和迁移后的 CoIN eval
+mcitlib train --method lora_ft --benchmark ucit --paths configs/paths.yaml
+mcitlib train --method hide --benchmark mllm_dcl --paths configs/paths.yaml
+mcitlib train --method sefe --benchmark mllm_acl --paths configs/paths.yaml
+
+# 从 CoIN Result.text 恢复准确率矩阵并计算论文指标
+mcitlib metrics --run-dir results/UCIT --benchmark ucit
+mcitlib metrics --run-dir results/DCL --benchmark mllm_dcl
+mcitlib metrics --run-dir results/ACL --benchmark mllm_acl
 ```
 
-`--full` 不按 20 步截断，比较器使用 0.005 的默认容差作为日志预检；最终 MFN/MAA 的 0.5 个百分点判定需要另行由 `mcitlib metrics` 的输出计算。若 v3 没有同机重跑结果，按论文表 1 对照。
-
-当前工具逐个运行训练命令，不会自动执行 KeepLoRA 的 Task0/pre/post、SEFE/KeepLoRA 的 merge 或后续 eval，因此它本身不是完整序列 runner，也不能单独完成 T5。完整任务编排和评测结果比较需在后续 GPU runner 中完成。
+`run_full.sh --full` 不按 20 步截断，比较器使用 0.005 的默认容差作为日志预检。它仍然只是训练 loss 工具，不替代统一 runner。统一 runner 逐步写日志和完成标记，失败后停止，`--resume` 可继续。最终 MFN/MAA 与 v3 同机重跑结果的差距应不超过 0.5 个百分点；没有 v3 重跑结果时，与论文表 1 对照，并注意 `llava-L5-report.md` 登记的论文源数据差异。
 
 ## 仅比较已有日志
 

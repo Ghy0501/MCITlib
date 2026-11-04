@@ -19,3 +19,5 @@ pycocotools
 pycocoevalcap
 openai
 validators
+einops==0.6.1
+scipy==1.10.1

@@ -174,6 +174,34 @@ We provide reference `config.json` and `generation_config.json` in `examples`.
 
 ## 🏃 How to run
 
+### v4 unified CLI for LLaVA
+
+The v4 LLaVA migration provides a single resumable entry point for all 12 methods. Use the `llava` environment for ten methods and `llava-t437` for SEFE/KeepLoRA; do not run script-level `pip install` during experiments.
+
+```bash
+python -m pip install -e '.[dev]'
+cp configs/paths.example.yaml configs/paths.yaml
+# Edit configs/paths.yaml, or use MCITLIB_MODEL_ROOT/MCITLIB_DATA_ROOT/MCITLIB_CKPT_ROOT.
+
+# Preview the exact ordered command list without executing it.
+mcitlib train --method lora_ft --benchmark ucit --dry-run
+
+# Run the complete train/extra/eval sequence; failed steps stop the sequence.
+mcitlib train --method lora_ft --benchmark ucit --paths configs/paths.yaml
+mcitlib train --method lora_ft --benchmark ucit --paths configs/paths.yaml --resume
+
+# Evaluate an individual task separately when needed (required for ModalPrompt).
+mcitlib eval --method modalprompt --benchmark ucit --after-task 2 --paths configs/paths.yaml
+
+# Compute MFT/MFN/MAA/BWT from the CoIN result directories.
+mcitlib metrics --run-dir results/UCIT --benchmark ucit
+
+# POPE, MME, MMBench and SEED-Bench using the MLLM-DCL Task5 checkpoint.
+mcitlib eval --method lora_ft --benchmark general --after-task 5 --paths configs/paths.yaml
+```
+
+See `docs/migration/placeholders.md` and `tools/regression/README.md` for path requirements and GPU regression gates. The sections below retain the original per-directory v3 instructions for the other backbones.
+
 Note: Our experiment is conducted in a CUDA 11.8 environment, with most libraries in the setup aligned to this CUDA version. Therefore, we recommend using `nvcc -V` to check the CUDA version on your current server. If it does not match, please install CUDA 11.8 before proceeding.
 ### 1. Clone this repository
 ```

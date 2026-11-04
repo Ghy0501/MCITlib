@@ -110,7 +110,9 @@ v4 的评测任务集合、模块选择和参数顺序应由 `v3_command_dump.py
 
 ## 10. 指标与评测复现缺口
 
-对仓库内 `.py` 和 `.sh` 检索 `MFT`、`MFN`、`MAA`、`BWT` 未发现计算脚本命中。论文指标计算需要 v4 新增 `mcitlib/eval/metrics.py`，但这属于复现已报告指标，不是新增算法功能；期望值只能来自论文附录矩阵，并需注明来源和矩阵布局。
+L5 已新增 `mcitlib/eval/metrics.py`，按论文定义从下三角矩阵计算 MFT/MFN/MAA/BWT，并可从 CoIN `Result.text` 目录恢复矩阵。测试 fixture 来自只读 `paper/sample.tex` 的 LLaVA 表 4/6/8，期望值来自表 1。
+
+论文源数据并非全部自洽：24 个方法 × 基准矩阵中有 7 个指标与表 1 不一致，包括 DCL/O-LoRA 的 BWT（矩阵计算 −12.03，表 1 为 −12.53）。其余小项为 0.01 的舍入差异。测试将这些源差异逐项固定，其他项仍严格要求两位小数一致；完整清单见 `llava-L5-report.md`，未修改论文或为通过测试改变公式。
 
 ## 11. SEFE 配置目录断链（L1 停止条件 S1）
 
@@ -156,7 +158,9 @@ T2 的 v3 参考子进程只注入 `builtins.sys` 使数据模块可导入；这
 
 ## 15. t437 私有快照、导入兼容与 KeepLoRA Task0
 
-SEFE 与 KeepLoRA 使用各自的新 LLaVA 快照，文件位于 `mcitlib/methods/_sefe/` 和 `_keeplora/`，没有合并进公共旧 LLaVA。transformers 4.37 自带 LLaVA 注册，并移除旧 MPT 导入所需的 mask 辅助函数；`allow_t437_llava_registration` 只在导入期允许已知重复注册并临时补齐这些函数，退出时清理。共享 trainer 在 4.31 保留 fairscale 分支，在 4.37 跳过已删除的 `ShardedDDPOption` 分支。上述处理不改变有效 Llama 前向公式。
+SEFE 与 KeepLoRA 的公共 t437 LLaVA 快照已去重到 `mcitlib/backbones/llava/snapshots/dcda07fb/`；SEFE 仅在私有目录保留正则化 Llama 差异，KeepLoRA 使用共享普通模型类。CLIP 文本塔/投影特征能力由 `mcitlib/backbones/llava/text_tower.py` 共享，方法私有 builder 只负责参数与行为差异。
+
+transformers 4.37 自带 LLaVA 注册，并移除旧 MPT 导入所需的 mask 辅助函数；`allow_t437_llava_registration` 只在导入期允许已知重复注册并临时补齐这些函数，退出时清理。共享 trainer 在 4.31 保留 fairscale 分支，在 4.37 跳过已删除的 `ShardedDDPOption` 分支。上述处理不改变有效 Llama 前向公式。
 
 KeepLoRA 的全局 Task0 权重提取原存在于 shell/fixture，但早期 YAML 漏迁移。现由 `pre_commands` 保留 `task_id=0`、每 benchmark 一次的语义；各梯度 chunk 的 `CUDA_VISIBLE_DEVICES` 也进入配置。CPU 对照通过玩具模型和设备替换覆盖选样、在线平均、chunk 合并、旧子空间投影和两种 SVD，不表示已验证真实 7B/GPU 结果。
 
@@ -164,8 +168,9 @@ SEFE/KeepLoRA 的 merge 脚本以直接文件路径执行，使用延迟私有 b
 
 ## 16. 当前不能宣称的事项
 
-- L1 的 T0（36 条普通序列及 router 配置检查）已通过；L4 的 12 个 LLaVA 方法均完成其小模型/小矩阵 CPU T1–T3 覆盖，但真实模型、checkpoint 全流程和 GPU 数值等价仍未完成，不能宣称 v4 整体实验已经复现。
+- 12 个 LLaVA 方法的 CPU T0–T3、真实命令 runner、CoIN 评测引用和指标/通用基准离线测试已完成；真实模型、完整 checkpoint 链路和 GPU 数值等价仍未验证，不能宣称实验已经复现。
 - 尚未在 GPU 上执行 T4/T5；当前回归工具的 mock/干跑测试不代表真实训练结果。
-- 尚未证明所有 LLaVA 方法可以共享一个上游快照或一个 transformers 环境；SEFE/KeepLoRA 明确使用隔离的 t437 实现。
+- 普通十个方法与 SEFE/KeepLoRA 仍分别使用 transformers 4.31/4.37 环境；只共享已证明兼容的快照和能力，不宣称单一环境。
+- ModalPrompt × UCIT Task2 的 output_dir 笔误仍保留，AR-5 尚未获得明确修改授权；真实运行该序列前必须决定。
 - 尚未确定 CL-MoE、HiDe-LLaVA、ModalPrompt 的上游再发布许可证。
 - DoRA 文件头是 NVIDIA 专有声明，上游许可证仅限研究或评估用途、不符合 OSI；这是 MLOSS 发布阻塞项。v3 中没有任何脚本启用 DoRA，v4 按 NB-1 不包含它。
