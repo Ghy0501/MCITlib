@@ -14,7 +14,7 @@ import torch
 
 def run(repo_root: Path, v3_root: Path, implementation: str, method: str, output: Path) -> None:
     if implementation == "v3":
-        method_dir = {"moelora": "MoELoRA", "clmoe": "CL-MoE", "smolora": "SMoLoRA", "olora": "OLoRA", "hide": "HiDe"}[method]
+        method_dir = {"moelora": "MoELoRA", "clmoe": "CL-MoE", "smolora": "SMoLoRA", "disco": "DISCO", "olora": "OLoRA", "hide": "HiDe"}[method]
         pythonpath = os.pathsep.join((str(v3_root / "LLaVA" / method_dir), str(v3_root / "LLaVA/LoRA-FT")))
     else:
         pythonpath = os.pathsep.join((str(repo_root), str(repo_root / "third_party/LLaVA"), str(repo_root / "third_party/peft")))
@@ -33,7 +33,7 @@ def run(repo_root: Path, v3_root: Path, implementation: str, method: str, output
         raise AssertionError(f"{implementation}/{method}: {result.stdout}\n{result.stderr}")
 
 
-@pytest.mark.parametrize("method", ["moelora", "clmoe", "smolora", "olora", "hide"])
+@pytest.mark.parametrize("method", ["moelora", "clmoe", "smolora", "disco", "olora", "hide"])
 def test_tuner_state_forward_and_gradients_match(repo_root: Path, v3_root: Path, tmp_path: Path, method: str) -> None:
     v3_path, v4_path = tmp_path / "v3.pt", tmp_path / "v4.pt"
     run(repo_root, v3_root, "v3", method, v3_path)

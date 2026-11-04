@@ -31,14 +31,14 @@ class Toy(nn.Module):
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--implementation", choices=["v3", "v4"], required=True)
-    parser.add_argument("--method", choices=["moelora", "clmoe", "smolora", "olora", "hide"], required=True)
+    parser.add_argument("--method", choices=["moelora", "clmoe", "smolora", "disco", "olora", "hide"], required=True)
     parser.add_argument("--out", required=True)
     args = parser.parse_args()
     torch.manual_seed(1234)
     model = Toy()
     instruction_embeddings = torch.arange(768, dtype=torch.float32).reshape(2, 384).tolist()
     if args.implementation == "v3":
-        if args.method in {"moelora", "olora"}:
+        if args.method in {"moelora", "disco", "olora"}:
             from CoIN.peft import CoINMOELoraConfig, get_peft_model
             extra = {} if args.method == "moelora" else {"cur_task": 1}
             config = CoINMOELoraConfig(r=4, lora_alpha=8, target_modules=["q_proj"], expert_num=4, **extra)
@@ -67,6 +67,10 @@ def main() -> None:
             from mcitlib.tuners.variants.olora import MCITOrthogonalLoraConfig, MCITOrthogonalLoraModel
             config = MCITOrthogonalLoraConfig(r=4, lora_alpha=8, target_modules=["q_proj"], cur_task=1, expert_num=4)
             context = tuner_model_context("MOE_LORA_CoIN", MCITOrthogonalLoraModel)
+        elif args.method == "disco":
+            from mcitlib.tuners.variants.disco import MCITDiscoLoraConfig, MCITDiscoLoraModel
+            config = MCITDiscoLoraConfig(r=4, lora_alpha=8, target_modules=["q_proj"], cur_task=1, expert_num=4)
+            context = tuner_model_context("MOE_LORA_CoIN", MCITDiscoLoraModel, MCITDiscoLoraConfig)
         elif args.method == "clmoe":
             from pathlib import Path
 

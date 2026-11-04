@@ -40,12 +40,15 @@ def normalise(value: Any) -> Any:
     return value
 
 
-@pytest.mark.parametrize("method_spec", [m for m in METHODS if m.id in {"lora_ft", "replay", "moelora", "mrlora", "clmoe", "smolora", "olora", "hide"}], ids=lambda item: item.id)
+@pytest.mark.parametrize("method_spec", [m for m in METHODS if m.id in {"lora_ft", "replay", "moelora", "mrlora", "clmoe", "smolora", "disco", "olora", "hide"}], ids=lambda item: item.id)
 @pytest.mark.parametrize("benchmark", BENCHMARKS, ids=lambda item: item.id)
 def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spec: Any) -> None:
     payload = json.loads((repo_root / "tests/fixtures/v3_commands/llava" / method_spec.id / f"{benchmark.id}.json").read_text())
     adapter = LlavaAdapter()
-    method = SimpleNamespace(train_entry=method_spec.train_entry, model_override="hide" if method_spec.id == "hide" else None)
+    method = SimpleNamespace(
+        train_entry=method_spec.train_entry,
+        model_override=method_spec.id if method_spec.id in {"disco", "hide"} else None,
+    )
     for task_id, task_name in enumerate(benchmark.tasks, start=1):
         values = load_layered_config(repo_root / "configs", "llava", benchmark.id, method_spec.id, task_id=task_id)
         task = TaskSpec(
@@ -63,8 +66,8 @@ def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spe
         expected = expected[:entry_index] + ["python", "-m", ENTRY_MODULE] + expected[entry_index + 1:]
         assert command.argv == normalise(expected)
         assert command.env["MCITLIB_TRAIN_ENTRY"] == method_spec.train_entry
-        if method_spec.id == "hide":
-            assert command.env["MCITLIB_MODEL_OVERRIDE"] == "hide"
+        if method_spec.id in {"disco", "hide"}:
+            assert command.env["MCITLIB_MODEL_OVERRIDE"] == method_spec.id
         assert command.kind == "train"
 
     def signature(commands: list[Any]) -> list[tuple[Any, ...]]:
