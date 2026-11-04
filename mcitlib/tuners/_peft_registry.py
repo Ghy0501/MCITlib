@@ -10,6 +10,7 @@ from peft.peft_model import PEFT_TYPE_TO_MODEL_MAPPING
 from peft.utils import PeftType
 
 from .mcit_expert_lora import MCITExpertLoraConfig, MCITExpertLoraModel
+from .variants.clmoe import MCITClMoELoraConfig, MCITClMoELoraModel
 from .variants.hide import MCITHiDeLoraConfig, MCITHiDeLoraModel
 
 # These aliases are compatibility only. Shared implementation classes use MCIT.
@@ -17,6 +18,8 @@ CoINMOELoraConfig = MCITExpertLoraConfig
 CoINMOELoraModel = MCITExpertLoraModel
 HiDeMOELoraConfig = MCITHiDeLoraConfig
 HiDeMOELoraModel = MCITHiDeLoraModel
+CLMoEMOELoraConfig = MCITClMoELoraConfig
+CLMoEMOELoraModel = MCITClMoELoraModel
 
 
 def register_mcit_tuners() -> None:
@@ -25,10 +28,14 @@ def register_mcit_tuners() -> None:
         setattr(PeftType, "MOE_LORA_CoIN", "MOE_LORA_CoIN")
     if not hasattr(PeftType, "MOE_LORA_HiDe"):
         setattr(PeftType, "MOE_LORA_HiDe", "MOE_LORA_HiDe")
+    if not hasattr(PeftType, "MOE_LORA_CLMoE"):
+        setattr(PeftType, "MOE_LORA_CLMoE", "MOE_LORA_CLMoE")
     PEFT_TYPE_TO_CONFIG_MAPPING["MOE_LORA_CoIN"] = MCITExpertLoraConfig
     PEFT_TYPE_TO_MODEL_MAPPING["MOE_LORA_CoIN"] = MCITExpertLoraModel
     PEFT_TYPE_TO_CONFIG_MAPPING["MOE_LORA_HiDe"] = MCITHiDeLoraConfig
     PEFT_TYPE_TO_MODEL_MAPPING["MOE_LORA_HiDe"] = MCITHiDeLoraModel
+    PEFT_TYPE_TO_CONFIG_MAPPING["MOE_LORA_CLMoE"] = MCITClMoELoraConfig
+    PEFT_TYPE_TO_MODEL_MAPPING["MOE_LORA_CLMoE"] = MCITClMoELoraModel
 
 
 @contextmanager
@@ -49,5 +56,5 @@ register_mcit_tuners()
 
 __all__ = [
     "CoINMOELoraConfig", "CoINMOELoraModel", "HiDeMOELoraConfig", "HiDeMOELoraModel",
-    "register_mcit_tuners", "tuner_model_context",
+    "CLMoEMOELoraConfig", "CLMoEMOELoraModel", "register_mcit_tuners", "tuner_model_context",
 ]
