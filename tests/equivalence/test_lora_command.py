@@ -37,7 +37,7 @@ def normalise(value: Any) -> Any:
     return value
 
 
-@pytest.mark.parametrize("method_spec", [m for m in METHODS if m.id in {"lora_ft", "replay", "moelora", "olora", "hide"}], ids=lambda item: item.id)
+@pytest.mark.parametrize("method_spec", [m for m in METHODS if m.id in {"lora_ft", "replay", "moelora", "mrlora", "olora", "hide"}], ids=lambda item: item.id)
 @pytest.mark.parametrize("benchmark", BENCHMARKS, ids=lambda item: item.id)
 def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spec: Any) -> None:
     payload = json.loads((repo_root / "tests/fixtures/v3_commands/llava" / method_spec.id / f"{benchmark.id}.json").read_text())
@@ -97,3 +97,31 @@ def test_moe_entry_is_selected_without_importing_torch(repo_root: Path) -> None:
     )
     assert command.env["MCITLIB_TRAIN_ENTRY"] == "moe"
     assert command.metadata["source_entry"] == "llava/train/train_mem_MOE.py"
+
+
+@pytest.mark.parametrize("benchmark", BENCHMARKS, ids=lambda item: item.id)
+def test_mrlora_router_dry_run_matches_v3(repo_root: Path, benchmark: Any) -> None:
+    fixture = repo_root / "tests/fixtures/v3_commands/llava/mrlora" / f"{benchmark.id}_router.json"
+    payload = json.loads(fixture.read_text())
+    expected = []
+    for item in payload["commands"]:
+        if item["kind"] == "install":
+            continue
+        argv = list(item["argv"])
+        if item["kind"] == "train":
+            index = next(i for i, value in enumerate(argv) if value.endswith(".py"))
+            argv = argv[:index] + ["python", "-m", ENTRY_MODULE] + argv[index + 1:]
+        expected.append((item["kind"], item["task_id"], normalise(argv)))
+    actual = build_sequence_commands(
+        repo_root / "configs", "llava", "mrlora", benchmark.id, sequence="router"
+    )
+    assert [(c.kind, c.task_id, c.argv) for c in actual] == expected
+    assert all(c.sequence == "router" for c in actual)
+
+    for task_id in range(1, len(benchmark.tasks) + 1):
+        actual_eval = build_sequence_commands(
+            repo_root / "configs", "llava", "mrlora", benchmark.id,
+            task_id=task_id, only_eval=True, sequence="router",
+        )
+        expected_eval = [item for item in expected if item[0] == "eval" and item[1] == task_id]
+        assert [(c.kind, c.task_id, c.argv) for c in actual_eval] == expected_eval

@@ -60,13 +60,19 @@ def assert_task_matches(v3_root: Path, payload: dict[str, Any], actual: dict[str
         assert actual["source"][key] == relative
 
     commands = [c for c in payload["commands"] if c["task_id"] == task_id]
-    for kind, actual_key in (("train", "train_command"), ("eval", "eval_commands"), ("extra", "extra_commands")):
+    for kind, actual_key in (
+        ("train", "train_command"),
+        ("eval", "eval_commands"),
+        ("extra", "extra_commands"),
+        ("other", "other_commands"),
+    ):
         expected_commands = [normalise(c["argv"]) for c in commands if c["kind"] == kind]
         if kind == "train":
             assert len(expected_commands) == 1
             assert actual[actual_key]["argv"] == expected_commands[0]
         else:
-            assert [item["argv"] for item in actual[actual_key]] == expected_commands
+            actual_commands = actual.get(actual_key, []) if kind == "other" else actual[actual_key]
+            assert [item["argv"] for item in actual_commands] == expected_commands
 
 
 @pytest.mark.parametrize("method", METHODS, ids=lambda item: item.id)
