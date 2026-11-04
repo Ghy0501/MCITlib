@@ -58,7 +58,15 @@ METHODS = (
             ("scripts/merge_lora_weights.py", "mcitlib/methods/_sefe/merge.py"),
         ),
     ),
-    MethodSpec("keeplora", "KeepLoRA", aliases=("KeepLoRA", "keep-lora"), env="llava-t437"),
+    MethodSpec(
+        "keeplora", "KeepLoRA", aliases=("KeepLoRA", "keep-lora"), env="llava-t437",
+        required_capabilities=frozenset({"model_class_override"}), model_override="keeplora",
+        script_aliases=(
+            ("llava.train.extract_gradients", "mcitlib.methods._keeplora.extract_gradients"),
+            ("llava.train.extract_weights", "mcitlib.methods._keeplora.extract_weights"),
+            ("scripts/merge_lora_weights.py", "mcitlib/methods/_keeplora/merge.py"),
+        ),
+    ),
 )
 
 BACKBONES = (

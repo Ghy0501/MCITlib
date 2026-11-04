@@ -110,6 +110,8 @@ class TrainingArguments(transformers.TrainingArguments):
     lora_dropout: float = 0.05
     lora_weight_path: str = ""
     lora_bias: str = "none"
+    freeze_lora_A: bool = field(default=False, metadata={"help": "Freeze LoRA A matrices, only train B matrices"})
+    init_lora_from_gradients: Optional[str] = field(default=None, metadata={"help": "Path to gradient file (.pt) for SVD-based LoRA initialization"})
     mm_projector_lr: Optional[float] = None
     group_by_modality_length: bool = field(default=False)
     is_SAT: bool = field(default=False,
@@ -917,6 +919,20 @@ def train():
                 model.to(torch.float16)
         rank0_print("Adding LoRA adapters...")
         model = get_peft_model(model, lora_config)
+        if training_args.init_lora_from_gradients is not None:
+            from mcitlib.methods._keeplora.lora import initialize_lora_weights_custom
+            rank0_print(f"Loading pre-computed SVD results from {training_args.init_lora_from_gradients}...")
+            gradient_data = torch.load(training_args.init_lora_from_gradients, map_location='cpu')
+            initialize_lora_weights_custom(
+                model,
+                gradient_dict=gradient_data['gradients'],
+                lora_r=training_args.lora_r,
+                local_rank=local_rank,
+            )
+        if training_args.freeze_lora_A:
+            from mcitlib.methods._keeplora.lora import freeze_lora_a_matrices
+            rank0_print("Freezing LoRA A matrices...")
+            freeze_lora_a_matrices(model, local_rank=local_rank)
 
     if 'mpt' in model_args.model_name_or_path:
         tokenizer = transformers.AutoTokenizer.from_pretrained(

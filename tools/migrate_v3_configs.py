@@ -133,6 +133,14 @@ def common_values(commands: list[dict[str, Any]]) -> dict[str, Any]:
     return {key: details[0][key] for key in sorted(keys) if all(item[key] == details[0][key] for item in details[1:])}
 
 
+def command_record(command: dict[str, Any]) -> dict[str, Any]:
+    result = command_details(command["argv"]) | {"kind": command["kind"], "order": command["order"]}
+    env = {key: value for key, value in command.get("env", {}).items() if key == "CUDA_VISIBLE_DEVICES"}
+    if env:
+        result["env"] = env
+    return result
+
+
 def task_commands(payload: dict[str, Any], task_id: int) -> dict[str, Any]:
     commands = [c for c in payload["commands"] if c["task_id"] == task_id]
     result: dict[str, Any] = {}
@@ -142,7 +150,7 @@ def task_commands(payload: dict[str, Any], task_id: int) -> dict[str, Any]:
         ("extra", "extra_commands"),
         ("other", "other_commands"),
     ):
-        selected = [command_details(c["argv"]) | {"kind": c["kind"], "order": c["order"]} for c in commands if c["kind"] == kind]
+        selected = [command_record(c) for c in commands if c["kind"] == kind]
         if kind == "train":
             if len(selected) != 1:
                 raise ValueError(f"expected one training command for task {task_id}, got {len(selected)}")
@@ -213,10 +221,14 @@ def migrate_method(v3_root: Path, commands_root: Path, method: Any, benchmarks: 
             "path_placeholders": payload.get("path_placeholders", {}),
             "config_aliases": payload.get("config_aliases", {}),
         }
-        result["overrides"]["llava"][benchmark.id] = {
+        benchmark_values = {
             f"task_{task_id}": make_task(v3_root, payload, method, benchmark, task_name, task_id)
             for task_id, task_name in enumerate(benchmark.tasks, start=1)
         }
+        pre_commands = [command_record(c) | {"task_id": 0} for c in payload["commands"] if c["task_id"] == 0]
+        if pre_commands:
+            benchmark_values = {"pre_commands": pre_commands, **benchmark_values}
+        result["overrides"]["llava"][benchmark.id] = benchmark_values
     result["defaults"] = {"train_args": common_values(all_train_commands)}
     if method.id == "mrlora":
         result["router"] = {"sequence": "router", "benchmarks": {}}

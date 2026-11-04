@@ -58,6 +58,9 @@ def install_model_override(override: str | type | None) -> None:
     elif override == "sefe":
         with allow_t437_llava_registration():
             from ...methods._sefe.llava_overrides import LlavaLlamaForCausalLM as override_cls
+    elif override == "keeplora":
+        with allow_t437_llava_registration():
+            from ...methods._keeplora.llava_overrides import LlavaLlamaForCausalLM as override_cls
     elif isinstance(override, str):
         raise NotImplementedError(f"model override is not registered: {override}")
     else:

@@ -29,6 +29,27 @@ source_metadata:
 overrides:
   llava:
     ucit:
+      pre_commands:
+      - argv:
+        - python
+        - -m
+        - llava.train.extract_weights
+        - --model-config
+        - ${repo_root}/configs/model_configs/llava.json
+        - --output-dir
+        - ${ckpt_root}/MCITlib/UCIT/LLaVA/KeepLoRA/Task0_llava_lora_gradients
+        - --energy-threshold
+        - '0.6'
+        args:
+          model-config: ${repo_root}/configs/model_configs/llava.json
+          output-dir: ${ckpt_root}/MCITlib/UCIT/LLaVA/KeepLoRA/Task0_llava_lora_gradients
+          energy-threshold: '0.6'
+        positional:
+        - -m
+        - llava.train.extract_weights
+        kind: extra
+        order: 0
+        task_id: 0
       task_1:
         task_id: 1
         task_name: ImageNet-R
@@ -227,6 +248,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 10
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -261,6 +284,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 11
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -280,6 +305,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 12
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands:
         - argv:
           - python
@@ -312,6 +339,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 1
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -343,6 +372,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 2
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -373,6 +404,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 3
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - scripts/merge_lora_weights.py
@@ -421,6 +454,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 6
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -452,6 +487,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 7
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -482,6 +519,9 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 8
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -686,6 +726,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 22
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -720,6 +762,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 23
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -739,6 +783,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 24
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -773,6 +819,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 26
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -807,6 +855,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 27
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -826,6 +876,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 28
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands:
         - argv:
           - python
@@ -858,6 +910,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 13
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -889,6 +943,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 14
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -919,6 +975,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 15
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - scripts/merge_lora_weights.py
@@ -967,6 +1025,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 18
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -998,6 +1058,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 19
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1028,6 +1090,9 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 20
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -1233,6 +1298,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 38
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -1267,6 +1334,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 39
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1286,6 +1355,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 40
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -1320,6 +1391,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 42
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1354,6 +1427,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 43
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -1373,6 +1448,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 44
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -1407,6 +1484,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 46
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1441,6 +1520,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 47
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -1460,6 +1541,8 @@ overrides:
           - llava.eval.CoIN.eval_caption
           kind: eval
           order: 48
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands:
         - argv:
           - python
@@ -1492,6 +1575,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 29
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1523,6 +1608,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 30
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -1553,6 +1640,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 31
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - scripts/merge_lora_weights.py
@@ -1601,6 +1690,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 34
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -1632,6 +1723,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 35
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1662,6 +1755,9 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 36
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -1866,6 +1962,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 58
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -1900,6 +1998,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 59
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1919,6 +2019,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 60
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -1953,6 +2055,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 62
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1987,6 +2091,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 63
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -2006,6 +2112,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 64
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2040,6 +2148,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 66
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -2074,6 +2184,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 67
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -2093,6 +2205,8 @@ overrides:
           - llava.eval.CoIN.eval_caption
           kind: eval
           order: 68
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2127,6 +2241,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 70
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -2161,6 +2277,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 71
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -2180,6 +2298,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 72
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands:
         - argv:
           - python
@@ -2212,6 +2332,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 49
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -2243,6 +2365,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 50
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -2273,6 +2397,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 51
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - scripts/merge_lora_weights.py
@@ -2321,6 +2447,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 54
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -2352,6 +2480,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 55
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -2382,6 +2512,9 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 56
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -2586,6 +2719,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 82
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -2620,6 +2755,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 83
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -2639,6 +2776,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 84
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2673,6 +2812,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 86
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -2707,6 +2848,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 87
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -2726,6 +2869,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 88
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2760,6 +2905,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 90
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -2794,6 +2941,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 91
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -2813,6 +2962,8 @@ overrides:
           - llava.eval.CoIN.eval_caption
           kind: eval
           order: 92
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2847,6 +2998,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 94
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -2881,6 +3034,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 95
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -2900,6 +3055,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 96
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2934,6 +3091,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 98
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -2968,6 +3127,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 99
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -2987,6 +3148,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 100
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands:
         - argv:
           - python
@@ -3019,6 +3182,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 73
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3050,6 +3215,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 74
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3080,6 +3247,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 75
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - scripts/merge_lora_weights.py
@@ -3128,6 +3297,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 78
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3159,6 +3330,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 79
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3189,6 +3362,9 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 80
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -3394,6 +3570,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 110
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3428,6 +3606,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 111
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3447,6 +3627,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 112
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -3481,6 +3663,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 114
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3515,6 +3699,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 115
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3534,6 +3720,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 116
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -3568,6 +3756,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 118
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3602,6 +3792,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 119
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3621,6 +3813,8 @@ overrides:
           - llava.eval.CoIN.eval_caption
           kind: eval
           order: 120
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -3655,6 +3849,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 122
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3689,6 +3885,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 123
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3708,6 +3906,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 124
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -3742,6 +3942,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 126
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3776,6 +3978,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 127
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3795,6 +3999,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 128
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -3829,6 +4035,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 130
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3863,6 +4071,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 131
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3882,6 +4092,8 @@ overrides:
           - llava.eval.CoIN.eval_caption
           kind: eval
           order: 132
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands:
         - argv:
           - python
@@ -3914,6 +4126,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 101
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3945,6 +4159,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 102
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3975,6 +4191,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 103
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - scripts/merge_lora_weights.py
@@ -4023,6 +4241,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 106
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -4054,6 +4274,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 107
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -4084,12 +4306,36 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 108
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
           - -e
           - .
     mllm_dcl:
+      pre_commands:
+      - argv:
+        - python
+        - -m
+        - llava.train.extract_weights
+        - --model-config
+        - ${repo_root}/configs/model_configs/llava.json
+        - --output-dir
+        - ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/KeepLoRA/Task0_llava_lora_gradients
+        - --energy-threshold
+        - '0.6'
+        args:
+          model-config: ${repo_root}/configs/model_configs/llava.json
+          output-dir: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/KeepLoRA/Task0_llava_lora_gradients
+          energy-threshold: '0.6'
+        positional:
+        - -m
+        - llava.train.extract_weights
+        kind: extra
+        order: 0
+        task_id: 0
       task_1:
         task_id: 1
         task_name: RS
@@ -4288,6 +4534,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 10
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -4322,6 +4570,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 11
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -4341,6 +4591,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 12
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands:
         - argv:
           - python
@@ -4373,6 +4625,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 1
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -4404,6 +4658,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 2
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -4434,6 +4690,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 3
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - scripts/merge_lora_weights.py
@@ -4482,6 +4740,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 6
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -4513,6 +4773,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 7
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -4543,6 +4805,9 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 8
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -4747,6 +5012,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 22
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -4781,6 +5048,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 23
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -4800,6 +5069,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 24
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands:
         - argv:
           - python
@@ -4832,6 +5103,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 13
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -4863,6 +5136,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 14
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -4893,6 +5168,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 15
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - scripts/merge_lora_weights.py
@@ -4941,6 +5218,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 18
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -4972,6 +5251,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 19
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -5002,6 +5283,9 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 20
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -5206,6 +5490,8 @@ overrides:
           - llava.eval.CoIN.model_pvqa
           kind: eval
           order: 34
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -5240,6 +5526,8 @@ overrides:
           - llava.eval.CoIN.model_pvqa
           kind: eval
           order: 35
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -5259,6 +5547,8 @@ overrides:
           - llava.eval.CoIN.eval_pvqa
           kind: eval
           order: 36
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -5293,6 +5583,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 38
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -5327,6 +5619,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 39
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -5346,6 +5640,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 40
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -5380,6 +5676,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 42
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -5414,6 +5712,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 43
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -5433,6 +5733,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 44
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands:
         - argv:
           - python
@@ -5465,6 +5767,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 25
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -5496,6 +5800,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 26
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -5526,6 +5832,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 27
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - scripts/merge_lora_weights.py
@@ -5574,6 +5882,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 30
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -5605,6 +5915,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 31
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -5635,6 +5947,9 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 32
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -5839,6 +6154,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 54
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -5873,6 +6190,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 55
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -5892,6 +6211,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 56
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -5926,6 +6247,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 58
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -5960,6 +6283,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 59
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -5979,6 +6304,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 60
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -6013,6 +6340,8 @@ overrides:
           - llava.eval.CoIN.model_pvqa
           kind: eval
           order: 62
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -6047,6 +6376,8 @@ overrides:
           - llava.eval.CoIN.model_pvqa
           kind: eval
           order: 63
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -6066,6 +6397,8 @@ overrides:
           - llava.eval.CoIN.eval_pvqa
           kind: eval
           order: 64
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -6100,6 +6433,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 66
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -6134,6 +6469,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 67
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -6153,6 +6490,8 @@ overrides:
           - llava.eval.CoIN.eval_sci
           kind: eval
           order: 68
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands:
         - argv:
           - python
@@ -6185,6 +6524,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 45
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -6216,6 +6557,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 46
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -6246,6 +6589,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 47
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - scripts/merge_lora_weights.py
@@ -6294,6 +6639,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 50
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -6325,6 +6672,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 51
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -6355,6 +6704,9 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 52
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -6559,6 +6911,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 78
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -6593,6 +6947,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 79
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -6612,6 +6968,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 80
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -6646,6 +7004,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 82
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -6680,6 +7040,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 83
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -6699,6 +7061,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 84
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -6733,6 +7097,8 @@ overrides:
           - llava.eval.CoIN.model_pvqa
           kind: eval
           order: 86
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -6767,6 +7133,8 @@ overrides:
           - llava.eval.CoIN.model_pvqa
           kind: eval
           order: 87
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -6786,6 +7154,8 @@ overrides:
           - llava.eval.CoIN.eval_pvqa
           kind: eval
           order: 88
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -6820,6 +7190,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 90
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -6854,6 +7226,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 91
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -6873,6 +7247,8 @@ overrides:
           - llava.eval.CoIN.eval_sci
           kind: eval
           order: 92
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -6907,6 +7283,8 @@ overrides:
           - llava.eval.CoIN.model_fin
           kind: eval
           order: 94
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -6941,6 +7319,8 @@ overrides:
           - llava.eval.CoIN.model_fin
           kind: eval
           order: 95
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -6960,6 +7340,8 @@ overrides:
           - llava.eval.CoIN.eval_finvis
           kind: eval
           order: 96
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands:
         - argv:
           - python
@@ -6992,6 +7374,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 69
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -7023,6 +7407,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 70
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -7053,6 +7439,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 71
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - scripts/merge_lora_weights.py
@@ -7101,6 +7489,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 74
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -7132,6 +7522,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 75
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -7162,12 +7554,36 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 76
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
           - -e
           - .
     mllm_acl:
+      pre_commands:
+      - argv:
+        - python
+        - -m
+        - llava.train.extract_weights
+        - --model-config
+        - ${repo_root}/configs/model_configs/llava.json
+        - --output-dir
+        - ${ckpt_root}/MCITlib/MLLM-ACL/LLaVA/KeepLoRA/Task0_llava_lora_gradients
+        - --energy-threshold
+        - '0.6'
+        args:
+          model-config: ${repo_root}/configs/model_configs/llava.json
+          output-dir: ${ckpt_root}/MCITlib/MLLM-ACL/LLaVA/KeepLoRA/Task0_llava_lora_gradients
+          energy-threshold: '0.6'
+        positional:
+        - -m
+        - llava.train.extract_weights
+        kind: extra
+        order: 0
+        task_id: 0
       task_1:
         task_id: 1
         task_name: OCR
@@ -7364,6 +7780,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 1
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -7395,6 +7813,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 2
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -7425,6 +7845,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 3
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - scripts/merge_lora_weights.py
@@ -7473,6 +7895,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 6
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -7504,6 +7928,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 7
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -7534,6 +7960,9 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 8
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -7741,6 +8170,8 @@ overrides:
           - llava.eval.CoIN.model_math
           kind: eval
           order: 20
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -7778,6 +8209,8 @@ overrides:
           - llava.eval.CoIN.model_math
           kind: eval
           order: 21
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -7791,6 +8224,8 @@ overrides:
           - llava.eval.CoIN.eval_math
           kind: eval
           order: 22
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands:
         - argv:
           - python
@@ -7823,6 +8258,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 10
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -7854,6 +8291,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 11
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -7884,6 +8323,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 12
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - scripts/merge_lora_weights.py
@@ -7932,6 +8373,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 15
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -7963,6 +8406,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 16
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -7993,6 +8438,9 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 17
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -8200,6 +8648,8 @@ overrides:
           - llava.eval.CoIN.model_math
           kind: eval
           order: 33
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -8237,6 +8687,8 @@ overrides:
           - llava.eval.CoIN.model_math
           kind: eval
           order: 34
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -8250,6 +8702,8 @@ overrides:
           - llava.eval.CoIN.eval_math
           kind: eval
           order: 35
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands:
         - argv:
           - python
@@ -8282,6 +8736,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 23
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -8313,6 +8769,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 24
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -8343,6 +8801,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 25
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - scripts/merge_lora_weights.py
@@ -8391,6 +8851,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 28
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -8422,6 +8884,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 29
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -8452,6 +8916,9 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 30
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -8659,6 +9126,8 @@ overrides:
           - llava.eval.CoIN.model_math
           kind: eval
           order: 47
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -8696,6 +9165,8 @@ overrides:
           - llava.eval.CoIN.model_math
           kind: eval
           order: 48
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -8709,6 +9180,8 @@ overrides:
           - llava.eval.CoIN.eval_math
           kind: eval
           order: 49
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -8743,6 +9216,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 52
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -8777,6 +9252,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 53
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -8793,6 +9270,8 @@ overrides:
           - llava.eval.CoIN.convert_result_to_submission
           kind: eval
           order: 54
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands:
         - argv:
           - python
@@ -8825,6 +9304,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 37
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -8856,6 +9337,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 38
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -8886,6 +9369,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 39
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - scripts/merge_lora_weights.py
@@ -8934,6 +9419,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 42
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -8965,6 +9452,8 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 43
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -8995,6 +9484,9 @@ overrides:
           - llava.train.extract_gradients
           kind: extra
           order: 44
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        other_commands: []
         removed_install_commands:
         - - pip
           - install

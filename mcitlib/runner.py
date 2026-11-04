@@ -26,6 +26,18 @@ def _task(benchmark: Any, task_id: int, name: str, values: dict[str, Any], route
     )
 
 
+def _command_from_record(item: dict[str, Any], task_id: int, kind: str, sequence: str) -> Command:
+    return Command(
+        argv=list(item["argv"]),
+        cwd=item.get("cwd", "."),
+        env=dict(item.get("env", {})),
+        kind=kind,
+        task_id=task_id,
+        sequence=sequence,
+        metadata={"order": item.get("order", -1), "source": "v3-command-dump"},
+    )
+
+
 def _recorded_commands(values: dict[str, Any], task: TaskSpec, include_extra: bool = True, sequence: str = "train") -> list[Command]:
     result: list[Command] = []
     kinds = [("eval_commands", "eval")]
@@ -33,14 +45,15 @@ def _recorded_commands(values: dict[str, Any], task: TaskSpec, include_extra: bo
         kinds.extend((("extra_commands", "extra"), ("other_commands", "other")))
     for key, kind in kinds:
         for item in values.get(key, []):
-            result.append(Command(
-                argv=list(item["argv"]),
-                kind=kind,
-                task_id=task.task_id,
-                sequence=sequence,
-                metadata={"order": item.get("order", -1), "source": "v3-command-dump"},
-            ))
+            result.append(_command_from_record(item, task.task_id, kind, sequence))
     return result
+
+
+def _apply_script_aliases(commands: list[Command], method: Any) -> list[Command]:
+    aliases = dict(method.script_aliases)
+    for command in commands:
+        command.argv = [aliases.get(value, value) for value in command.argv]
+    return commands
 
 
 def build_sequence_commands(
@@ -68,6 +81,12 @@ def build_sequence_commands(
     from .backbones.llava.adapter import LlavaAdapter
     adapter = LlavaAdapter()
     commands: list[Command] = []
+    if not only_eval and task_id in (None, 0, 1):
+        base_values = load_layered_config(config_root, backbone_id, benchmark.id, method.id)
+        benchmark_values = base_values.get("overrides", {}).get(backbone_id, {}).get(benchmark.id, {})
+        commands.extend(_command_from_record(item, 0, item.get("kind", "extra"), sequence)
+                        for item in benchmark_values.get("pre_commands", []))
+        _apply_script_aliases(commands, method)
     for current_id, task_name in enumerate(benchmark.tasks, start=1):
         if task_id is not None and current_id != task_id:
             continue
@@ -85,10 +104,7 @@ def build_sequence_commands(
             commands.append(train)
         if only_eval or not method.separate_train_and_infer:
             recorded = _recorded_commands(values, task, include_extra=not only_eval, sequence=sequence)
-            aliases = dict(method.script_aliases)
-            for command in recorded:
-                command.argv = [aliases.get(value, value) for value in command.argv]
-            commands.extend(recorded)
+            commands.extend(_apply_script_aliases(recorded, method))
     commands.sort(key=lambda command: (command.task_id or 0, command.metadata.get("order", -1)))
     return commands
 
