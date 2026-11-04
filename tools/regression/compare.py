@@ -101,8 +101,8 @@ def run_combo(repo_root: Path, v3_root: Path, method_id: str, benchmark_id: str,
     v4_env = os.environ.copy()
     v4_env["PYTHONPATH"] = os.pathsep.join((str(repo_root), str(repo_root / "third_party/LLaVA"), str(repo_root / "third_party/peft")))
     v4_env["MCITLIB_TRAIN_ENTRY"] = method.train_entry
-    if method.id == "hide":
-        v4_env["MCITLIB_MODEL_OVERRIDE"] = "hide"
+    if method.model_override:
+        v4_env["MCITLIB_MODEL_OVERRIDE"] = method.model_override
     destination = out / method.id / benchmark.id / f"task{task_id}"
     print(f"[{method.id}/{benchmark.id}/task{task_id}] v3: {' '.join(v3_argv)}")
     print(f"[{method.id}/{benchmark.id}/task{task_id}] v4: {' '.join(v4_argv)}")
