@@ -19,8 +19,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PYTHONPATH: .:third_party/LLaVA:third_party/peft
+      MCITLIB_REQUIRE_V3: '1'
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: git worktree add ../MCITlib_v3_ref a3a622c9beb690e84c2923785279f179a6aac07e
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
@@ -33,8 +37,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PYTHONPATH: .:third_party/LLaVA:third_party/peft
+      MCITLIB_REQUIRE_V3: '1'
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: git worktree add ../MCITlib_v3_ref a3a622c9beb690e84c2923785279f179a6aac07e
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'

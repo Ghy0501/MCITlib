@@ -41,6 +41,10 @@ def build_train_command(run_cfg: RunConfig, task: TaskSpec, entry: str, model_ov
     argv = original[:entry_index] + ["python", "-m", ENTRY_MODULE] + original[entry_index + 1:]
     argv = _resolve(argv, run_cfg)
     repo_root = Path(run_cfg.values.get("repo_root", ".")).resolve()
+    config_name = run_cfg.values.get("deepspeed_config", "zero2")
+    config_path = run_cfg.values["deepspeed_configs"][config_name]
+    deepspeed_index = argv.index("--deepspeed") + 1
+    argv[deepspeed_index] = str((repo_root / config_path).resolve())
     pythonpath = os.pathsep.join((str(repo_root / "third_party/LLaVA"), str(repo_root / "third_party/peft")))
     env = {"MCITLIB_TRAIN_ENTRY": entry, "PYTHONPATH": pythonpath}
     if model_override:

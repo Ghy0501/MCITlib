@@ -269,7 +269,7 @@ def main() -> int:
         "model_config": "model_configs/llava.json",
         "train_launcher": {"master_port": "9001"},
         "entries": {"standard": "llava/train/train_mem.py", "moe": "llava/train/train_mem_MOE.py"},
-        "deepspeed_configs": {"zero2": "scripts/zero2.json", "zero3_offload": "scripts/zero3_offload.json"},
+        "deepspeed_configs": {"zero2": "configs/deepspeed/zero2.json", "zero3_offload": "configs/deepspeed/zero3_offload.json"},
     }
     (args.out / "backbones" / "llava.yaml").write_text(yaml.safe_dump(backbone, sort_keys=False, allow_unicode=True), encoding="utf-8")
     for benchmark in benchmarks:

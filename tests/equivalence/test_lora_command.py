@@ -22,6 +22,9 @@ def normalise(value: Any, method_id: str | None = None) -> Any:
     if isinstance(value, list):
         return [normalise(item, method_id) for item in value]
     if isinstance(value, str):
+        for filename in ("zero2.json", "zero3_offload.json"):
+            if value == f"./scripts/{filename}" or value.endswith(f"/configs/deepspeed/{filename}"):
+                return f"${{deepspeed_config}}/{filename}"
         merge_target = "mcitlib/methods/_keeplora/merge.py" if method_id == "keeplora" else "mcitlib/methods/_sefe/merge.py"
         script_aliases = {
             "key_elements_identification.py": "mcitlib/methods/_sefe/key_elements.py",
@@ -73,7 +76,10 @@ def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spe
         expected = next(c for c in payload["commands"] if c["kind"] == "train" and c["task_id"] == task_id)["argv"]
         entry_index = next(i for i, value in enumerate(expected) if value.endswith(".py"))
         expected = expected[:entry_index] + ["python", "-m", ENTRY_MODULE] + expected[entry_index + 1:]
-        assert command.argv == normalise(expected, method_spec.id)
+        assert normalise(command.argv, method_spec.id) == normalise(expected, method_spec.id)
+        deepspeed_path = Path(command.argv[command.argv.index("--deepspeed") + 1])
+        assert deepspeed_path.is_absolute()
+        assert deepspeed_path == repo_root / "configs/deepspeed" / f"{method_spec.deepspeed_config}.json"
         assert command.env["MCITLIB_TRAIN_ENTRY"] == method_spec.train_entry
         if method_spec.model_override:
             assert command.env["MCITLIB_MODEL_OVERRIDE"] == method_spec.model_override
@@ -142,13 +148,20 @@ def test_mrlora_router_dry_run_matches_v3(repo_root: Path, benchmark: Any) -> No
     actual = build_sequence_commands(
         repo_root / "configs", "llava", "mrlora", benchmark.id, sequence="router"
     )
-    assert [(c.kind, c.task_id, c.argv) for c in actual] == expected
+    assert [(c.kind, c.task_id, normalise(c.argv, "mrlora")) for c in actual] == expected
     assert all(c.sequence == "router" for c in actual)
-
     for task_id in range(1, len(benchmark.tasks) + 1):
         actual_eval = build_sequence_commands(
             repo_root / "configs", "llava", "mrlora", benchmark.id,
             task_id=task_id, only_eval=True, sequence="router",
         )
         expected_eval = [item for item in expected if item[0] == "eval" and item[1] == task_id]
-        assert [(c.kind, c.task_id, c.argv) for c in actual_eval] == expected_eval
+        assert [(c.kind, c.task_id, normalise(c.argv, "mrlora")) for c in actual_eval] == expected_eval
+
+
+@pytest.mark.parametrize("name,source", [
+    ("zero2.json", "LLaVA/LoRA-FT/scripts/zero2.json"),
+    ("zero3_offload.json", "LLaVA/ModalPrompt/scripts/zero3_offload.json"),
+])
+def test_deepspeed_configs_are_byte_identical(repo_root: Path, v3_root: Path, name: str, source: str) -> None:
+    assert (repo_root / "configs/deepspeed" / name).read_bytes() == (v3_root / source).read_bytes()

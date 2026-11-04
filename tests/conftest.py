@@ -19,5 +19,8 @@ def v3_root(repo_root: Path) -> Path:
     value = os.environ.get("MCITLIB_V3_ROOT")
     path = Path(value).expanduser().resolve() if value else repo_root.parent / "MCITlib_v3_ref"
     if not (path / "LLaVA").is_dir():
-        pytest.skip(f"v3 reference worktree not found: {path}")
+        message = f"v3 reference worktree not found: {path}"
+        if os.environ.get("MCITLIB_REQUIRE_V3") == "1":
+            pytest.fail(message)
+        pytest.skip(message)
     return path
