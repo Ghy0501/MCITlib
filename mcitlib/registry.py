@@ -43,7 +43,15 @@ METHODS = (
     MethodSpec("lora_ft", "LoRA-FT", aliases=("LoRA-FT", "lora-ft", "lora")),
     MethodSpec("replay", "Replay", aliases=("Replay",)),
     MethodSpec("moelora", "MoELoRA", aliases=("MoELoRA", "moe-lora"), train_entry="moe"),
-    MethodSpec("mrlora", "MR-LoRA", aliases=("MR-LoRA", "mr-lora"), train_entry="standard", required_capabilities=frozenset({"router_data"}), extra_stages=("router",)),
+    MethodSpec(
+        "mrlora", "MR-LoRA", aliases=("MR-LoRA", "mr-lora"), train_entry="standard",
+        required_capabilities=frozenset({"router_data"}), extra_stages=("router",),
+        script_aliases=(
+            ("scripts/UCIT_extract_router_result.py", "mcitlib/methods/_mrlora/router_results/ucit.py"),
+            ("scripts/DCL_extract_router_result.py", "mcitlib/methods/_mrlora/router_results/dcl.py"),
+            ("scripts/ACL_extract_router_result.py", "mcitlib/methods/_mrlora/router_results/acl.py"),
+        ),
+    ),
     MethodSpec("olora", "OLoRA", aliases=("OLoRA", "O-LoRA", "o-lora"), train_entry="moe"),
     MethodSpec("clmoe", "CL-MoE", aliases=("CL-MoE", "cl-moe"), train_entry="moe"),
     MethodSpec("disco", "DISCO", aliases=("DISCO",), train_entry="moe", required_capabilities=frozenset({"text_tower", "clip_features", "layer_index"}), model_override="disco"),

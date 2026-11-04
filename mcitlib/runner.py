@@ -57,9 +57,23 @@ def _recorded_commands(values: dict[str, Any], task: TaskSpec, include_extra: bo
 
 
 def _apply_script_aliases(commands: list[Command], method: Any) -> list[Command]:
+    from .backbones.llava.eval_runners import resolve_eval_module
+
     aliases = dict(method.script_aliases)
+    entry = "mcitlib.backbones.llava.eval_runners.entry"
     for command in commands:
         command.argv = [aliases.get(value, value) for value in command.argv]
+        command.env.setdefault("MCITLIB_METHOD", method.id)
+        if method.model_override:
+            command.env.setdefault("MCITLIB_MODEL_OVERRIDE", method.model_override)
+        if command.kind == "eval" and "-m" in command.argv:
+            index = command.argv.index("-m")
+            source_module = command.argv[index + 1]
+            target = resolve_eval_module(source_module, method.id)
+            command.argv = command.argv[:index + 1] + [entry, target] + command.argv[index + 2:]
+            command.metadata["eval_target"] = target
+            command.metadata["source_eval_module"] = source_module
+            command.metadata["eval_module_alias"] = True
     return commands
 
 

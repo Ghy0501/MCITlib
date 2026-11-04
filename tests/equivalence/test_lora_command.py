@@ -31,6 +31,9 @@ def normalise(value: Any, method_id: str | None = None) -> Any:
             "llava.train.extract_gradients": "mcitlib.methods._keeplora.extract_gradients",
             "llava.train.extract_weights": "mcitlib.methods._keeplora.extract_weights",
             "scripts/merge_lora_weights.py": merge_target,
+            "scripts/UCIT_extract_router_result.py": "mcitlib/methods/_mrlora/router_results/ucit.py",
+            "scripts/DCL_extract_router_result.py": "mcitlib/methods/_mrlora/router_results/dcl.py",
+            "scripts/ACL_extract_router_result.py": "mcitlib/methods/_mrlora/router_results/acl.py",
         }
         if value in script_aliases:
             return script_aliases[value]
@@ -50,6 +53,17 @@ def normalise(value: Any, method_id: str | None = None) -> Any:
                 return target + value[len(source):]
         return value
     return value
+
+
+def command_signature(command: Any, method_id: str) -> tuple[Any, ...]:
+    argv = normalise(command.argv, method_id)
+    metadata = getattr(command, "metadata", {})
+    if metadata.get("eval_module_alias"):
+        index = argv.index("-m")
+        assert argv[index + 1] == "mcitlib.backbones.llava.eval_runners.entry"
+        assert argv[index + 2] == metadata["eval_target"]
+        argv = argv[:index + 1] + [metadata["source_eval_module"]] + argv[index + 3:]
+    return command.kind, command.task_id, argv
 
 
 @pytest.mark.parametrize("method_spec", METHODS, ids=lambda item: item.id)
@@ -105,7 +119,7 @@ def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spe
         assert command.kind == "train"
 
     def signature(commands: list[Any]) -> list[tuple[Any, ...]]:
-        return [(c.kind, c.task_id, normalise(c.argv, method_spec.id)) for c in commands]
+        return [command_signature(command, method_spec.id) for command in commands]
 
     expected_commands = []
     for item in payload["commands"]:
@@ -166,7 +180,7 @@ def test_mrlora_router_dry_run_matches_v3(repo_root: Path, benchmark: Any) -> No
     actual = build_sequence_commands(
         repo_root / "configs", "llava", "mrlora", benchmark.id, sequence="router"
     )
-    assert [(c.kind, c.task_id, normalise(c.argv, "mrlora")) for c in actual] == expected
+    assert [command_signature(c, "mrlora") for c in actual] == expected
     assert all(c.sequence == "router" for c in actual)
     for task_id in range(1, len(benchmark.tasks) + 1):
         actual_eval = build_sequence_commands(
@@ -174,7 +188,7 @@ def test_mrlora_router_dry_run_matches_v3(repo_root: Path, benchmark: Any) -> No
             task_id=task_id, only_eval=True, sequence="router",
         )
         expected_eval = [item for item in expected if item[0] == "eval" and item[1] == task_id]
-        assert [(c.kind, c.task_id, normalise(c.argv, "mrlora")) for c in actual_eval] == expected_eval
+        assert [command_signature(c, "mrlora") for c in actual_eval] == expected_eval
 
 
 @pytest.mark.parametrize("name,source", [
