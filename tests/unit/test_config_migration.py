@@ -84,7 +84,10 @@ def test_t0_all_36_sequences(repo_root: Path, v3_root: Path, method: Any, benchm
     payload = json.loads((repo_root / "tests/fixtures/v3_commands/llava" / method.id / f"{benchmark.id}.json").read_text())
     merged = load_layered_config(repo_root / "configs", "llava", benchmark.id, method.id)
     tasks = merged["overrides"]["llava"][benchmark.id]
-    assert set(tasks) == {f"task_{i}" for i in range(1, len(benchmark.tasks) + 1)}
+    assert set(tasks) - {"pre_commands"} == {f"task_{i}" for i in range(1, len(benchmark.tasks) + 1)}
+    pre_commands = tasks.get("pre_commands", [])
+    expected_pre = [normalise(c["argv"]) for c in payload["commands"] if c["task_id"] == 0]
+    assert [item["argv"] for item in pre_commands] == expected_pre
     for task_id, task_name in enumerate(benchmark.tasks, start=1):
         # Load again with the task layer enabled: this checks the actual
         # defaults < backbone < benchmark < method < task merge, not just raw YAML.

@@ -18,13 +18,16 @@ from mcitlib.registry import BENCHMARKS, METHODS
 from mcitlib.runner import build_sequence_commands
 
 
-def normalise(value: Any) -> Any:
+def normalise(value: Any, method_id: str | None = None) -> Any:
     if isinstance(value, list):
-        return [normalise(item) for item in value]
+        return [normalise(item, method_id) for item in value]
     if isinstance(value, str):
+        merge_target = "mcitlib/methods/_keeplora/merge.py" if method_id == "keeplora" else "mcitlib/methods/_sefe/merge.py"
         script_aliases = {
             "key_elements_identification.py": "mcitlib/methods/_sefe/key_elements.py",
-            "scripts/merge_lora_weights.py": "mcitlib/methods/_sefe/merge.py",
+            "llava.train.extract_gradients": "mcitlib.methods._keeplora.extract_gradients",
+            "llava.train.extract_weights": "mcitlib.methods._keeplora.extract_weights",
+            "scripts/merge_lora_weights.py": merge_target,
         }
         if value in script_aliases:
             return script_aliases[value]
@@ -46,14 +49,14 @@ def normalise(value: Any) -> Any:
     return value
 
 
-@pytest.mark.parametrize("method_spec", [m for m in METHODS if m.id in {"lora_ft", "replay", "moelora", "mrlora", "clmoe", "smolora", "disco", "modalprompt", "sefe", "olora", "hide"}], ids=lambda item: item.id)
+@pytest.mark.parametrize("method_spec", METHODS, ids=lambda item: item.id)
 @pytest.mark.parametrize("benchmark", BENCHMARKS, ids=lambda item: item.id)
 def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spec: Any) -> None:
     payload = json.loads((repo_root / "tests/fixtures/v3_commands/llava" / method_spec.id / f"{benchmark.id}.json").read_text())
     adapter = LlavaAdapter()
     method = SimpleNamespace(
         train_entry=method_spec.train_entry,
-        model_override=method_spec.id if method_spec.id in {"disco", "modalprompt", "sefe", "hide"} else None,
+        model_override=method_spec.model_override,
     )
     for task_id, task_name in enumerate(benchmark.tasks, start=1):
         values = load_layered_config(repo_root / "configs", "llava", benchmark.id, method_spec.id, task_id=task_id)
@@ -70,14 +73,14 @@ def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spe
         expected = next(c for c in payload["commands"] if c["kind"] == "train" and c["task_id"] == task_id)["argv"]
         entry_index = next(i for i, value in enumerate(expected) if value.endswith(".py"))
         expected = expected[:entry_index] + ["python", "-m", ENTRY_MODULE] + expected[entry_index + 1:]
-        assert command.argv == normalise(expected)
+        assert command.argv == normalise(expected, method_spec.id)
         assert command.env["MCITLIB_TRAIN_ENTRY"] == method_spec.train_entry
-        if method_spec.id in {"disco", "modalprompt", "sefe", "hide"}:
-            assert command.env["MCITLIB_MODEL_OVERRIDE"] == method_spec.id
+        if method_spec.model_override:
+            assert command.env["MCITLIB_MODEL_OVERRIDE"] == method_spec.model_override
         assert command.kind == "train"
 
     def signature(commands: list[Any]) -> list[tuple[Any, ...]]:
-        return [(c.kind, c.task_id, normalise(c.argv)) for c in commands]
+        return [(c.kind, c.task_id, normalise(c.argv, method_spec.id)) for c in commands]
 
     expected_commands = []
     for item in payload["commands"]:
@@ -87,13 +90,21 @@ def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spe
         if item["kind"] == "train":
             entry_index = next(i for i, value in enumerate(argv) if value.endswith(".py"))
             argv = argv[:entry_index] + ["python", "-m", ENTRY_MODULE] + argv[entry_index + 1:]
-        expected_commands.append(SimpleNamespace(kind=item["kind"], task_id=item["task_id"], argv=argv))
+        expected_commands.append(SimpleNamespace(
+            kind=item["kind"], task_id=item["task_id"], argv=argv,
+            env={key: value for key, value in item.get("env", {}).items() if key == "CUDA_VISIBLE_DEVICES"},
+        ))
     actual_commands = build_sequence_commands(repo_root / "configs", "llava", method_spec.id, benchmark.id)
     expected_train = [
         c for c in expected_commands
         if not method_spec.separate_train_and_infer or c.kind != "eval"
     ]
     assert signature(actual_commands) == signature(expected_train)
+    if method_spec.id == "keeplora":
+        assert sum(c.task_id == 0 for c in actual_commands) == 1
+        for actual, expected in zip(actual_commands, expected_train):
+            if actual.kind != "train":
+                assert actual.env.get("CUDA_VISIBLE_DEVICES") == expected.env.get("CUDA_VISIBLE_DEVICES")
 
     for task_id in range(1, len(benchmark.tasks) + 1):
         expected_eval = [c for c in expected_commands if c.kind == "eval" and c.task_id == task_id]

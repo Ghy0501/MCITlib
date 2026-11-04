@@ -53,7 +53,7 @@ def main() -> None:
         module_name = "llava.train.train" if args.entry == "standard" else "llava.train.train_MOE"
     else:
         module_name = "mcitlib.backbones.llava.standard_train" if args.entry == "standard" else "mcitlib.backbones.llava.moe_train"
-    if args.method == "RegLoRA":
+    if args.method in {"RegLoRA", "KeepLoRA"}:
         from mcitlib.backbones.llava.overrides import allow_t437_llava_registration
         with allow_t437_llava_registration():
             module = __import__(module_name, fromlist=["make_supervised_data_module"])
