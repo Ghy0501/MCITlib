@@ -9,6 +9,7 @@ import torch
 
 from mcitlib.config.schema import DataSource, TaskSpec
 from mcitlib.methods.hide import HiDeMethod
+from mcitlib.methods.moelora import MoELoRAMethod
 from mcitlib.methods.olora import OLoRAMethod
 from mcitlib.methods.replay import ReplayMethod
 
@@ -59,3 +60,19 @@ def test_hide_declares_private_model_override() -> None:
     assert method.model_override == "hide"
     assert method.model_class_override() is not None
     assert method.required_capabilities == frozenset({"text_tower", "clip_features", "layer_index"})
+
+
+def test_moelora_plugin_builds_shared_expert_tuner() -> None:
+    from unittest.mock import patch
+
+    task = task_with_data()
+    method = MoELoRAMethod({"r": 8, "lora_alpha": 16, "expert_num": 4, "target_modules": ["q_proj"]})
+    assert method.train_entry == "moe"
+    assert method.select_train_data(task) is task.data
+    with patch("peft.get_peft_model", side_effect=lambda model, config: config) as get_model:
+        config = method.build_trainable(SimpleNamespace(), None)
+    assert config.r == 8
+    assert config.lora_alpha == 16
+    assert config.expert_num == 4
+    assert config.peft_type == "MOE_LORA_CoIN"
+    get_model.assert_called_once()

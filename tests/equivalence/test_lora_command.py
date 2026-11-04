@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2025-2026 MCITlib authors
-"""T3: LoRA-FT v4 command generation preserves v3 argv."""
+"""T3: migrated LLaVA methods preserve v3 command sequences."""
 from __future__ import annotations
 
 import json
@@ -37,7 +37,7 @@ def normalise(value: Any) -> Any:
     return value
 
 
-@pytest.mark.parametrize("method_spec", [m for m in METHODS if m.id in {"lora_ft", "replay", "olora", "hide"}], ids=lambda item: item.id)
+@pytest.mark.parametrize("method_spec", [m for m in METHODS if m.id in {"lora_ft", "replay", "moelora", "olora", "hide"}], ids=lambda item: item.id)
 @pytest.mark.parametrize("benchmark", BENCHMARKS, ids=lambda item: item.id)
 def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spec: Any) -> None:
     payload = json.loads((repo_root / "tests/fixtures/v3_commands/llava" / method_spec.id / f"{benchmark.id}.json").read_text())

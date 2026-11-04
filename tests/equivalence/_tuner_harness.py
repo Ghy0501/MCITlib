@@ -31,15 +31,16 @@ class Toy(nn.Module):
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--implementation", choices=["v3", "v4"], required=True)
-    parser.add_argument("--method", choices=["olora", "hide"], required=True)
+    parser.add_argument("--method", choices=["moelora", "olora", "hide"], required=True)
     parser.add_argument("--out", required=True)
     args = parser.parse_args()
     torch.manual_seed(1234)
     model = Toy()
     if args.implementation == "v3":
-        if args.method == "olora":
+        if args.method in {"moelora", "olora"}:
             from CoIN.peft import CoINMOELoraConfig, get_peft_model
-            config = CoINMOELoraConfig(r=4, lora_alpha=8, target_modules=["q_proj"], cur_task=1, expert_num=4)
+            extra = {} if args.method == "moelora" else {"cur_task": 1}
+            config = CoINMOELoraConfig(r=4, lora_alpha=8, target_modules=["q_proj"], expert_num=4, **extra)
         else:
             from HiDe.peft import HiDeMOELoraConfig, get_peft_model
             config = HiDeMOELoraConfig(r=4, lora_alpha=8, target_modules=["q_proj"], cur_task=1, expert_num=4)
@@ -48,7 +49,11 @@ def main() -> None:
         from peft import get_peft_model
 
         from mcitlib.tuners._peft_registry import tuner_model_context
-        if args.method == "olora":
+        if args.method == "moelora":
+            from mcitlib.tuners.mcit_expert_lora import MCITExpertLoraConfig, MCITExpertLoraModel
+            config = MCITExpertLoraConfig(r=4, lora_alpha=8, target_modules=["q_proj"], expert_num=4)
+            context = tuner_model_context("MOE_LORA_CoIN", MCITExpertLoraModel)
+        elif args.method == "olora":
             from mcitlib.tuners.variants.olora import MCITOrthogonalLoraConfig, MCITOrthogonalLoraModel
             config = MCITOrthogonalLoraConfig(r=4, lora_alpha=8, target_modules=["q_proj"], cur_task=1, expert_num=4)
             context = tuner_model_context("MOE_LORA_CoIN", MCITOrthogonalLoraModel)
