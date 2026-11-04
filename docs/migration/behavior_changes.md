@@ -5,7 +5,7 @@
 | ID | 变更 | 数值理由 | 验证方式 | 状态 |
 |---|---|---|---|---|
 | NB-1 | 不包含 DoRA：不 vendor `tuners/dora.py`，删除 `dora_enable`、`DoraConfig` 及 peft 中 DoRA 相关改动 | v3 没有脚本启用 DoRA，`dora_enable=False`；其 NVIDIA 专有/仅研究许可不符合 MLOSS 开源要求 | 全仓配置/脚本无启用项；T3 白名单只列出 DoRA 参数和命令差异 | 已实施：`6ab1363` |
-| NB-2 | CL-MoE 任务标识由 `RunContext` 注入，不读硬编码 `task.txt`；router 统计改为 `diagnostics.router_stats`，默认关闭 | router 数值不依赖该文件；注入的任务 ID 与 v3 文件值相同 | T1 对同一输入比较 router 输出；测试文件读取替换和诊断开关默认值 | 已批准，待实施 |
+| NB-2 | CL-MoE 任务标识由 `RunContext` 注入，不读硬编码 `task.txt`；router 统计改为 `diagnostics.router_stats`，默认关闭 | router 数值不依赖该文件；注入的任务 ID 与 v3 文件值相同 | T1 对同一输入比较 router 输出；测试文件读取替换和诊断开关默认值 | 诊断工具已实施；CL-MoE 接入和 T1 随本方法提交验证，哈希见 L4 报告 |
 | NB-3 | 删除 vendored peft 等文件中的调试 `print` | 只改变标准输出，不改变张量、参数或控制流 | T1/T3 数值和 argv 比对；检查没有 print 影响异常路径 | 无需额外改动：vendor 为 pristine peft 0.4.0，未带入 v3 调试 print |
 | NB-4 | 用 Python 清理训练结束时的 `checkpoint-*`，仅限当前 `output_dir` 直接子目录并校验前缀，不用 `shell=True` | 删除目录集合和时机与 v3 相同 | 单元测试构造嵌套/越界目录，验证删除集合；T3 检查调用时机 | 已实施：`e76ca89`，`tests/unit/test_cleanup.py` 通过 |
 | NB-5 | 移除所有运行时 `pip install`，包括 RegLoRA 的 `transformers==4.37.2` | 由 `llava` 或 `llava-t437` 环境预先保证依赖，训练过程不改变环境 | 环境检查测试；T3 白名单列出被移除的安装命令；运行时不调用 pip | 结构已保证无运行时 pip；完整 T3 白名单待 L3 全方法覆盖 |
