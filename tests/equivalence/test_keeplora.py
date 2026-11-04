@@ -8,7 +8,7 @@ import subprocess
 import sys
 from importlib.machinery import ModuleSpec
 from pathlib import Path
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
 
 import pytest
 import torch
@@ -94,3 +94,22 @@ def test_keeplora_data_matches_v3_in_t437(repo_root: Path, v3_root: Path, tmp_pa
     run_harness(repo_root, v3_root, "v3", "standard", data, images, v3_output, stub, method_dir="KeepLoRA")
     run_harness(repo_root, v3_root, "v4", "standard", data, images, v4_output, stub, method_dir="KeepLoRA")
     assert_nested_equal(torch.load(v3_output, map_location="cpu"), torch.load(v4_output, map_location="cpu"), "data")
+
+
+def test_keeplora_merge_script_and_private_builder(repo_root: Path) -> None:
+    from unittest.mock import Mock, patch
+
+    from mcitlib.methods._keeplora.merge import merge_lora
+
+    script = repo_root / "mcitlib/methods/_keeplora/merge.py"
+    result = subprocess.run([sys.executable, str(script), "--help"], capture_output=True, check=False)
+    assert result.returncode == 0, result.stderr
+    with allow_t437_llava_registration():
+        from mcitlib.methods._keeplora.llava_overrides import builder
+    model, tokenizer = Mock(), Mock()
+    with patch.object(builder, "load_pretrained_model", return_value=(tokenizer, model, None, 0)) as load:
+        merge_lora(SimpleNamespace(model_path="output/checkpoint-1", model_base="llava", save_model_path="merged"))
+    load.assert_called_once()
+    assert load.call_args.args[2] == "output_checkpoint-1"
+    model.save_pretrained.assert_called_once_with("merged")
+    tokenizer.save_pretrained.assert_called_once_with("merged")

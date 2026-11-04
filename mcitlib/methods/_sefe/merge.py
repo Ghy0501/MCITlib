@@ -6,11 +6,12 @@ from __future__ import annotations
 
 import argparse
 
-from .llava_overrides.builder import load_pretrained_model
-
 
 def merge_lora(args) -> None:
-    from llava.eval.CoIN.coin_utils import get_model_name_from_path
+    from mcitlib.backbones.llava.overrides import allow_t437_llava_registration
+    with allow_t437_llava_registration():
+        from mcitlib.methods._sefe.llava_overrides.builder import load_pretrained_model
+    from llava.mm_utils import get_model_name_from_path
 
     model_name = get_model_name_from_path(args.model_path)
     tokenizer, model, _, _ = load_pretrained_model(

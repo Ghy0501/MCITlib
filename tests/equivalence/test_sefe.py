@@ -123,3 +123,23 @@ def test_sefe_data_matches_v3_in_t437(repo_root: Path, v3_root: Path, tmp_path: 
     v4 = torch.load(v4_output, map_location="cpu")
     for key in v3:
         assert torch.equal(v3[key], v4[key]), key
+
+
+def test_sefe_merge_script_and_private_builder(repo_root: Path) -> None:
+    from unittest.mock import Mock, patch
+
+    from mcitlib.backbones.llava.overrides import allow_t437_llava_registration
+    from mcitlib.methods._sefe.merge import merge_lora
+
+    script = repo_root / "mcitlib/methods/_sefe/merge.py"
+    result = subprocess.run([sys.executable, str(script), "--help"], capture_output=True, check=False)
+    assert result.returncode == 0, result.stderr
+    with allow_t437_llava_registration():
+        from mcitlib.methods._sefe.llava_overrides import builder
+    model, tokenizer = Mock(), Mock()
+    with patch.object(builder, "load_pretrained_model", return_value=(tokenizer, model, None, 0)) as load:
+        merge_lora(SimpleNamespace(model_path="output/checkpoint-1", model_base="llava", save_model_path="merged"))
+    load.assert_called_once()
+    assert load.call_args.args[2] == "output_checkpoint-1"
+    model.save_pretrained.assert_called_once_with("merged")
+    tokenizer.save_pretrained.assert_called_once_with("merged")
