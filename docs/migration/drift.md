@@ -154,10 +154,18 @@ v3 shell 未设置 `set -e`，所以 `read_config` 的 `FileNotFoundError` 不�
 
 T2 的 v3 参考子进程只注入 `builtins.sys` 使数据模块可导入；这不修改 v3 文件，也不证明 O-LoRA 的原始训练入口可直接运行。该可复现性风险需在 GPU 阶段单独确认。
 
-## 15. 当前不能宣称的事项
+## 15. t437 私有快照、导入兼容与 KeepLoRA Task0
 
-- L1 的 T0（36 条普通序列及 router 配置检查）已通过；L3 的 LoRA-FT、Replay、O-LoRA、HiDe 已完成其 CPU T1–T3 覆盖，其余 8 个方法及真实模型/GPU 数值等价仍未完成，不能宣称 v4 整体与 v3 数值等价。
-- 尚未在 GPU 上执行 T4/T5。
-- 尚未证明所有 LLaVA 方法可以共享一个上游快照或一个 transformers 环境。
+SEFE 与 KeepLoRA 使用各自的新 LLaVA 快照，文件位于 `mcitlib/methods/_sefe/` 和 `_keeplora/`，没有合并进公共旧 LLaVA。transformers 4.37 自带 LLaVA 注册，并移除旧 MPT 导入所需的 mask 辅助函数；`allow_t437_llava_registration` 只在导入期允许已知重复注册并临时补齐这些函数，退出时清理。共享 trainer 在 4.31 保留 fairscale 分支，在 4.37 跳过已删除的 `ShardedDDPOption` 分支。上述处理不改变有效 Llama 前向公式。
+
+KeepLoRA 的全局 Task0 权重提取原存在于 shell/fixture，但早期 YAML 漏迁移。现由 `pre_commands` 保留 `task_id=0`、每 benchmark 一次的语义；各梯度 chunk 的 `CUDA_VISIBLE_DEVICES` 也进入配置。CPU 对照通过玩具模型和设备替换覆盖选样、在线平均、chunk 合并、旧子空间投影和两种 SVD，不表示已验证真实 7B/GPU 结果。
+
+SEFE/KeepLoRA 的 merge 脚本以直接文件路径执行，使用延迟私有 builder 导入；模型名推导改用 `llava.mm_utils.get_model_name_from_path`，该函数与 v3 CoIN 同名实现逐行等价。
+
+## 16. 当前不能宣称的事项
+
+- L1 的 T0（36 条普通序列及 router 配置检查）已通过；L4 的 12 个 LLaVA 方法均完成其小模型/小矩阵 CPU T1–T3 覆盖，但真实模型、checkpoint 全流程和 GPU 数值等价仍未完成，不能宣称 v4 整体实验已经复现。
+- 尚未在 GPU 上执行 T4/T5；当前回归工具的 mock/干跑测试不代表真实训练结果。
+- 尚未证明所有 LLaVA 方法可以共享一个上游快照或一个 transformers 环境；SEFE/KeepLoRA 明确使用隔离的 t437 实现。
 - 尚未确定 CL-MoE、HiDe-LLaVA、ModalPrompt 的上游再发布许可证。
 - DoRA 文件头是 NVIDIA 专有声明，上游许可证仅限研究或评估用途、不符合 OSI；这是 MLOSS 发布阻塞项。v3 中没有任何脚本启用 DoRA，v4 按 NB-1 不包含它。

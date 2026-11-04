@@ -47,4 +47,11 @@ ModalPrompt × UCIT 的 Task2 并非注释缺失：其 v3 JSON 的 `output_dir` 
 
 - 占位路径的存在不等于数据/权重已经验证。
 - 序列恢复是作者明确授权的配置集成修复，不是对 v3 原始脚本行为的声称复现。
-- 当前通过的是 CPU 的配置/命令检查和单元测试；T4/T5 仍需在 GPU 上执行。
+- 当前通过的是 CPU 的配置/命令检查和小模型/小矩阵单元测试；真实权重、完整 checkpoint 链路以及 T4/T5 仍需在 GPU 上执行。
+
+## 6. SEFE 与 KeepLoRA 的额外产物
+
+- SEFE 的 key-element 输入、LoRA 输出和 `_merged` 模型都由 `${ckpt_root}` 派生；方法脚本别名指向 `mcitlib/methods/_sefe/`，不是指向 v3 机器路径。
+- KeepLoRA 的 Task0 权重子空间写入 `${ckpt_root}/.../Task0_llava_lora_gradients/`；每个任务的 pre/post 梯度、fixed-rank 初始化、累计子空间和 merge 输出同样位于 `${ckpt_root}` 下。Task0 在每个 benchmark 完整序列中只执行一次。
+- KeepLoRA 的 `CUDA_VISIBLE_DEVICES` 白名单保留 v3 各 chunk 的 GPU 分配；它只是命令环境记录，当前 dry-run 不会启动并行任务。真实执行时仍需按顺序等待 chunk 完成后再 merge/SVD。
+- 这些目录在 GPU 节点必须可写且有足够空间；占位符替换后仍需确认旧子空间文件属于正确的上一任务，不能混用不同 benchmark 或方法的 checkpoint。
