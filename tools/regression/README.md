@@ -19,7 +19,9 @@ tools/regression/run_short.sh --combo lora_ft:ucit --execute
 tools/regression/run_short.sh --execute
 ```
 
-每个组合写 `regression_out/<method>/<benchmark>/task<k>/{v3,v4}.log` 和 `comparison.json`。比较器读取日志中的 loss，要求 bf16 下最大相对误差不超过 `1e-3`。
+每个组合写 `regression_out/<method>/<benchmark>/task<k>/{v3,v4}.log` 和 `comparison.json`。比较器读取日志中的 loss，要求 bf16 下最大相对误差不超过 `1e-3`，且两侧 loss 数都恰好等于 `max_steps`、进程正常退出或由工具主动终止；任一侧提前崩溃都会失败。
+
+任务 2 及之后先用 v3 完整执行之前任务及当前任务所需的训练前依赖，结果缓存到 `regression_out/shared-checkpoints/`。共享准备只在全部依赖成功后写完成标记；v3/v4 当前任务分别写入各自 `v3-checkpoints/`、`v4-checkpoints/`，不会互相覆盖。
 
 ## T5：训练 loss 全任务预检
 

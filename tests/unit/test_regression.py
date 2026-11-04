@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from mcitlib.registry import METHODS
-from tools.regression.compare import compare_logs, run_combo
+from tools.regression.compare import ProcessOutcome, compare_logs, run_combo
 
 
 def test_compare_logs_relative_tolerance(tmp_path: Path) -> None:
@@ -37,7 +37,7 @@ def test_regression_uses_registered_model_override(repo_root: Path, tmp_path: Pa
         environments.append(env)
         log.parent.mkdir(parents=True, exist_ok=True)
         log.write_text("{'loss': 1.0}\n", encoding="utf-8")
-        return 0
+        return ProcessOutcome(0)
 
     with patch("tools.regression.compare.run_process", side_effect=fake_process):
         result = run_combo(
@@ -47,3 +47,95 @@ def test_regression_uses_registered_model_override(repo_root: Path, tmp_path: Pa
     assert result["passed"]
     assert len(environments) == 2
     assert environments[1].get("MCITLIB_MODEL_OVERRIDE") == method.model_override
+
+
+def test_task2_uses_cached_shared_previous_and_isolated_outputs(repo_root: Path, tmp_path: Path) -> None:
+    from unittest.mock import patch
+
+    calls = []
+
+    def fake_process(argv, cwd, env, log, max_steps):
+        calls.append((argv, max_steps))
+        output = Path(argv[argv.index("--output_dir") + 1])
+        output.mkdir(parents=True, exist_ok=True)
+        if max_steps is not None:
+            previous = Path(argv[argv.index("--previous_task_model_path") + 1])
+            assert previous.is_dir()
+        count = max_steps or 1
+        log.parent.mkdir(parents=True, exist_ok=True)
+        log.write_text("".join(f"loss: {1.0 / (index + 1)}\n" for index in range(count)), encoding="utf-8")
+        return ProcessOutcome(0)
+
+    with patch("tools.regression.compare.run_process", side_effect=fake_process):
+        first = run_combo(repo_root, repo_root.parent / "MCITlib_v3_ref", "lora_ft", "ucit", 2, tmp_path, True, 2)
+        second = run_combo(repo_root, repo_root.parent / "MCITlib_v3_ref", "lora_ft", "ucit", 2, tmp_path, True, 2)
+    assert first["passed"] and second["passed"]
+    assert len(calls) == 5  # one cached full task1 preparation + two short runs per invocation
+    short_calls = [argv for argv, limit in calls if limit == 2]
+    previous = [Path(argv[argv.index("--previous_task_model_path") + 1]) for argv in short_calls]
+    outputs = [Path(argv[argv.index("--output_dir") + 1]) for argv in short_calls]
+    assert previous[0] == previous[1]
+    assert "shared-checkpoints" in str(previous[0])
+    assert outputs[0] != outputs[1]
+    assert "v3-checkpoints" in str(outputs[0]) and "v4-checkpoints" in str(outputs[1])
+
+
+def test_fake_training_early_v4_crash_fails(repo_root: Path, tmp_path: Path, monkeypatch) -> None:
+    import os
+    import sys
+
+    binary = tmp_path / "bin"
+    binary.mkdir()
+    fake = binary / "deepspeed"
+    fake.write_text(f"""#!{sys.executable}
+import os
+from pathlib import Path
+import sys
+argv = sys.argv[1:]
+Path(argv[argv.index('--output_dir') + 1]).mkdir(parents=True, exist_ok=True)
+count = 3 if 'MCITLIB_TRAIN_ENTRY' in os.environ else 20
+for index in range(count):
+    print(f'loss: {{1.0 / (index + 1)}}', flush=True)
+sys.exit(1 if count == 3 else 0)
+""", encoding="utf-8")
+    fake.chmod(0o755)
+    monkeypatch.setenv("PATH", str(binary) + os.pathsep + os.environ["PATH"])
+    result = run_combo(repo_root, repo_root.parent / "MCITlib_v3_ref", "lora_ft", "ucit", 1, tmp_path, True, 20)
+    assert not result["passed"]
+    assert result["v3_count"] == 20 and result["v4_count"] == 3
+    assert result["v4_exit"] == 1
+    assert not result["counts_match"] and not result["exits_acceptable"]
+
+
+def test_sefe_task2_prepares_merge_and_key_elements_once(repo_root: Path, tmp_path: Path) -> None:
+    from unittest.mock import patch
+
+    calls = []
+
+    def fake_process(argv, cwd, env, log, max_steps):
+        calls.append((argv, max_steps))
+        if "--output_dir" in argv:
+            Path(argv[argv.index("--output_dir") + 1]).mkdir(parents=True, exist_ok=True)
+        if "--save-model-path" in argv:
+            Path(argv[argv.index("--save-model-path") + 1]).mkdir(parents=True, exist_ok=True)
+        if any(value.endswith("key_elements_identification.py") for value in argv):
+            Path(argv[-2], "Task1_llava_lora_topP.pth").touch()
+        if max_steps is not None:
+            assert Path(argv[argv.index("--model_name_or_path") + 1]).is_dir()
+            assert Path(argv[argv.index("--regularization_info_path") + 1]).is_file()
+        count = max_steps or 1
+        log.parent.mkdir(parents=True, exist_ok=True)
+        log.write_text("".join(f"loss: {1.0 / (index + 1)}\n" for index in range(count)), encoding="utf-8")
+        return ProcessOutcome(0)
+
+    with patch("tools.regression.compare.run_process", side_effect=fake_process):
+        result = run_combo(repo_root, repo_root.parent / "MCITlib_v3_ref", "sefe", "ucit", 2, tmp_path, True, 2)
+    assert result["passed"]
+    preparation = [argv for argv, limit in calls if limit is None]
+    assert len(preparation) == 3
+    assert preparation[0][0] == "deepspeed"
+    assert any("merge_lora_weights.py" in value for argv in preparation for value in argv)
+    assert any("key_elements_identification.py" in value for argv in preparation for value in argv)
+    short = [argv for argv, limit in calls if limit == 2]
+    assert len(short) == 2
+    assert short[0][short[0].index("--regularization_info_path") + 1] == short[1][short[1].index("--regularization_info_path") + 1]
