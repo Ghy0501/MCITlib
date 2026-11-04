@@ -12,10 +12,14 @@ from transformers.trainer import (
     get_parameter_names,
     has_length,
     ALL_LAYERNORM_LAYERS,
-    ShardedDDPOption,
     logger,
 )
 from typing import List, Optional
+
+try:
+    from transformers.trainer import ShardedDDPOption
+except ImportError:
+    ShardedDDPOption = None
 
 
 def maybe_zero_3(param, ignore_status=False, name=None):
@@ -170,7 +174,7 @@ class LLaVATrainer(Trainer):
         """
         if is_sagemaker_mp_enabled():
             return super().create_optimizer()
-        if self.sharded_ddp == ShardedDDPOption.SIMPLE:
+        if ShardedDDPOption is not None and self.sharded_ddp == ShardedDDPOption.SIMPLE:
             return super().create_optimizer()
 
         opt_model = self.model
@@ -226,7 +230,7 @@ class LLaVATrainer(Trainer):
 
             optimizer_cls, optimizer_kwargs = Trainer.get_optimizer_cls_and_kwargs(self.args)
 
-            if self.sharded_ddp == ShardedDDPOption.SIMPLE:
+            if ShardedDDPOption is not None and self.sharded_ddp == ShardedDDPOption.SIMPLE:
                 self.optimizer = OSS(
                     params=optimizer_grouped_parameters,
                     optim=optimizer_cls,

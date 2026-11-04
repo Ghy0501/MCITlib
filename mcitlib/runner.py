@@ -84,7 +84,11 @@ def build_sequence_commands(
             train.sequence = sequence
             commands.append(train)
         if only_eval or not method.separate_train_and_infer:
-            commands.extend(_recorded_commands(values, task, include_extra=not only_eval, sequence=sequence))
+            recorded = _recorded_commands(values, task, include_extra=not only_eval, sequence=sequence)
+            aliases = dict(method.script_aliases)
+            for command in recorded:
+                command.argv = [aliases.get(value, value) for value in command.argv]
+            commands.extend(recorded)
     commands.sort(key=lambda command: (command.task_id or 0, command.metadata.get("order", -1)))
     return commands
 

@@ -19,6 +19,7 @@ class MethodSpec:
     separate_train_and_infer: bool = False
     extra_stages: tuple[str, ...] = ()
     model_override: str | None = None
+    script_aliases: tuple[tuple[str, str], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -49,7 +50,14 @@ METHODS = (
     MethodSpec("hide", "HiDe", aliases=("HiDe", "hide-llava"), train_entry="moe", required_capabilities=frozenset({"text_tower", "clip_features", "layer_index"}), model_override="hide"),
     MethodSpec("smolora", "SMoLoRA", aliases=("SMoLoRA", "smo-lora"), train_entry="moe"),
     MethodSpec("modalprompt", "ModalPrompt", aliases=("ModalPrompt",), deepspeed_config="zero3_offload", required_capabilities=frozenset({"text_tower", "clip_features"}), separate_train_and_infer=True, model_override="modalprompt"),
-    MethodSpec("sefe", "RegLoRA", aliases=("RegLoRA", "reglora", "SEFE"), env="llava-t437"),
+    MethodSpec(
+        "sefe", "RegLoRA", aliases=("RegLoRA", "reglora", "SEFE"), env="llava-t437",
+        required_capabilities=frozenset({"model_class_override"}), model_override="sefe",
+        script_aliases=(
+            ("key_elements_identification.py", "mcitlib/methods/_sefe/key_elements.py"),
+            ("scripts/merge_lora_weights.py", "mcitlib/methods/_sefe/merge.py"),
+        ),
+    ),
     MethodSpec("keeplora", "KeepLoRA", aliases=("KeepLoRA", "keep-lora"), env="llava-t437"),
 )
 

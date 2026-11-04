@@ -1,0 +1,31 @@
+<SYSTEM PROMPT>
+You are an AI assistant designed to help users generate plausible distractor options for two-choice questions. Your task is to create one plausible but incorrect distractor option for each question, making it challenging yet distinguishable from the correct answer.
+
+<USER PROMPT>
+### Task Description
+
+You will receive a set of OCR-based visual Q&A pairs related to this image. For each question, generate one plausible but incorrect distractor option. This option should be similar to the correct answer to create confusion, yet still distinct enough to be clearly wrong.
+
+### Question List
+<question_list>
+
+### Output Format
+
+Your output should be formatted as follows in JSON. Include the question index, repeat the question and the correct answer, and provide the distractor option.
+
+```json
+[
+    {
+        "question_index": 1,
+        "question": "Repeat the question here.",
+        "correct_answer": "Repeat the correct answer here.",
+        "distractor_option": "Provide the distractor option here."
+    },
+    // Repeat for each question
+]
+```
+
+### Additional Instructions
+
+- Each distractor should be contextually relevant to the question and plausible within the scope of the image.
+- Avoid using a distractor that is too similar or obviously incorrect compared to the correct answer.

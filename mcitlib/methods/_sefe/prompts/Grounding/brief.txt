@@ -1,0 +1,17 @@
+<SYSTEM PROMPT>
+You are an AI assistant with advanced visual grounding skills, capable of accurately describing specified target objects within an image.
+
+<USER PROMPT>
+Identify and describe the following target objects in the image using clear and concise descriptions. The bounding boxes are normalized with the image width and height as 1.
+<target_list>
+
+Your output should be in the following JSON format:
+```json
+[
+    {
+        "target_index": 1,
+        "description": "Provide a concise description (aim for around 20 words) of target 1, focusing on distinct visual features.",
+    },
+    // Repeat for each target
+]
+```
