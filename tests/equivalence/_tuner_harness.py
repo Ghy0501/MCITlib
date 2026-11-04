@@ -31,11 +31,12 @@ class Toy(nn.Module):
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--implementation", choices=["v3", "v4"], required=True)
-    parser.add_argument("--method", choices=["moelora", "mrlora", "clmoe", "olora", "hide"], required=True)
+    parser.add_argument("--method", choices=["moelora", "clmoe", "smolora", "olora", "hide"], required=True)
     parser.add_argument("--out", required=True)
     args = parser.parse_args()
     torch.manual_seed(1234)
     model = Toy()
+    instruction_embeddings = torch.arange(768, dtype=torch.float32).reshape(2, 384).tolist()
     if args.implementation == "v3":
         if args.method in {"moelora", "olora"}:
             from CoIN.peft import CoINMOELoraConfig, get_peft_model
@@ -44,6 +45,12 @@ def main() -> None:
         elif args.method == "clmoe":
             from CLMoE.peft import CLMoEMOELoraConfig, get_peft_model
             config = CLMoEMOELoraConfig(r=4, lora_alpha=8, target_modules=["q_proj"], expert_num=4)
+        elif args.method == "smolora":
+            from CoIN.peft import SMoLoraConfig, TaskType, get_peft_model
+            config = SMoLoraConfig(
+                r=4, lora_alpha=8, target_modules=["q_proj"], expert_num=4,
+                ins_type=1, ins_emb=instruction_embeddings, task_type=TaskType.CAUSAL_LM_SMoLoRA,
+            )
         else:
             from HiDe.peft import HiDeMOELoraConfig, get_peft_model
             config = HiDeMOELoraConfig(r=4, lora_alpha=8, target_modules=["q_proj"], cur_task=1, expert_num=4)
@@ -68,6 +75,16 @@ def main() -> None:
             config = MCITClMoELoraConfig(r=4, lora_alpha=8, target_modules=["q_proj"], expert_num=4)
             config._mcit_router_stats = RouterStats(task_id=1, output_dir=Path("."))
             context = tuner_model_context("MOE_LORA_CLMoE", MCITClMoELoraModel)
+        elif args.method == "smolora":
+            from mcitlib.tuners.mcit_separable_expert_lora import (
+                MCITSeparableExpertLoraConfig,
+                MCITSeparableExpertLoraModel,
+            )
+            config = MCITSeparableExpertLoraConfig(
+                r=4, lora_alpha=8, target_modules=["q_proj"], expert_num=4,
+                ins_type=1, ins_emb=instruction_embeddings, task_type="CAUSAL_LM_SMoLoRA",
+            )
+            context = tuner_model_context("SMOLORA", MCITSeparableExpertLoraModel)
         else:
             from mcitlib.tuners.variants.hide import MCITHiDeLoraConfig, MCITHiDeLoraModel
             config = MCITHiDeLoraConfig(r=4, lora_alpha=8, target_modules=["q_proj"], cur_task=1, expert_num=4)
@@ -106,6 +123,7 @@ def main() -> None:
         "train_output": train_output.detach().cpu(),
         "eval_output": eval_output.detach().cpu(),
         "gradients": gradients,
+        "requires_grad": {name: param.requires_grad for name, param in model.named_parameters()},
     }, args.out)
 
 

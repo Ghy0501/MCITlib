@@ -28,6 +28,9 @@ PREFIXES = (
 
 def normalise(value: Any) -> Any:
     if isinstance(value, str):
+        asset_prefix = "/your_ckpts_path/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_"
+        if value.startswith(asset_prefix):
+            return "${repo_root}/assets/smolora/ins_emb_multi_" + value[len(asset_prefix):]
         for source, target in PREFIXES:
             if value == source:
                 return target
