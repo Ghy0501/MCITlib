@@ -86,6 +86,9 @@ def build_sequence_commands(
     task_id: int | None = None,
     only_eval: bool = False,
     sequence: str = "train",
+    model_path: str | None = None,
+    model_base: str | None = None,
+    num_chunks: int | None = None,
 ) -> list[Command]:
     """Build v3-ordered commands; NB-5 install commands are never emitted."""
     backbone = get_backbone(backbone_id)
@@ -93,6 +96,19 @@ def build_sequence_commands(
         raise ValueError(f"backbone is not migrated yet: {backbone_id}")
     method = get_method(method_id)
     benchmark = get_benchmark(benchmark_id)
+    if benchmark.id == "general":
+        if not only_eval or sequence != "train":
+            raise ValueError("general benchmarks are supported only by the eval command")
+        from .backbones.llava.general import build_general_commands
+        commands = build_general_commands(
+            config_root, method.id, task_id, model_path, model_base, num_chunks
+        )
+        if paths is not None:
+            for command in commands:
+                command.argv = [paths.resolve_templates(str(value)) for value in command.argv]
+                command.cwd = paths.resolve_templates(command.cwd)
+                command.env = {key: paths.resolve_templates(str(value)) for key, value in command.env.items()}
+        return commands
     if sequence not in {"train", "router"}:
         raise ValueError(f"unknown sequence: {sequence}")
     if sequence == "router" and method.id != "mrlora":

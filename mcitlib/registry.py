@@ -89,6 +89,9 @@ BENCHMARKS = (
     BenchmarkSpec("mllm_dcl", "MLLM-DCL", "train_DCL.sh", "Eval_MLLM_DCL", ("RS", "Med", "AD", "Sci", "Fin")),
     BenchmarkSpec("mllm_acl", "MLLM-ACL", "train_ACL.sh", "Eval_MLLM_ACL", ("OCR", "Math", "VP", "APP")),
 )
+GENERAL_BENCHMARK = BenchmarkSpec(
+    "general", "General_Benchmarks", "", "Eval_benchmarks", ("POPE", "MME", "MMBench", "SEED-Bench")
+)
 
 
 def _key(value: str) -> str:
@@ -118,6 +121,8 @@ def get_benchmark(value: str) -> BenchmarkSpec:
     for spec in BENCHMARKS:
         if key in {_key(spec.id), _key(spec.v3_name)}:
             return spec
+    if key in {_key(GENERAL_BENCHMARK.id), _key(GENERAL_BENCHMARK.v3_name)}:
+        return GENERAL_BENCHMARK
     raise KeyError(f"unknown benchmark: {value}")
 
 

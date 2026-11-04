@@ -9,3 +9,13 @@ deepspeed==0.9.5
 bitsandbytes==0.41.0
 numpy==1.23.5
 PyYAML>=6.0
+# Training/evaluation runtime dependencies; NB-5 forbids runtime installation.
+Pillow
+tqdm
+shortuuid
+pandas
+nltk
+pycocotools
+pycocoevalcap
+openai
+validators

@@ -8,7 +8,7 @@ import json
 import sys
 from pathlib import Path
 
-from .registry import BACKBONES, BENCHMARKS, METHODS, matrix
+from .registry import BACKBONES, BENCHMARKS, METHODS, get_benchmark, matrix
 
 
 def _add_common(parser: argparse.ArgumentParser) -> None:
@@ -33,8 +33,13 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate = sub.add_parser("eval", help="build or run evaluation")
     _add_common(evaluate)
     evaluate.add_argument("--after-task", type=int)
+    evaluate.add_argument("--model-path", help="override the checkpoint for general evaluation")
+    evaluate.add_argument("--model-base")
+    evaluate.add_argument("--num-chunks", type=int)
     metrics = sub.add_parser("metrics", help="compute continual-learning metrics")
-    metrics.add_argument("--run-dir", type=Path, required=True)
+    metrics.add_argument("--run-dir", type=Path, required=True, help="matrix JSON or CoIN results directory")
+    metrics.add_argument("--benchmark", choices=tuple(item.id for item in BENCHMARKS))
+    metrics.add_argument("--output", type=Path, help="also write the complete result as JSON")
     return parser
 
 
@@ -51,7 +56,18 @@ def main(argv: list[str] | None = None) -> int:
         print_list()
         return 0
     if args.command == "metrics":
-        print(json.dumps({"run_dir": str(args.run_dir), "status": "metrics implementation lands in L5"}, ensure_ascii=False))
+        from .eval.metrics import metrics_from_path
+
+        try:
+            tasks = get_benchmark(args.benchmark).tasks if args.benchmark else None
+            result = metrics_from_path(args.run_dir, tasks=tasks)
+            if args.output:
+                args.output.parent.mkdir(parents=True, exist_ok=True)
+                args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        except (KeyError, ValueError, FileNotFoundError, json.JSONDecodeError) as error:
+            print(f"mcitlib: {error}", file=sys.stderr)
+            return 2
+        print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
     from .paths import PathResolver
     from .runner import build_sequence_commands, execute_commands
@@ -69,6 +85,9 @@ def main(argv: list[str] | None = None) -> int:
             task_id=args.task if args.command == "train" else args.after_task,
             only_eval=args.command == "eval",
             sequence=args.sequence,
+            model_path=getattr(args, "model_path", None),
+            model_base=getattr(args, "model_base", None),
+            num_chunks=getattr(args, "num_chunks", None),
         )
     except (KeyError, ValueError, FileNotFoundError) as error:
         print(f"mcitlib: {error}", file=sys.stderr)

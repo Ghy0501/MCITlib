@@ -1,0 +1,24 @@
+id: general
+v3_name: General_Benchmarks
+source_benchmark: mllm_dcl
+tasks:
+- task_id: 1
+  id: pope
+  name: POPE
+  data_config: pope.json
+  output_name: POPE
+- task_id: 2
+  id: mme
+  name: MME
+  data_config: mme.json
+  output_name: MME
+- task_id: 3
+  id: mmbench
+  name: MMBench
+  data_config: mm_bench.json
+  output_name: MMBench
+- task_id: 4
+  id: seed
+  name: SEED-Bench
+  data_config: seed.json
+  output_name: SEED
