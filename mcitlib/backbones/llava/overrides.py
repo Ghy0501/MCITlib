@@ -7,7 +7,9 @@ from __future__ import annotations
 def install_model_override(override: str | type | None) -> None:
     if override is None:
         return
-    if override == "hide":
+    if override == "disco":
+        from ...methods._disco.llava_overrides import LlavaLlamaForCausalLM as override_cls
+    elif override == "hide":
         from ...methods._hide.llava_overrides import LlavaLlamaForCausalLM as override_cls
     elif isinstance(override, str):
         raise NotImplementedError(f"model override is not registered: {override}")

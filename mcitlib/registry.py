@@ -45,7 +45,7 @@ METHODS = (
     MethodSpec("mrlora", "MR-LoRA", aliases=("MR-LoRA", "mr-lora"), train_entry="standard", required_capabilities=frozenset({"router_data"}), extra_stages=("router",)),
     MethodSpec("olora", "OLoRA", aliases=("OLoRA", "O-LoRA", "o-lora"), train_entry="moe"),
     MethodSpec("clmoe", "CL-MoE", aliases=("CL-MoE", "cl-moe"), train_entry="moe"),
-    MethodSpec("disco", "DISCO", aliases=("DISCO",), train_entry="moe", required_capabilities=frozenset({"text_tower", "clip_features"})),
+    MethodSpec("disco", "DISCO", aliases=("DISCO",), train_entry="moe", required_capabilities=frozenset({"text_tower", "clip_features", "layer_index"}), model_override="disco"),
     MethodSpec("hide", "HiDe", aliases=("HiDe", "hide-llava"), train_entry="moe", required_capabilities=frozenset({"text_tower", "clip_features", "layer_index"}), model_override="hide"),
     MethodSpec("smolora", "SMoLoRA", aliases=("SMoLoRA", "smo-lora"), train_entry="moe"),
     MethodSpec("modalprompt", "ModalPrompt", aliases=("ModalPrompt",), deepspeed_config="zero3_offload", separate_train_and_infer=True),

@@ -46,17 +46,25 @@ def register_mcit_tuners() -> None:
 
 
 @contextmanager
-def tuner_model_context(peft_type: str, model_class):
-    """Temporarily map a shared serialized PeftType to one method's model."""
-    previous = PEFT_TYPE_TO_MODEL_MAPPING.get(peft_type)
+def tuner_model_context(peft_type: str, model_class, config_class=None):
+    """Temporarily map a serialized PeftType to one method's implementation."""
+    previous_model = PEFT_TYPE_TO_MODEL_MAPPING.get(peft_type)
+    previous_config = PEFT_TYPE_TO_CONFIG_MAPPING.get(peft_type)
     PEFT_TYPE_TO_MODEL_MAPPING[peft_type] = model_class
+    if config_class is not None:
+        PEFT_TYPE_TO_CONFIG_MAPPING[peft_type] = config_class
     try:
         yield
     finally:
-        if previous is None:
+        if previous_model is None:
             PEFT_TYPE_TO_MODEL_MAPPING.pop(peft_type, None)
         else:
-            PEFT_TYPE_TO_MODEL_MAPPING[peft_type] = previous
+            PEFT_TYPE_TO_MODEL_MAPPING[peft_type] = previous_model
+        if config_class is not None:
+            if previous_config is None:
+                PEFT_TYPE_TO_CONFIG_MAPPING.pop(peft_type, None)
+            else:
+                PEFT_TYPE_TO_CONFIG_MAPPING[peft_type] = previous_config
 
 
 register_mcit_tuners()
