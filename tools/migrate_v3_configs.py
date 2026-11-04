@@ -135,7 +135,12 @@ def common_values(commands: list[dict[str, Any]]) -> dict[str, Any]:
 def task_commands(payload: dict[str, Any], task_id: int) -> dict[str, Any]:
     commands = [c for c in payload["commands"] if c["task_id"] == task_id]
     result: dict[str, Any] = {}
-    for kind, output_key in (("train", "train_command"), ("eval", "eval_commands"), ("extra", "extra_commands")):
+    for kind, output_key in (
+        ("train", "train_command"),
+        ("eval", "eval_commands"),
+        ("extra", "extra_commands"),
+        ("other", "other_commands"),
+    ):
         selected = [command_details(c["argv"]) | {"kind": c["kind"], "order": c["order"]} for c in commands if c["kind"] == kind]
         if kind == "train":
             if len(selected) != 1:

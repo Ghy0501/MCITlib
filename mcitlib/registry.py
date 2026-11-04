@@ -42,7 +42,7 @@ METHODS = (
     MethodSpec("lora_ft", "LoRA-FT", aliases=("LoRA-FT", "lora-ft", "lora")),
     MethodSpec("replay", "Replay", aliases=("Replay",)),
     MethodSpec("moelora", "MoELoRA", aliases=("MoELoRA", "moe-lora"), train_entry="moe"),
-    MethodSpec("mrlora", "MR-LoRA", aliases=("MR-LoRA", "mr-lora"), train_entry="standard", extra_stages=("router",)),
+    MethodSpec("mrlora", "MR-LoRA", aliases=("MR-LoRA", "mr-lora"), train_entry="standard", required_capabilities=frozenset({"router_data"}), extra_stages=("router",)),
     MethodSpec("olora", "OLoRA", aliases=("OLoRA", "O-LoRA", "o-lora"), train_entry="moe"),
     MethodSpec("clmoe", "CL-MoE", aliases=("CL-MoE", "cl-moe"), train_entry="moe"),
     MethodSpec("disco", "DISCO", aliases=("DISCO",), train_entry="moe", required_capabilities=frozenset({"text_tower", "clip_features"})),
@@ -54,7 +54,7 @@ METHODS = (
 )
 
 BACKBONES = (
-    BackboneSpec("llava", "llava", True, frozenset({"text_tower", "clip_features", "layer_index", "model_class_override"})),
+    BackboneSpec("llava", "llava", True, frozenset({"text_tower", "clip_features", "layer_index", "model_class_override", "router_data"})),
     BackboneSpec("internvl", "internvl", False),
     BackboneSpec("videollava", "videollava", False),
     BackboneSpec("videollama2", "videollama2", False),

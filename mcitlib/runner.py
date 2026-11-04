@@ -6,12 +6,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .config.loader import load_layered_config
+from .config.loader import deep_merge, load_layered_config
 from .config.schema import Command, DataSource, RunConfig, TaskSpec
 from .registry import get_backbone, get_benchmark, get_method
 
 
-def _task(benchmark: Any, task_id: int, name: str, values: dict[str, Any]) -> TaskSpec:
+def _task(benchmark: Any, task_id: int, name: str, values: dict[str, Any], router: bool = False) -> TaskSpec:
     source = values["source"]
     return TaskSpec(
         benchmark=benchmark.id,
@@ -21,21 +21,23 @@ def _task(benchmark: Any, task_id: int, name: str, values: dict[str, Any]) -> Ta
         data_config=source["data_config"],
         train_config=source["train_config"],
         eval_config=source.get("eval_config"),
+        router=router,
         data=DataSource.from_dict(values["data_config"]),
     )
 
 
-def _recorded_commands(values: dict[str, Any], task: TaskSpec, include_extra: bool = True) -> list[Command]:
+def _recorded_commands(values: dict[str, Any], task: TaskSpec, include_extra: bool = True, sequence: str = "train") -> list[Command]:
     result: list[Command] = []
     kinds = [("eval_commands", "eval")]
     if include_extra:
-        kinds.append(("extra_commands", "extra"))
+        kinds.extend((("extra_commands", "extra"), ("other_commands", "other")))
     for key, kind in kinds:
         for item in values.get(key, []):
             result.append(Command(
                 argv=list(item["argv"]),
                 kind=kind,
                 task_id=task.task_id,
+                sequence=sequence,
                 metadata={"order": item.get("order", -1), "source": "v3-command-dump"},
             ))
     return result
@@ -49,6 +51,7 @@ def build_sequence_commands(
     paths: Any = None,
     task_id: int | None = None,
     only_eval: bool = False,
+    sequence: str = "train",
 ) -> list[Command]:
     """Build v3-ordered commands; NB-5 install commands are never emitted."""
     backbone = get_backbone(backbone_id)
@@ -56,6 +59,10 @@ def build_sequence_commands(
         raise ValueError(f"backbone is not migrated yet: {backbone_id}")
     method = get_method(method_id)
     benchmark = get_benchmark(benchmark_id)
+    if sequence not in {"train", "router"}:
+        raise ValueError(f"unknown sequence: {sequence}")
+    if sequence == "router" and method.id != "mrlora":
+        raise ValueError(f"method {method.id} has no router sequence")
     if backbone_id != "llava":
         raise ValueError(f"unsupported backbone: {backbone_id}")
     from .backbones.llava.adapter import LlavaAdapter
@@ -65,14 +72,18 @@ def build_sequence_commands(
         if task_id is not None and current_id != task_id:
             continue
         values = load_layered_config(config_root, backbone_id, benchmark.id, method.id, task_id=current_id)
+        if sequence == "router":
+            router_task = values["router"]["benchmarks"][benchmark.id]["tasks"][f"task_{current_id}"]
+            values = deep_merge(values, router_task)
         values = {**values, "repo_root": str(Path(config_root).resolve().parent)}
-        task = _task(benchmark, current_id, task_name, values)
+        task = _task(benchmark, current_id, task_name, values, router=sequence == "router")
         if not only_eval:
             run_cfg = RunConfig(backbone_id, method.id, benchmark.id, task=task, values=values, paths=paths)
             train = adapter.build_command(run_cfg, method, task)
             train.metadata["order"] = values["train_command"].get("order", -1)
+            train.sequence = sequence
             commands.append(train)
-        commands.extend(_recorded_commands(values, task, include_extra=not only_eval))
+        commands.extend(_recorded_commands(values, task, include_extra=not only_eval, sequence=sequence))
     commands.sort(key=lambda command: (command.task_id or 0, command.metadata.get("order", -1)))
     return commands
 

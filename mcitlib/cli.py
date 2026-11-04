@@ -17,6 +17,7 @@ def _add_common(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--benchmark", required=True)
     parser.add_argument("--paths", type=Path)
     parser.add_argument("--config-root", type=Path, default=Path("configs"))
+    parser.add_argument("--sequence", choices=("train", "router"), default="train")
     parser.add_argument("--dry-run", action="store_true")
 
 
@@ -67,6 +68,7 @@ def main(argv: list[str] | None = None) -> int:
             paths=paths,
             task_id=args.task if args.command == "train" else args.after_task,
             only_eval=args.command == "eval",
+            sequence=args.sequence,
         )
     except (KeyError, ValueError, FileNotFoundError) as error:
         print(f"mcitlib: {error}", file=sys.stderr)
