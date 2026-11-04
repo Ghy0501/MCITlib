@@ -72,6 +72,8 @@ v4 需要：
 - 由显式命令/配置触发加载，并记录来源、形状和校验信息；
 - 按 D5 默认方案考虑迁到 HF 数据资源，作者确认前不在仓库中擅自删除或替换原文件。
 
+**L4 已按后续定稿实施：**三个文件复制到 `assets/smolora/`，v3 原文件保留；`configs/methods/smolora.yaml` 由迁移脚本自动记录 sha256，命令和配置中的资产路径指向新目录。`load_instruction_embeddings` 只在显式调用时校验哈希并 pickle 读取，import 不触发加载。LLaVA 范围内核实 `ptmoelora.py` 仅为基础调优器改名且训练入口未调用，`SMoGate` 和 NumPy `softmax` 也无调用方，因此未迁移这些死代码。
+
 ## 6. RegLoRA/SEFE 的运行时环境改写
 
 `LLaVA/RegLoRA/scripts/MCITlib/Train/Task1.sh` 和 `Taskn.sh` 含 `pip install transformers==4.37.2`，且训练后调用 `scripts/merge_lora_weights.py`。其 pyproject 仍写 `transformers==4.31.0`，KeepLoRA 的 pyproject 则写 `4.37.2`。

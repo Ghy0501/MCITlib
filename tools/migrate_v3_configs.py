@@ -9,6 +9,7 @@ values into the layered v4 schema.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -164,6 +165,33 @@ def make_task(v3_root: Path, payload: dict[str, Any], method: Any, benchmark: An
     }
 
 
+def relocate_smolora_assets(value: Any) -> Any:
+    """Move only the three authorized instruction-embedding assets."""
+    if isinstance(value, str):
+        prefix = "${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_"
+        if value.startswith(prefix):
+            return "${repo_root}/assets/smolora/ins_emb_multi_" + value[len(prefix):]
+        return value
+    if isinstance(value, list):
+        return [relocate_smolora_assets(item) for item in value]
+    if isinstance(value, dict):
+        return {key: relocate_smolora_assets(item) for key, item in value.items()}
+    return value
+
+
+def smolora_asset_metadata(v3_root: Path, benchmarks: list[Any]) -> dict[str, Any]:
+    records = []
+    for benchmark in benchmarks:
+        name = f"ins_emb_multi_{benchmark.id.removeprefix('mllm_')}.pkl"
+        source = v3_root / "LLaVA/SMoLoRA" / name
+        records.append({
+            "benchmark": benchmark.id,
+            "path": f"${{repo_root}}/assets/smolora/{name}",
+            "sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+        })
+    return {"instruction_embeddings": records}
+
+
 def migrate_method(v3_root: Path, commands_root: Path, method: Any, benchmarks: list[Any]) -> dict[str, Any]:
     result: dict[str, Any] = {
         "id": method.id,
@@ -203,6 +231,9 @@ def migrate_method(v3_root: Path, commands_root: Path, method: Any, benchmarks: 
                     for task_id, task_name in enumerate(benchmark.tasks, start=1)
                 },
             }
+    if method.id == "smolora":
+        result = relocate_smolora_assets(result)
+        result["assets"] = smolora_asset_metadata(v3_root, benchmarks)
     return result
 
 

@@ -56,7 +56,7 @@ overrides:
           batch_size: 16
           grad_acc: 2
           ins_type: 0
-          ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_ucit.pkl
+          ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_ucit.pkl
           lr: 0.0002
         eval_config:
           gpu_num: 2
@@ -86,7 +86,7 @@ overrides:
           - --ins_type
           - '0'
           - --ins_emb
-          - ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_ucit.pkl
+          - ${repo_root}/assets/smolora/ins_emb_multi_ucit.pkl
           - --model_name_or_path
           - ${model_root}/llava-v1.5-7b
           - --pretrain_mm_mlp_adapter
@@ -163,7 +163,7 @@ overrides:
             mm_projector_lr: 2e-5
             expert_num: '6'
             ins_type: '0'
-            ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_ucit.pkl
+            ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_ucit.pkl
             model_name_or_path: ${model_root}/llava-v1.5-7b
             pretrain_mm_mlp_adapter: ${model_root}/llava-v1.5-7b/mm_projector.bin
             version: v1
@@ -300,6 +300,7 @@ overrides:
           kind: eval
           order: 5
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -335,7 +336,7 @@ overrides:
           batch_size: 16
           grad_acc: 2
           ins_type: 1
-          ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_ucit.pkl
+          ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_ucit.pkl
           lr: 0.0002
         eval_config:
           gpu_num: 2
@@ -365,7 +366,7 @@ overrides:
           - --ins_type
           - '1'
           - --ins_emb
-          - ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_ucit.pkl
+          - ${repo_root}/assets/smolora/ins_emb_multi_ucit.pkl
           - --model_name_or_path
           - ${model_root}/llava-v1.5-7b
           - --previous_task_model_path
@@ -442,7 +443,7 @@ overrides:
             mm_projector_lr: 2e-5
             expert_num: '6'
             ins_type: '1'
-            ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_ucit.pkl
+            ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_ucit.pkl
             model_name_or_path: ${model_root}/llava-v1.5-7b
             previous_task_model_path: ${ckpt_root}/MCITlib/UCIT/LLaVA/SMoLoRA/Task1_llava_lora
             version: v1
@@ -678,6 +679,7 @@ overrides:
           kind: eval
           order: 15
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -714,7 +716,7 @@ overrides:
           batch_size: 16
           grad_acc: 2
           ins_type: 2
-          ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_ucit.pkl
+          ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_ucit.pkl
           lr: 0.0002
         eval_config:
           gpu_num: 2
@@ -744,7 +746,7 @@ overrides:
           - --ins_type
           - '2'
           - --ins_emb
-          - ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_ucit.pkl
+          - ${repo_root}/assets/smolora/ins_emb_multi_ucit.pkl
           - --model_name_or_path
           - ${model_root}/llava-v1.5-7b
           - --previous_task_model_path
@@ -821,7 +823,7 @@ overrides:
             mm_projector_lr: 2e-5
             expert_num: '6'
             ins_type: '2'
-            ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_ucit.pkl
+            ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_ucit.pkl
             model_name_or_path: ${model_root}/llava-v1.5-7b
             previous_task_model_path: ${ckpt_root}/MCITlib/UCIT/LLaVA/SMoLoRA/Task2_llava_lora
             version: v1
@@ -1156,6 +1158,7 @@ overrides:
           kind: eval
           order: 29
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -1191,7 +1194,7 @@ overrides:
           batch_size: 16
           grad_acc: 2
           ins_type: 3
-          ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_ucit.pkl
+          ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_ucit.pkl
           lr: 0.0002
         eval_config:
           gpu_num: 2
@@ -1221,7 +1224,7 @@ overrides:
           - --ins_type
           - '3'
           - --ins_emb
-          - ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_ucit.pkl
+          - ${repo_root}/assets/smolora/ins_emb_multi_ucit.pkl
           - --model_name_or_path
           - ${model_root}/llava-v1.5-7b
           - --previous_task_model_path
@@ -1298,7 +1301,7 @@ overrides:
             mm_projector_lr: 2e-5
             expert_num: '6'
             ins_type: '3'
-            ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_ucit.pkl
+            ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_ucit.pkl
             model_name_or_path: ${model_root}/llava-v1.5-7b
             previous_task_model_path: ${ckpt_root}/MCITlib/UCIT/LLaVA/SMoLoRA/Task3_llava_lora
             version: v1
@@ -1732,6 +1735,7 @@ overrides:
           kind: eval
           order: 47
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -1767,7 +1771,7 @@ overrides:
           batch_size: 16
           grad_acc: 2
           ins_type: 4
-          ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_ucit.pkl
+          ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_ucit.pkl
           lr: 0.0002
         eval_config:
           gpu_num: 2
@@ -1797,7 +1801,7 @@ overrides:
           - --ins_type
           - '4'
           - --ins_emb
-          - ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_ucit.pkl
+          - ${repo_root}/assets/smolora/ins_emb_multi_ucit.pkl
           - --model_name_or_path
           - ${model_root}/llava-v1.5-7b
           - --previous_task_model_path
@@ -1874,7 +1878,7 @@ overrides:
             mm_projector_lr: 2e-5
             expert_num: '6'
             ins_type: '4'
-            ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_ucit.pkl
+            ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_ucit.pkl
             model_name_or_path: ${model_root}/llava-v1.5-7b
             previous_task_model_path: ${ckpt_root}/MCITlib/UCIT/LLaVA/SMoLoRA/Task4_llava_lora
             version: v1
@@ -2407,6 +2411,7 @@ overrides:
           kind: eval
           order: 69
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -2443,7 +2448,7 @@ overrides:
           batch_size: 16
           grad_acc: 2
           ins_type: 5
-          ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_ucit.pkl
+          ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_ucit.pkl
           lr: 0.0002
         eval_config:
           gpu_num: 2
@@ -2473,7 +2478,7 @@ overrides:
           - --ins_type
           - '5'
           - --ins_emb
-          - ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_ucit.pkl
+          - ${repo_root}/assets/smolora/ins_emb_multi_ucit.pkl
           - --model_name_or_path
           - ${model_root}/llava-v1.5-7b
           - --previous_task_model_path
@@ -2550,7 +2555,7 @@ overrides:
             mm_projector_lr: 2e-5
             expert_num: '6'
             ins_type: '5'
-            ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_ucit.pkl
+            ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_ucit.pkl
             model_name_or_path: ${model_root}/llava-v1.5-7b
             previous_task_model_path: ${ckpt_root}/MCITlib/UCIT/LLaVA/SMoLoRA/Task5_llava_lora
             version: v1
@@ -3182,6 +3187,7 @@ overrides:
           kind: eval
           order: 95
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -3214,7 +3220,7 @@ overrides:
           batch_size: 4
           grad_acc: 2
           ins_type: 0
-          ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_dcl.pkl
+          ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_dcl.pkl
           lr: 0.0002
         eval_config:
           gpu_num: 2
@@ -3244,7 +3250,7 @@ overrides:
           - --ins_type
           - '0'
           - --ins_emb
-          - ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_dcl.pkl
+          - ${repo_root}/assets/smolora/ins_emb_multi_dcl.pkl
           - --model_name_or_path
           - ${model_root}/llava-v1.5-7b
           - --pretrain_mm_mlp_adapter
@@ -3321,7 +3327,7 @@ overrides:
             mm_projector_lr: 2e-5
             expert_num: '8'
             ins_type: '0'
-            ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_dcl.pkl
+            ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_dcl.pkl
             model_name_or_path: ${model_root}/llava-v1.5-7b
             pretrain_mm_mlp_adapter: ${model_root}/llava-v1.5-7b/mm_projector.bin
             version: v1
@@ -3458,6 +3464,7 @@ overrides:
           kind: eval
           order: 4
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -3493,7 +3500,7 @@ overrides:
           batch_size: 4
           grad_acc: 2
           ins_type: 1
-          ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_dcl.pkl
+          ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_dcl.pkl
           lr: 0.0002
         eval_config:
           gpu_num: 2
@@ -3523,7 +3530,7 @@ overrides:
           - --ins_type
           - '1'
           - --ins_emb
-          - ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_dcl.pkl
+          - ${repo_root}/assets/smolora/ins_emb_multi_dcl.pkl
           - --model_name_or_path
           - ${model_root}/llava-v1.5-7b
           - --previous_task_model_path
@@ -3600,7 +3607,7 @@ overrides:
             mm_projector_lr: 2e-5
             expert_num: '8'
             ins_type: '1'
-            ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_dcl.pkl
+            ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_dcl.pkl
             model_name_or_path: ${model_root}/llava-v1.5-7b
             previous_task_model_path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/SMoLoRA/Task1_llava_lora
             version: v1
@@ -3836,6 +3843,7 @@ overrides:
           kind: eval
           order: 13
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -3871,7 +3879,7 @@ overrides:
           batch_size: 4
           grad_acc: 2
           ins_type: 2
-          ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_dcl.pkl
+          ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_dcl.pkl
           lr: 0.0002
         eval_config:
           gpu_num: 2
@@ -3901,7 +3909,7 @@ overrides:
           - --ins_type
           - '2'
           - --ins_emb
-          - ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_dcl.pkl
+          - ${repo_root}/assets/smolora/ins_emb_multi_dcl.pkl
           - --model_name_or_path
           - ${model_root}/llava-v1.5-7b
           - --previous_task_model_path
@@ -3978,7 +3986,7 @@ overrides:
             mm_projector_lr: 2e-5
             expert_num: '8'
             ins_type: '2'
-            ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_dcl.pkl
+            ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_dcl.pkl
             model_name_or_path: ${model_root}/llava-v1.5-7b
             previous_task_model_path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/SMoLoRA/Task2_llava_lora
             version: v1
@@ -4313,6 +4321,7 @@ overrides:
           kind: eval
           order: 26
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -4348,7 +4357,7 @@ overrides:
           batch_size: 4
           grad_acc: 2
           ins_type: 3
-          ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_dcl.pkl
+          ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_dcl.pkl
           lr: 0.0002
         eval_config:
           gpu_num: 2
@@ -4378,7 +4387,7 @@ overrides:
           - --ins_type
           - '3'
           - --ins_emb
-          - ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_dcl.pkl
+          - ${repo_root}/assets/smolora/ins_emb_multi_dcl.pkl
           - --model_name_or_path
           - ${model_root}/llava-v1.5-7b
           - --previous_task_model_path
@@ -4455,7 +4464,7 @@ overrides:
             mm_projector_lr: 2e-5
             expert_num: '8'
             ins_type: '3'
-            ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_dcl.pkl
+            ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_dcl.pkl
             model_name_or_path: ${model_root}/llava-v1.5-7b
             previous_task_model_path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/SMoLoRA/Task3_llava_lora
             version: v1
@@ -4889,6 +4898,7 @@ overrides:
           kind: eval
           order: 43
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -4924,7 +4934,7 @@ overrides:
           batch_size: 4
           grad_acc: 2
           ins_type: 4
-          ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_dcl.pkl
+          ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_dcl.pkl
           lr: 0.0002
         eval_config:
           gpu_num: 2
@@ -4954,7 +4964,7 @@ overrides:
           - --ins_type
           - '4'
           - --ins_emb
-          - ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_dcl.pkl
+          - ${repo_root}/assets/smolora/ins_emb_multi_dcl.pkl
           - --model_name_or_path
           - ${model_root}/llava-v1.5-7b
           - --previous_task_model_path
@@ -5031,7 +5041,7 @@ overrides:
             mm_projector_lr: 2e-5
             expert_num: '8'
             ins_type: '4'
-            ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_dcl.pkl
+            ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_dcl.pkl
             model_name_or_path: ${model_root}/llava-v1.5-7b
             previous_task_model_path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/SMoLoRA/Task4_llava_lora
             version: v1
@@ -5564,6 +5574,7 @@ overrides:
           kind: eval
           order: 64
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -5596,7 +5607,7 @@ overrides:
           batch_size: 4
           grad_acc: 2
           ins_type: 0
-          ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_acl.pkl
+          ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_acl.pkl
           lr: 5.0e-05
         eval_config:
           gpu_num: 2
@@ -5626,7 +5637,7 @@ overrides:
           - --ins_type
           - '0'
           - --ins_emb
-          - ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_acl.pkl
+          - ${repo_root}/assets/smolora/ins_emb_multi_acl.pkl
           - --model_name_or_path
           - ${model_root}/llava-v1.5-7b
           - --pretrain_mm_mlp_adapter
@@ -5703,7 +5714,7 @@ overrides:
             mm_projector_lr: 2e-5
             expert_num: '4'
             ins_type: '0'
-            ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_acl.pkl
+            ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_acl.pkl
             model_name_or_path: ${model_root}/llava-v1.5-7b
             pretrain_mm_mlp_adapter: ${model_root}/llava-v1.5-7b/mm_projector.bin
             version: v1
@@ -5840,6 +5851,7 @@ overrides:
           kind: eval
           order: 5
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -5875,7 +5887,7 @@ overrides:
           batch_size: 4
           grad_acc: 2
           ins_type: 1
-          ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_acl.pkl
+          ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_acl.pkl
           lr: 0.0002
         eval_config:
           gpu_num: 2
@@ -5905,7 +5917,7 @@ overrides:
           - --ins_type
           - '1'
           - --ins_emb
-          - ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_acl.pkl
+          - ${repo_root}/assets/smolora/ins_emb_multi_acl.pkl
           - --model_name_or_path
           - ${model_root}/llava-v1.5-7b
           - --previous_task_model_path
@@ -5982,7 +5994,7 @@ overrides:
             mm_projector_lr: 2e-5
             expert_num: '4'
             ins_type: '1'
-            ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_acl.pkl
+            ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_acl.pkl
             model_name_or_path: ${model_root}/llava-v1.5-7b
             previous_task_model_path: ${ckpt_root}/MCITlib/MLLM-ACL/LLaVA/SMoLoRA/Task1_llava_lora
             version: v1
@@ -6218,6 +6230,7 @@ overrides:
           kind: eval
           order: 15
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -6253,7 +6266,7 @@ overrides:
           batch_size: 4
           grad_acc: 2
           ins_type: 2
-          ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_acl.pkl
+          ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_acl.pkl
           lr: 0.0002
         eval_config:
           gpu_num: 2
@@ -6283,7 +6296,7 @@ overrides:
           - --ins_type
           - '2'
           - --ins_emb
-          - ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_acl.pkl
+          - ${repo_root}/assets/smolora/ins_emb_multi_acl.pkl
           - --model_name_or_path
           - ${model_root}/llava-v1.5-7b
           - --previous_task_model_path
@@ -6360,7 +6373,7 @@ overrides:
             mm_projector_lr: 2e-5
             expert_num: '4'
             ins_type: '2'
-            ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_acl.pkl
+            ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_acl.pkl
             model_name_or_path: ${model_root}/llava-v1.5-7b
             previous_task_model_path: ${ckpt_root}/MCITlib/MLLM-ACL/LLaVA/SMoLoRA/Task2_llava_lora
             version: v1
@@ -6695,6 +6708,7 @@ overrides:
           kind: eval
           order: 29
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -6730,7 +6744,7 @@ overrides:
           batch_size: 4
           grad_acc: 2
           ins_type: 3
-          ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_acl.pkl
+          ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_acl.pkl
           lr: 0.0002
         eval_config:
           gpu_num: 2
@@ -6760,7 +6774,7 @@ overrides:
           - --ins_type
           - '3'
           - --ins_emb
-          - ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_acl.pkl
+          - ${repo_root}/assets/smolora/ins_emb_multi_acl.pkl
           - --model_name_or_path
           - ${model_root}/llava-v1.5-7b
           - --previous_task_model_path
@@ -6837,7 +6851,7 @@ overrides:
             mm_projector_lr: 2e-5
             expert_num: '4'
             ins_type: '3'
-            ins_emb: ${ckpt_root}/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_acl.pkl
+            ins_emb: ${repo_root}/assets/smolora/ins_emb_multi_acl.pkl
             model_name_or_path: ${model_root}/llava-v1.5-7b
             previous_task_model_path: ${ckpt_root}/MCITlib/MLLM-ACL/LLaVA/SMoLoRA/Task3_llava_lora
             version: v1
@@ -7268,6 +7282,7 @@ overrides:
           kind: eval
           order: 47
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -7303,3 +7318,14 @@ defaults:
     vision_tower: ${model_root}/clip-vit-large-patch14-336
     warmup_ratio: '0.03'
     weight_decay: '0.'
+assets:
+  instruction_embeddings:
+  - benchmark: ucit
+    path: ${repo_root}/assets/smolora/ins_emb_multi_ucit.pkl
+    sha256: 2a4595386ca010a104d3dd2109f2da52c6cabe562aa5d6304e3a469880d4bc37
+  - benchmark: mllm_dcl
+    path: ${repo_root}/assets/smolora/ins_emb_multi_dcl.pkl
+    sha256: ea251206f6ef970a2207e150810e416c134246c3904cffac1b2c91abfcf01721
+  - benchmark: mllm_acl
+    path: ${repo_root}/assets/smolora/ins_emb_multi_acl.pkl
+    sha256: 06a73e7820040610db55b24ee4accb15c8118c8347d25b83d080b12db8117022
