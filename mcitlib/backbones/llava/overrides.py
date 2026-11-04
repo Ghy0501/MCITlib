@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
+from importlib import import_module
 
 
 @contextmanager
@@ -72,3 +73,7 @@ def install_model_override(override: str | type | None) -> None:
     llama_module.LlavaLlamaForCausalLM = override_cls
     llava.model.LlavaLlamaForCausalLM = override_cls
     llava.LlavaLlamaForCausalLM = override_cls
+    if isinstance(override, str):
+        private_builder = import_module(f"mcitlib.methods._{override}.llava_overrides.builder")
+        import llava.model.builder as builder_module
+        builder_module.load_pretrained_model = private_builder.load_pretrained_model

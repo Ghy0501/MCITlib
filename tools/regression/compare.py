@@ -12,6 +12,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from mcitlib.config.loader import load_layered_config
+from mcitlib.config.schema import DataSource
 from mcitlib.registry import BENCHMARKS, METHODS, get_benchmark, get_method
 
 LOSS = re.compile(r"(?:loss|Loss)[\"']?\s*[:=]\s*([0-9]+(?:\.[0-9]+)?(?:[eE][+-]?\d+)?)")
@@ -166,6 +168,18 @@ def _isolate_output(argv: list[str], original: list[str], output_root: Path) -> 
     _set_option(argv, "--output_dir", output_root / suffix)
 
 
+def _repair_training_argv(
+    argv: list[str], repo_root: Path, method: Any, benchmark_id: str, task_id: int,
+) -> list[str]:
+    result = list(argv)
+    if method.id == "replay":
+        values = load_layered_config(repo_root / "configs", "llava", benchmark_id, method.id, task_id=task_id)
+        source = DataSource.from_dict(values["data_config"])
+        result[result.index("--data_path") + 1] = source.replay_path
+        result[result.index("--image_folder") + 1] = source.router_folder
+    return result
+
+
 def _v4_training_argv(original: list[str], repo_root: Path, method: Any) -> list[str]:
     entry_index = next(i for i, value in enumerate(original) if value.endswith(".py"))
     result = original[:entry_index] + ["python", "-m", "mcitlib.backbones.llava.train_entry"] + original[entry_index + 1:]
@@ -202,8 +216,12 @@ def _prepare_shared_inputs(
         ):
             selected.append(command)
     selected.sort(key=lambda command: (command["task_id"], command["order"]))
+    method = get_method(payload["method"])
     for command in selected:
-        argv = substitute(command["argv"], v3_root, repo_root, shared_root)
+        raw_argv = command["argv"]
+        if command["kind"] == "train":
+            raw_argv = _repair_training_argv(raw_argv, repo_root, method, payload["benchmark"], command["task_id"])
+        argv = substitute(raw_argv, v3_root, repo_root, shared_root)
         env = dict(base_env)
         env.update({key: value for key, value in command.get("env", {}).items() if key == "CUDA_VISIBLE_DEVICES"})
         log = destination / "prepare" / f"{command['task_id']}-{command['order']}-{command['kind']}.log"
@@ -233,6 +251,7 @@ def run_combo(
         command["argv"] for command in payload["commands"]
         if command["kind"] == "train" and command["task_id"] == task_id
     )
+    original = _repair_training_argv(original, repo_root, method, benchmark.id, task_id)
     destination = out / method.id / benchmark.id / f"task{task_id}"
     shared_root = out / "shared-checkpoints" / method.id / benchmark.id
     v3_output_root = destination / "v3-checkpoints"
@@ -254,6 +273,7 @@ def run_combo(
     v4_env = os.environ.copy()
     v4_env["PYTHONPATH"] = os.pathsep.join((str(repo_root), str(repo_root / "third_party/LLaVA"), str(repo_root / "third_party/peft")))
     v4_env["MCITLIB_TRAIN_ENTRY"] = method.train_entry
+    v4_env["MCITLIB_METHOD"] = method.id
     v4_env.update({"MCITLIB_MODEL_ROOT": str(model_root), "MCITLIB_DATA_ROOT": str(data_root), "MCITLIB_CKPT_ROOT": str(v4_input_root)})
     if method.model_override:
         v4_env["MCITLIB_MODEL_OVERRIDE"] = method.model_override

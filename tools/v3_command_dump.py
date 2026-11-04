@@ -183,6 +183,28 @@ def _apply_router_compat(scripts_root: Path, configs_root: Path, benchmark_id: s
     return script_aliases, placeholders
 
 
+def _apply_replay_placeholders(configs_root: Path, benchmark_id: str) -> dict[str, Any]:
+    """Give Replay its own data JSON and the router-generated image root."""
+    benchmark = get_benchmark(benchmark_id)
+    placeholders: dict[str, Any] = {}
+    data_root = configs_root / "data_configs" / benchmark.v3_name
+    for path in sorted(data_root.glob("*.json")):
+        values = json.loads(path.read_text(encoding="utf-8"))
+        added: dict[str, str] = {}
+        if "replay_path" not in values:
+            values["replay_path"] = values["train_path"].rsplit("/", 1)[0] + "/replay.json"
+            added["replay_path"] = values["replay_path"]
+        if "router_folder" not in values:
+            values["router_folder"] = (
+                values["train_folder"] if benchmark_id == "ucit" else values["train_folder"].rsplit("/", 1)[0]
+            )
+            added["router_folder"] = values["router_folder"]
+        if added:
+            path.write_text(json.dumps(values, indent=2) + "\n", encoding="utf-8")
+            placeholders[str(path.relative_to(configs_root))] = added
+    return placeholders
+
+
 def _classify(argv: list[str]) -> str:
     executable = argv[0] if argv else ""
     text = " ".join(argv)
@@ -276,6 +298,8 @@ def run_sequence(
             script_aliases, config_placeholders = _apply_router_compat(
                 temp_root / "scripts", temp_root / "configs", benchmark.id
             )
+        elif method.id == "replay":
+            config_placeholders = _apply_replay_placeholders(temp_root / "configs", benchmark.id)
         shim_bin = temp_root / ".shim-bin"
         _write_shims(shim_bin)
         log = temp_root / "commands.jsonl"

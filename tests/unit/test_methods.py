@@ -91,3 +91,13 @@ def test_clmoe_context_and_default_diagnostics(tmp_path) -> None:
         config = method.build_trainable(SimpleNamespace(), None)
     assert config.peft_type == "MOE_LORA_CLMoE"
     assert config._mcit_router_stats is method.router_stats
+
+
+def test_lazy_factory_instantiates_every_registered_method() -> None:
+    from mcitlib.methods import create_method
+    from mcitlib.registry import METHODS
+
+    for spec in METHODS:
+        method = create_method(spec.id, {})
+        assert method.id == spec.id
+        assert method.train_entry == spec.train_entry

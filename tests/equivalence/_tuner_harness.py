@@ -23,15 +23,17 @@ class Toy(nn.Module):
         self.model.layers = nn.ModuleList([Block() for _ in range(32)])
         self.config = SimpleNamespace(model_type="llama", to_dict=lambda: {"model_type": "llama"})
         self.expert_weight = [0.0] * 8
+        self.layer_index = 31
 
     def forward(self, x):
-        return self.model.layers[31].q_proj(x)
+        return self.model.layers[self.layer_index].q_proj(x)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--implementation", choices=["v3", "v4"], required=True)
     parser.add_argument("--method", choices=["moelora", "clmoe", "smolora", "disco", "olora", "hide"], required=True)
+    parser.add_argument("--case", choices=["default", "early", "nondefault"], default="default")
     parser.add_argument("--out", required=True)
     args = parser.parse_args()
     torch.manual_seed(1234)
@@ -112,6 +114,11 @@ def main() -> None:
             datetime=SimpleNamespace(now=lambda: SimpleNamespace(second=0))
         )
 
+    if args.method == "hide" and args.case == "early":
+        model.model.model.layer_index = 0
+    if args.method == "disco" and args.case == "nondefault":
+        for layer in model.model.model.layers:
+            layer.q_proj.mask_signal = [1.0, 0.5, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0]
     x = torch.randn(2, 3, 8)
     model.train()
     train_output = model(x)
@@ -120,7 +127,7 @@ def main() -> None:
     model.eval()
     if args.method == "hide":
         for layer in model.model.model.layers:
-            layer.q_proj.expert_weight = [0.25] * 4
+            layer.q_proj.expert_weight = [0.1, 0.2, 0.3, 0.4]
     eval_output = model(x)
     torch.save({
         "state_dict": {name: value.detach().cpu() for name, value in model.state_dict().items()},

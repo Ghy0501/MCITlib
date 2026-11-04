@@ -8,6 +8,7 @@ from typing import Any
 
 from .config.loader import deep_merge, load_layered_config
 from .config.schema import Command, DataSource, RunConfig, TaskSpec
+from .methods import create_method
 from .registry import get_backbone, get_benchmark, get_method
 
 
@@ -98,7 +99,8 @@ def build_sequence_commands(
         task = _task(benchmark, current_id, task_name, values, router=sequence == "router")
         if not only_eval:
             run_cfg = RunConfig(backbone_id, method.id, benchmark.id, task=task, values=values, paths=paths)
-            train = adapter.build_command(run_cfg, method, task)
+            plugin = create_method(method.id, values)
+            train = adapter.build_command(run_cfg, plugin, task)
             train.metadata["order"] = values["train_command"].get("order", -1)
             train.sequence = sequence
             commands.append(train)

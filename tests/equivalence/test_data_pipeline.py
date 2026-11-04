@@ -44,6 +44,8 @@ def run_harness(repo_root: Path, v3_root: Path, implementation: str, entry: str,
         pythonpath = os.pathsep.join((str(repo_root), str(repo_root / "third_party/LLaVA"), str(repo_root / "third_party/peft"), str(stub)))
     env = os.environ.copy()
     env["PYTHONPATH"] = pythonpath
+    if method_dir == "ModalPrompt":
+        env["MCITLIB_METHOD"] = "modalprompt"
     env.pop("CUDA_VISIBLE_DEVICES", None)
     result = subprocess.run(
         [sys.executable, str(harness), "--implementation", implementation, "--entry", entry,
@@ -97,7 +99,7 @@ def test_variant_data_matches_their_v3_directories(repo_root: Path, v3_root: Pat
     v3_output, v4_output = tmp_path / "v3.pt", tmp_path / "v4.pt"
     entry = "standard" if method_dir == "ModalPrompt" else "moe"
     run_harness(repo_root, v3_root, "v3", entry, data, images, v3_output, stub, method_dir=method_dir)
-    run_harness(repo_root, v3_root, "v4", entry, data, images, v4_output, stub)
+    run_harness(repo_root, v3_root, "v4", entry, data, images, v4_output, stub, method_dir=method_dir)
     v3 = torch.load(v3_output, map_location="cpu")
     v4 = torch.load(v4_output, map_location="cpu")
     for key in v3:

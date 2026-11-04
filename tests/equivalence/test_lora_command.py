@@ -13,7 +13,7 @@ import pytest
 from mcitlib.backbones.llava.adapter import LlavaAdapter
 from mcitlib.backbones.llava.args import ENTRY_MODULE
 from mcitlib.config.loader import load_layered_config
-from mcitlib.config.schema import RunConfig, TaskSpec
+from mcitlib.config.schema import DataSource, RunConfig, TaskSpec
 from mcitlib.registry import BENCHMARKS, METHODS
 from mcitlib.runner import build_sequence_commands
 
@@ -57,10 +57,28 @@ def normalise(value: Any, method_id: str | None = None) -> Any:
 def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spec: Any) -> None:
     payload = json.loads((repo_root / "tests/fixtures/v3_commands/llava" / method_spec.id / f"{benchmark.id}.json").read_text())
     adapter = LlavaAdapter()
-    method = SimpleNamespace(
-        train_entry=method_spec.train_entry,
-        model_override=method_spec.model_override,
-    )
+    if method_spec.id == "replay":
+        from mcitlib.methods.replay import ReplayMethod
+        method = ReplayMethod()
+    else:
+        method = SimpleNamespace(
+            train_entry=method_spec.train_entry,
+            model_override=method_spec.model_override,
+        )
+
+    def expected_training_argv(item):
+        argv = list(item["argv"])
+        entry_index = next(i for i, value in enumerate(argv) if value.endswith(".py"))
+        argv = argv[:entry_index] + ["python", "-m", ENTRY_MODULE] + argv[entry_index + 1:]
+        if method_spec.id == "replay":
+            values = load_layered_config(
+                repo_root / "configs", "llava", benchmark.id, method_spec.id, task_id=item["task_id"]
+            )
+            source = DataSource.from_dict(values["data_config"])
+            argv[argv.index("--data_path") + 1] = source.replay_path
+            argv[argv.index("--image_folder") + 1] = source.router_folder
+        return argv
+
     for task_id, task_name in enumerate(benchmark.tasks, start=1):
         values = load_layered_config(repo_root / "configs", "llava", benchmark.id, method_spec.id, task_id=task_id)
         task = TaskSpec(
@@ -70,17 +88,18 @@ def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spe
             model_config="model_configs/llava.json",
             data_config="",
             train_config="",
+            data=DataSource.from_dict(values["data_config"]),
         )
         run_cfg = RunConfig("llava", method_spec.id, benchmark.id, task=task, values={**values, "repo_root": str(repo_root)})
         command = adapter.build_command(run_cfg, method, task)
-        expected = next(c for c in payload["commands"] if c["kind"] == "train" and c["task_id"] == task_id)["argv"]
-        entry_index = next(i for i, value in enumerate(expected) if value.endswith(".py"))
-        expected = expected[:entry_index] + ["python", "-m", ENTRY_MODULE] + expected[entry_index + 1:]
+        item = next(c for c in payload["commands"] if c["kind"] == "train" and c["task_id"] == task_id)
+        expected = expected_training_argv(item)
         assert normalise(command.argv, method_spec.id) == normalise(expected, method_spec.id)
         deepspeed_path = Path(command.argv[command.argv.index("--deepspeed") + 1])
         assert deepspeed_path.is_absolute()
         assert deepspeed_path == repo_root / "configs/deepspeed" / f"{method_spec.deepspeed_config}.json"
         assert command.env["MCITLIB_TRAIN_ENTRY"] == method_spec.train_entry
+        assert command.env["MCITLIB_METHOD"] == method_spec.id
         if method_spec.model_override:
             assert command.env["MCITLIB_MODEL_OVERRIDE"] == method_spec.model_override
         assert command.kind == "train"
@@ -94,8 +113,7 @@ def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spe
             continue  # NB-5: installation is environment setup, not a task step.
         argv = list(item["argv"])
         if item["kind"] == "train":
-            entry_index = next(i for i, value in enumerate(argv) if value.endswith(".py"))
-            argv = argv[:entry_index] + ["python", "-m", ENTRY_MODULE] + argv[entry_index + 1:]
+            argv = expected_training_argv(item)
         expected_commands.append(SimpleNamespace(
             kind=item["kind"], task_id=item["task_id"], argv=argv,
             env={key: value for key, value in item.get("env", {}).items() if key == "CUDA_VISIBLE_DEVICES"},

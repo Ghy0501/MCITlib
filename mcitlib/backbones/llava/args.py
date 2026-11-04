@@ -30,15 +30,23 @@ def _resolve(value: Any, run_cfg: RunConfig) -> Any:
     return value
 
 
-def build_train_command(run_cfg: RunConfig, task: TaskSpec, entry: str, model_override: str | None = None) -> Command:
+def build_train_command(
+    run_cfg: RunConfig, task: TaskSpec, entry: str,
+    model_override: str | None = None, method: Any = None,
+) -> Command:
     try:
         original = list(run_cfg.values["train_command"]["argv"])
     except (KeyError, TypeError) as error:
         raise ValueError("merged task config lacks train_command.argv") from error
-    entry_index = next((i for i, value in enumerate(original) if value.endswith(".py")), None)
+    argv = list(original)
+    if method is not None and hasattr(method, "select_train_data"):
+        source = method.select_train_data(task)
+        argv[argv.index("--data_path") + 1] = source.train_path
+        argv[argv.index("--image_folder") + 1] = source.train_folder
+    entry_index = next((i for i, value in enumerate(argv) if value.endswith(".py")), None)
     if entry_index is None:
         raise ValueError(f"v3 training entry not found in argv: {original}")
-    argv = original[:entry_index] + ["python", "-m", ENTRY_MODULE] + original[entry_index + 1:]
+    argv = argv[:entry_index] + ["python", "-m", ENTRY_MODULE] + argv[entry_index + 1:]
     argv = _resolve(argv, run_cfg)
     repo_root = Path(run_cfg.values.get("repo_root", ".")).resolve()
     config_name = run_cfg.values.get("deepspeed_config", "zero2")
@@ -46,7 +54,7 @@ def build_train_command(run_cfg: RunConfig, task: TaskSpec, entry: str, model_ov
     deepspeed_index = argv.index("--deepspeed") + 1
     argv[deepspeed_index] = str((repo_root / config_path).resolve())
     pythonpath = os.pathsep.join((str(repo_root / "third_party/LLaVA"), str(repo_root / "third_party/peft")))
-    env = {"MCITLIB_TRAIN_ENTRY": entry, "PYTHONPATH": pythonpath}
+    env = {"MCITLIB_TRAIN_ENTRY": entry, "MCITLIB_METHOD": run_cfg.method, "PYTHONPATH": pythonpath}
     if model_override:
         env["MCITLIB_MODEL_OVERRIDE"] = model_override
     return Command(

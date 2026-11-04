@@ -12,7 +12,7 @@ import pytest
 import torch
 
 
-def run(repo_root: Path, v3_root: Path, implementation: str, method: str, output: Path) -> None:
+def run(repo_root: Path, v3_root: Path, implementation: str, method: str, output: Path, case: str = "default") -> None:
     if implementation == "v3":
         method_dir = {"moelora": "MoELoRA", "clmoe": "CL-MoE", "smolora": "SMoLoRA", "disco": "DISCO", "olora": "OLoRA", "hide": "HiDe"}[method]
         pythonpath = os.pathsep.join((str(v3_root / "LLaVA" / method_dir), str(v3_root / "LLaVA/LoRA-FT")))
@@ -22,7 +22,7 @@ def run(repo_root: Path, v3_root: Path, implementation: str, method: str, output
     env["PYTHONPATH"] = pythonpath
     result = subprocess.run(
         [sys.executable, str(repo_root / "tests/equivalence/_tuner_harness.py"),
-         "--implementation", implementation, "--method", method, "--out", str(output)],
+         "--implementation", implementation, "--method", method, "--case", case, "--out", str(output)],
         cwd=repo_root,
         env=env,
         capture_output=True,
@@ -46,6 +46,23 @@ def test_tuner_state_forward_and_gradients_match(repo_root: Path, v3_root: Path,
     assert torch.equal(v3["train_output"], v4["train_output"])
     assert torch.equal(v3["eval_output"], v4["eval_output"])
     assert v3["requires_grad"] == v4["requires_grad"]
+    assert v3["gradients"].keys() == v4["gradients"].keys()
+    for name in v3["gradients"]:
+        assert torch.equal(v3["gradients"][name], v4["gradients"][name]), name
+
+
+@pytest.mark.parametrize("method,case", [("hide", "early"), ("disco", "nondefault")])
+def test_nondefault_expert_paths_match(repo_root: Path, v3_root: Path, tmp_path: Path, method: str, case: str) -> None:
+    v3_path, v4_path = tmp_path / "v3.pt", tmp_path / "v4.pt"
+    run(repo_root, v3_root, "v3", method, v3_path, case)
+    run(repo_root, v3_root, "v4", method, v4_path, case)
+    v3 = torch.load(v3_path, map_location="cpu")
+    v4 = torch.load(v4_path, map_location="cpu")
+    assert v3["state_dict"].keys() == v4["state_dict"].keys()
+    for name in v3["state_dict"]:
+        assert torch.equal(v3["state_dict"][name], v4["state_dict"][name]), name
+    assert torch.equal(v3["train_output"], v4["train_output"])
+    assert torch.equal(v3["eval_output"], v4["eval_output"])
     assert v3["gradients"].keys() == v4["gradients"].keys()
     for name in v3["gradients"]:
         assert torch.equal(v3["gradients"][name], v4["gradients"][name]), name

@@ -1071,6 +1071,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 13
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -1108,6 +1110,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 14
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1127,6 +1131,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 15
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -1164,6 +1170,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 17
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1201,6 +1209,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 18
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -1220,6 +1230,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 19
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -1257,6 +1269,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 21
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -1294,6 +1308,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 22
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1313,6 +1329,8 @@ overrides:
           - llava.eval.CoIN.eval_caption
           kind: eval
           order: 23
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -1350,6 +1368,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 25
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1387,6 +1407,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 26
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -1406,6 +1428,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 27
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -1443,6 +1467,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 29
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -1480,6 +1506,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 30
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1499,6 +1527,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 31
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -1536,6 +1566,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 33
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -1573,6 +1605,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 34
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1592,6 +1626,8 @@ overrides:
           - llava.eval.CoIN.eval_caption
           kind: eval
           order: 35
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
         other_commands:
         - argv:
@@ -1785,6 +1821,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 2
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -1804,6 +1842,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 4
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -1823,6 +1863,8 @@ overrides:
           - llava.eval.CoIN.eval_pvqa
           kind: eval
           order: 6
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -1842,6 +1884,8 @@ overrides:
           - llava.eval.CoIN.eval_sci
           kind: eval
           order: 8
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -1861,6 +1905,8 @@ overrides:
           - llava.eval.CoIN.eval_finvis
           kind: eval
           order: 10
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
         other_commands: []
         removed_install_commands:
@@ -2049,6 +2095,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 13
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2068,6 +2116,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 15
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2087,6 +2137,8 @@ overrides:
           - llava.eval.CoIN.eval_pvqa
           kind: eval
           order: 17
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2106,6 +2158,8 @@ overrides:
           - llava.eval.CoIN.eval_sci
           kind: eval
           order: 19
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2125,6 +2179,8 @@ overrides:
           - llava.eval.CoIN.eval_finvis
           kind: eval
           order: 21
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
         other_commands: []
         removed_install_commands:
@@ -2313,6 +2369,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 24
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2332,6 +2390,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 26
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2351,6 +2411,8 @@ overrides:
           - llava.eval.CoIN.eval_pvqa
           kind: eval
           order: 28
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2370,6 +2432,8 @@ overrides:
           - llava.eval.CoIN.eval_sci
           kind: eval
           order: 30
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2389,6 +2453,8 @@ overrides:
           - llava.eval.CoIN.eval_finvis
           kind: eval
           order: 32
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
         other_commands: []
         removed_install_commands:
@@ -2577,6 +2643,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 35
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2596,6 +2664,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 37
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2615,6 +2685,8 @@ overrides:
           - llava.eval.CoIN.eval_pvqa
           kind: eval
           order: 39
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2634,6 +2706,8 @@ overrides:
           - llava.eval.CoIN.eval_sci
           kind: eval
           order: 41
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2653,6 +2727,8 @@ overrides:
           - llava.eval.CoIN.eval_finvis
           kind: eval
           order: 43
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
         other_commands: []
         removed_install_commands:
@@ -2841,6 +2917,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 46
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2860,6 +2938,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 48
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2879,6 +2959,8 @@ overrides:
           - llava.eval.CoIN.eval_pvqa
           kind: eval
           order: 50
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2898,6 +2980,8 @@ overrides:
           - llava.eval.CoIN.eval_sci
           kind: eval
           order: 52
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2917,6 +3001,8 @@ overrides:
           - llava.eval.CoIN.eval_finvis
           kind: eval
           order: 54
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
         other_commands:
         - argv:
@@ -3300,6 +3386,8 @@ overrides:
           - llava.eval.CoIN.model_math
           kind: eval
           order: 7
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3340,6 +3428,8 @@ overrides:
           - llava.eval.CoIN.model_math
           kind: eval
           order: 8
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3353,6 +3443,8 @@ overrides:
           - llava.eval.CoIN.eval_math
           kind: eval
           order: 9
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
         other_commands: []
         removed_install_commands:
@@ -3562,6 +3654,8 @@ overrides:
           - llava.eval.CoIN.model_math
           kind: eval
           order: 14
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3602,6 +3696,8 @@ overrides:
           - llava.eval.CoIN.model_math
           kind: eval
           order: 15
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3615,6 +3711,8 @@ overrides:
           - llava.eval.CoIN.eval_math
           kind: eval
           order: 16
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
         other_commands: []
         removed_install_commands:
@@ -3824,6 +3922,8 @@ overrides:
           - llava.eval.CoIN.model_math
           kind: eval
           order: 22
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3864,6 +3964,8 @@ overrides:
           - llava.eval.CoIN.model_math
           kind: eval
           order: 23
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3877,6 +3979,8 @@ overrides:
           - llava.eval.CoIN.eval_math
           kind: eval
           order: 24
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -3914,6 +4018,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 27
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3951,6 +4057,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 28
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3967,6 +4075,8 @@ overrides:
           - llava.eval.CoIN.convert_result_to_submission
           kind: eval
           order: 29
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
         other_commands:
         - argv:
@@ -4043,6 +4153,8 @@ router:
             test_path: ${data_root}/UCIT/ImageNet-R/test_3000.json
             train_folder: ${data_root}/UCIT
             test_folder: ${data_root}/UCIT
+            router_path: /your_data_path/UCIT/ImageNet-R/router.json
+            router_folder: /your_data_path/UCIT
           train_config:
             gpu_num: 2
             rank: 16
@@ -4221,6 +4333,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 2
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -4258,6 +4372,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 3
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -4277,6 +4393,8 @@ router:
             - llava.eval.CoIN.eval_deepseek_r1
             kind: eval
             order: 4
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           extra_commands: []
           other_commands: []
           removed_install_commands:
@@ -4483,6 +4601,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 7
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -4520,6 +4640,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 8
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -4539,6 +4661,8 @@ router:
             - llava.eval.CoIN.eval_deepseek_r1
             kind: eval
             order: 9
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           - argv:
             - python
             - -m
@@ -4576,6 +4700,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 11
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -4613,6 +4739,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 12
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -4632,6 +4760,8 @@ router:
             - llava.eval.CoIN.eval_deepseek_r1
             kind: eval
             order: 13
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           extra_commands: []
           other_commands: []
           removed_install_commands:
@@ -4839,6 +4969,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 16
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -4876,6 +5008,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 17
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -4895,6 +5029,8 @@ router:
             - llava.eval.CoIN.eval_deepseek_r1
             kind: eval
             order: 18
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           - argv:
             - python
             - -m
@@ -4932,6 +5068,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 20
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -4969,6 +5107,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 21
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -4988,6 +5128,8 @@ router:
             - llava.eval.CoIN.eval_deepseek_r1
             kind: eval
             order: 22
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           - argv:
             - python
             - -m
@@ -5025,6 +5167,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 24
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -5062,6 +5206,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 25
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -5081,6 +5227,8 @@ router:
             - llava.eval.CoIN.eval_caption
             kind: eval
             order: 26
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           extra_commands: []
           other_commands: []
           removed_install_commands:
@@ -5287,6 +5435,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 29
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -5324,6 +5474,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 30
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -5343,6 +5495,8 @@ router:
             - llava.eval.CoIN.eval_deepseek_r1
             kind: eval
             order: 31
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           - argv:
             - python
             - -m
@@ -5380,6 +5534,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 33
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -5417,6 +5573,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 34
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -5436,6 +5594,8 @@ router:
             - llava.eval.CoIN.eval_deepseek_r1
             kind: eval
             order: 35
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           - argv:
             - python
             - -m
@@ -5473,6 +5633,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 37
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -5510,6 +5672,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 38
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -5529,6 +5693,8 @@ router:
             - llava.eval.CoIN.eval_caption
             kind: eval
             order: 39
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           - argv:
             - python
             - -m
@@ -5566,6 +5732,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 41
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -5603,6 +5771,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 42
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -5622,6 +5792,8 @@ router:
             - llava.eval.CoIN.eval_deepseek_r1
             kind: eval
             order: 43
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           extra_commands: []
           other_commands: []
           removed_install_commands:
@@ -5828,6 +6000,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 46
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -5865,6 +6039,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 47
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -5884,6 +6060,8 @@ router:
             - llava.eval.CoIN.eval_deepseek_r1
             kind: eval
             order: 48
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           - argv:
             - python
             - -m
@@ -5921,6 +6099,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 50
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -5958,6 +6138,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 51
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -5977,6 +6159,8 @@ router:
             - llava.eval.CoIN.eval_deepseek_r1
             kind: eval
             order: 52
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           - argv:
             - python
             - -m
@@ -6014,6 +6198,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 54
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -6051,6 +6237,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 55
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -6070,6 +6258,8 @@ router:
             - llava.eval.CoIN.eval_caption
             kind: eval
             order: 56
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           - argv:
             - python
             - -m
@@ -6107,6 +6297,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 58
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -6144,6 +6336,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 59
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -6163,6 +6357,8 @@ router:
             - llava.eval.CoIN.eval_deepseek_r1
             kind: eval
             order: 60
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           - argv:
             - python
             - -m
@@ -6200,6 +6396,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 62
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -6237,6 +6435,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 63
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -6256,6 +6456,8 @@ router:
             - llava.eval.CoIN.eval_deepseek_r1
             kind: eval
             order: 64
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           extra_commands: []
           other_commands: []
           removed_install_commands:
@@ -6463,6 +6665,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 67
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -6500,6 +6704,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 68
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -6519,6 +6725,8 @@ router:
             - llava.eval.CoIN.eval_deepseek_r1
             kind: eval
             order: 69
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           - argv:
             - python
             - -m
@@ -6556,6 +6764,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 71
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -6593,6 +6803,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 72
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -6612,6 +6824,8 @@ router:
             - llava.eval.CoIN.eval_deepseek_r1
             kind: eval
             order: 73
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           - argv:
             - python
             - -m
@@ -6649,6 +6863,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 75
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -6686,6 +6902,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 76
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -6705,6 +6923,8 @@ router:
             - llava.eval.CoIN.eval_caption
             kind: eval
             order: 77
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           - argv:
             - python
             - -m
@@ -6742,6 +6962,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 79
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -6779,6 +7001,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 80
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -6798,6 +7022,8 @@ router:
             - llava.eval.CoIN.eval_deepseek_r1
             kind: eval
             order: 81
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           - argv:
             - python
             - -m
@@ -6835,6 +7061,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 83
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -6872,6 +7100,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 84
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -6891,6 +7121,8 @@ router:
             - llava.eval.CoIN.eval_deepseek_r1
             kind: eval
             order: 85
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           - argv:
             - python
             - -m
@@ -6928,6 +7160,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 87
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -6965,6 +7199,8 @@ router:
             - llava.eval.CoIN.model_others
             kind: eval
             order: 88
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -6984,6 +7220,8 @@ router:
             - llava.eval.CoIN.eval_caption
             kind: eval
             order: 89
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           extra_commands: []
           other_commands: []
           removed_install_commands:
@@ -7018,6 +7256,8 @@ router:
             test_path: ${data_root}/MLLM-CL/RS/test.json
             train_folder: ${data_root}/MLLM-CL/RS
             test_folder: ${data_root}/MLLM-CL/RS
+            router_path: /your_data_path/MLLM-CL/RS/router.json
+            router_folder: /your_data_path/MLLM-CL
           train_config:
             gpu_num: 2
             rank: 32
@@ -7196,6 +7436,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 1
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -7233,6 +7475,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 2
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           extra_commands: []
           other_commands: []
           removed_install_commands: []
@@ -7435,6 +7679,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 4
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -7472,6 +7718,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 5
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -7509,6 +7757,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 6
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -7546,6 +7796,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 7
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           extra_commands: []
           other_commands: []
           removed_install_commands: []
@@ -7748,6 +8000,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 9
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -7785,6 +8039,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 10
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -7822,6 +8078,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 11
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -7859,6 +8117,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 12
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -7896,6 +8156,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 13
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -7933,6 +8195,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 14
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           extra_commands: []
           other_commands: []
           removed_install_commands: []
@@ -8135,6 +8399,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 16
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -8172,6 +8438,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 17
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -8209,6 +8477,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 18
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -8246,6 +8516,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 19
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -8283,6 +8555,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 20
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -8320,6 +8594,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 21
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -8357,6 +8633,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 22
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -8394,6 +8672,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 23
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           extra_commands: []
           other_commands: []
           removed_install_commands: []
@@ -8596,6 +8876,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 25
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -8633,6 +8915,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 26
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -8670,6 +8954,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 27
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -8707,6 +8993,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 28
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -8744,6 +9032,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 29
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -8781,6 +9071,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 30
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -8818,6 +9110,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 31
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -8855,6 +9149,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 32
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -8892,6 +9188,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 33
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -8929,6 +9227,8 @@ router:
             - llava.eval.CoIN.model_dcl_router
             kind: eval
             order: 34
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           extra_commands: []
           other_commands: []
           removed_install_commands: []
@@ -8959,6 +9259,8 @@ router:
             test_path: ${data_root}/MLLM-CL/OCR_test/test.json
             train_folder: ${data_root}/MLLM-CL/OCR
             test_folder: ${data_root}/MLLM-CL/OCR_test
+            router_path: /your_data_path/MLLM-CL/OCR/router.json
+            router_folder: /your_data_path/MLLM-CL
           train_config:
             gpu_num: 2
             rank: 32
@@ -9309,6 +9611,8 @@ router:
             - llava.eval.CoIN.model_math
             kind: eval
             order: 5
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -9349,6 +9653,8 @@ router:
             - llava.eval.CoIN.model_math
             kind: eval
             order: 6
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -9362,6 +9668,8 @@ router:
             - llava.eval.CoIN.eval_math
             kind: eval
             order: 7
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           extra_commands: []
           other_commands: []
           removed_install_commands:
@@ -9571,6 +9879,8 @@ router:
             - llava.eval.CoIN.model_math
             kind: eval
             order: 11
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -9611,6 +9921,8 @@ router:
             - llava.eval.CoIN.model_math
             kind: eval
             order: 12
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -9624,6 +9936,8 @@ router:
             - llava.eval.CoIN.eval_math
             kind: eval
             order: 13
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           extra_commands: []
           other_commands: []
           removed_install_commands:
@@ -9833,6 +10147,8 @@ router:
             - llava.eval.CoIN.model_math
             kind: eval
             order: 18
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -9873,6 +10189,8 @@ router:
             - llava.eval.CoIN.model_math
             kind: eval
             order: 19
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -9886,6 +10204,8 @@ router:
             - llava.eval.CoIN.eval_math
             kind: eval
             order: 20
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           - argv:
             - python
             - -m
@@ -9923,6 +10243,8 @@ router:
             - llava.eval.CoIN.model_ai2d
             kind: eval
             order: 23
+            env:
+              CUDA_VISIBLE_DEVICES: '1'
           - argv:
             - python
             - -m
@@ -9960,6 +10282,8 @@ router:
             - llava.eval.CoIN.model_ai2d
             kind: eval
             order: 24
+            env:
+              CUDA_VISIBLE_DEVICES: '0'
           - argv:
             - python
             - -m
@@ -9976,6 +10300,8 @@ router:
             - llava.eval.CoIN.convert_result_to_submission
             kind: eval
             order: 25
+            env:
+              CUDA_VISIBLE_DEVICES: 0,1
           extra_commands: []
           other_commands: []
           removed_install_commands:

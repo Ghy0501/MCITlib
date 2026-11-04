@@ -22,12 +22,14 @@ from dataclasses import dataclass, field
 import json, deepspeed
 import logging
 import pathlib, random
+from types import SimpleNamespace
 from typing import Dict, Optional, Sequence, List
 
 import torch
 import sys
 import transformers
 from mcitlib.backbones.llava.cleanup import remove_checkpoint_dirs
+from mcitlib.backbones.llava.model_config import TEXT_MODEL_OVERRIDES, inject_text_tower_config, normalize_generation_config
 
 from mcitlib.backbones.llava.trainer import LLaVATrainer
 from llava.constants import IGNORE_INDEX, IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN
@@ -39,7 +41,7 @@ from llava.mm_utils import tokenizer_image_token
 
 from peft import PeftModel, TaskType, get_peft_model
 from peft.utils import WEIGHTS_NAME, set_peft_model_state_dict
-from mcitlib.tuners._peft_registry import CoINMOELoraConfig
+from mcitlib.tuners.mcit_expert_lora import MCITExpertLoraConfig
 
 from PIL import Image, ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -60,7 +62,13 @@ class ModelArguments:
     freeze_backbone: bool = field(default=False)
     tune_mm_mlp_adapter: bool = field(default=False)
     vision_tower: Optional[str] = field(default=None)
+    text_tower: Optional[str] = field(default=None)
     mm_vision_select_layer: Optional[int] = field(default=-1)   # default to the last layer
+    mm_text_select_layer: Optional[int] = field(default=-1)
+    cur_task: Optional[int] = field(default=0)
+    ins_type: Optional[int] = field(default=0)
+    ins_emb: Optional[str] = field(default=None)
+    task: Optional[str] = field(default="")
     pretrain_mm_mlp_adapter: Optional[str] = field(default=None)
     mm_projector_type: Optional[str] = field(default='linear')
     mm_use_im_start_end: bool = field(default=False)
@@ -842,10 +850,16 @@ def train():
                 **bnb_model_from_pretrained_args
             )
         else:
+            model_kwargs = dict(cache_dir=training_args.cache_dir, **bnb_model_from_pretrained_args)
+            if os.environ.get("MCITLIB_MODEL_OVERRIDE") in TEXT_MODEL_OVERRIDES:
+                model_kwargs["config"] = inject_text_tower_config(
+                    transformers.AutoConfig.from_pretrained(model_args.model_name_or_path),
+                    model_args.text_tower or model_args.vision_tower,
+                    model_args.mm_text_select_layer,
+                )
             model = LlavaLlamaForCausalLM.from_pretrained(
                 model_args.model_name_or_path,
-                cache_dir=training_args.cache_dir,
-                **bnb_model_from_pretrained_args,
+                **model_kwargs,
             )
     else:
         model = transformers.LlamaForCausalLM.from_pretrained(
@@ -854,6 +868,8 @@ def train():
             **bnb_model_from_pretrained_args
         )
     model.config.use_cache = False
+    if os.environ.get("MCITLIB_MODEL_OVERRIDE") in TEXT_MODEL_OVERRIDES:
+        normalize_generation_config(model)
 
     if model_args.freeze_backbone:
         model.model.requires_grad_(False)
@@ -871,27 +887,40 @@ def train():
                 output.requires_grad_(True)
             model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
 
+    mcit_method = None
     if training_args.lora_enable:
-        kwargs = { 
+        from mcitlib.methods import create_method
+        method_id = os.environ.get("MCITLIB_METHOD", "moelora")
+        task_id = int(model_args.task) if method_id == "clmoe" and model_args.task else int(model_args.cur_task)
+        ctx = SimpleNamespace(task_id=task_id, output_dir=Path(training_args.output_dir))
+        cfg = {
+            "r": training_args.lora_r,
+            "lora_alpha": training_args.lora_alpha,
+            "target_modules": find_all_linear_names(model),
+            "lora_dropout": training_args.lora_dropout,
+            "bias": training_args.lora_bias,
             "task_embedding_dim": model_args.task_embedding_dim,
             "expert_num": model_args.expert_num,
-            }
-        lora_config = CoINMOELoraConfig(
-            r=training_args.lora_r,
-            lora_alpha=training_args.lora_alpha,
-            target_modules=find_all_linear_names(model),
-            lora_dropout=training_args.lora_dropout,
-            bias=training_args.lora_bias,
-            task_type=TaskType.CAUSAL_LM_CoIN,
-            **kwargs
-        )
+            "cur_task": model_args.cur_task,
+            "task_id": task_id,
+            "ins_type": model_args.ins_type,
+            "ins_emb": model_args.ins_emb,
+        }
+        if method_id == "smolora":
+            from mcitlib.config.loader import read_yaml
+            assets = read_yaml(Path.cwd() / "configs/methods/smolora.yaml")["assets"]["instruction_embeddings"]
+            cfg["ins_emb_sha256"] = next(
+                item["sha256"] for item in assets if Path(item["path"]).name == Path(model_args.ins_emb).name
+            )
+        mcit_method = create_method(method_id, cfg, ctx)
+        mcit_method.before_task(ctx)
         if training_args.bits == 16:
             if training_args.bf16:
                 model.to(torch.bfloat16)
             if training_args.fp16:
                 model.to(torch.float16)
         rank0_print("Adding LoRA adapters...")
-        model = get_peft_model(model, lora_config)
+        model = mcit_method.build_trainable(model, None)
 
     if 'mpt' in model_args.model_name_or_path:
         tokenizer = transformers.AutoTokenizer.from_pretrained(
@@ -933,6 +962,10 @@ def train():
         
         vision_tower = model.get_vision_tower()
         vision_tower.to(dtype=torch.bfloat16 if training_args.bf16 else torch.float16, device=training_args.device)
+        if os.environ.get("MCITLIB_MODEL_OVERRIDE") in {"hide", "disco"}:
+            model.get_model().initialize_text_modules(model_args=model_args, fsdp=training_args.fsdp)
+            text_tower = model.get_text_tower()
+            text_tower.to(dtype=torch.bfloat16 if training_args.bf16 else torch.float16, device=training_args.device)
 
         data_args.image_processor = vision_tower.image_processor
         data_args.is_multimodal = True
@@ -974,6 +1007,21 @@ def train():
                     if training_args.bf16 and module.weight.dtype == torch.float32:
                         module = module.to(torch.bfloat16)
 
+    model_override = os.environ.get("MCITLIB_MODEL_OVERRIDE")
+    if model_override in {"hide", "disco"}:
+        clip_tokenizer = transformers.AutoTokenizer.from_pretrained(
+            model_args.text_tower,
+            cache_dir=training_args.cache_dir,
+            model_max_length=training_args.model_max_length,
+            padding_side="right",
+            use_fast=True,
+        )
+        model.set_clip_tokenizer(clip_tokenizer)
+        model.set_tokenizer(tokenizer)
+        model.set_cur_task(model_args.cur_task, model_args.expert_num)
+    elif os.environ.get("MCITLIB_METHOD") == "olora":
+        model.get_base_model().cur_task = model_args.cur_task
+
     if model_args.previous_task_model_path is not None:
         # load model from previous task
         load_model_from_previous_task(model, model_args.previous_task_model_path)
@@ -984,6 +1032,7 @@ def train():
                     tokenizer=tokenizer,
                     args=training_args,
                     **data_module)
+    trainer.mcit_method = mcit_method
 
     # if list(pathlib.Path(training_args.output_dir).glob("checkpoint-*")):
     #     trainer.train(resume_from_checkpoint=True)

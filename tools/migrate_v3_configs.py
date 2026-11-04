@@ -165,6 +165,10 @@ def task_commands(payload: dict[str, Any], task_id: int) -> dict[str, Any]:
 
 def make_task(v3_root: Path, payload: dict[str, Any], method: Any, benchmark: Any, task_name: str, task_id: int, router: bool = False) -> dict[str, Any]:
     values = source_values(v3_root, method, benchmark, task_name, task_id, router)
+    placeholders = payload.get("config_placeholders", {})
+    for config_key, relative in values["source"].items():
+        if relative in placeholders:
+            values[config_key].update(placeholders[relative])
     return {
         "task_id": task_id,
         "task_name": task_name,

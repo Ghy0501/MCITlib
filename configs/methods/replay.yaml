@@ -8,6 +8,7 @@ source_metadata:
   ucit:
     sequence_repairs: []
     path_placeholders:
+      /home/hongbo_zhao/ghy-cl-codebase/clip-vit-large-patch14-336: /your_model_path/clip-vit-large-patch14-336
       /home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints: /your_ckpts_path
       /home/hongbo_zhao/ghy-cl-codebase/MCITlib: /your_path/MCITlib_v3
       /mnt/cache/guohaiyang/miniconda3/envs/coin/bin/python: /your_python_path
@@ -15,6 +16,7 @@ source_metadata:
   mllm_dcl:
     sequence_repairs: []
     path_placeholders:
+      /home/hongbo_zhao/ghy-cl-codebase/clip-vit-large-patch14-336: /your_model_path/clip-vit-large-patch14-336
       /home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints: /your_ckpts_path
       /home/hongbo_zhao/ghy-cl-codebase/MCITlib: /your_path/MCITlib_v3
       /mnt/cache/guohaiyang/miniconda3/envs/coin/bin/python: /your_python_path
@@ -22,6 +24,7 @@ source_metadata:
   mllm_acl:
     sequence_repairs: []
     path_placeholders:
+      /home/hongbo_zhao/ghy-cl-codebase/clip-vit-large-patch14-336: /your_model_path/clip-vit-large-patch14-336
       /home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints: /your_ckpts_path
       /home/hongbo_zhao/ghy-cl-codebase/MCITlib: /your_path/MCITlib_v3
       /mnt/cache/guohaiyang/miniconda3/envs/coin/bin/python: /your_python_path
@@ -46,6 +49,8 @@ overrides:
           test_path: ${data_root}/UCIT/ImageNet-R/test_3000.json
           train_folder: ${data_root}/UCIT
           test_folder: ${data_root}/UCIT
+          replay_path: /your_data_path/UCIT/ImageNet-R/replay.json
+          router_folder: /your_data_path/UCIT
         train_config:
           gpu_num: 2
           rank: 16
@@ -84,7 +89,9 @@ overrides:
           - --version
           - v1
           - --data_path
+          - ${data_root}/UCIT/ImageNet-R/replay.json
           - --image_folder
+          - ${data_root}/UCIT
           - --vision_tower
           - ${model_root}/clip-vit-large-patch14-336
           - --mm_projector_type
@@ -152,8 +159,8 @@ overrides:
             model_name_or_path: ${model_root}/llava-v1.5-7b
             pretrain_mm_mlp_adapter: ${model_root}/llava-v1.5-7b/mm_projector.bin
             version: v1
-            data_path: true
-            image_folder: true
+            data_path: ${data_root}/UCIT/ImageNet-R/replay.json
+            image_folder: ${data_root}/UCIT
             vision_tower: ${model_root}/clip-vit-large-patch14-336
             mm_projector_type: mlp2x_gelu
             mm_vision_select_layer: '-2'
@@ -222,6 +229,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 3
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -259,6 +268,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 4
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -278,7 +289,10 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 5
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -459,43 +473,6 @@ overrides:
           - --image-folder
           - ${data_root}/UCIT
           - --answers-file
-          - ./results/UCIT/each_dataset/ImageNet-R/LoRA-task2/2_0.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '0'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task2_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
-            image-folder: ${data_root}/UCIT
-            answers-file: ./results/UCIT/each_dataset/ImageNet-R/LoRA-task2/2_0.jsonl
-            num-chunks: '2'
-            chunk-idx: '0'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_others
-          kind: eval
-          order: 9
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_others
-          - --model-path
-          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task2_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/UCIT/ImageNet-R/test_3000.json
-          - --image-folder
-          - ${data_root}/UCIT
-          - --answers-file
           - ./results/UCIT/each_dataset/ImageNet-R/LoRA-task2/2_1.jsonl
           - --num-chunks
           - '2'
@@ -519,7 +496,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_others
           kind: eval
+          order: 9
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_others
+          - --model-path
+          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task2_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --answers-file
+          - ./results/UCIT/each_dataset/ImageNet-R/LoRA-task2/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task2_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            image-folder: ${data_root}/UCIT
+            answers-file: ./results/UCIT/each_dataset/ImageNet-R/LoRA-task2/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_others
+          kind: eval
           order: 10
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -539,43 +557,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 11
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_others
-          - --model-path
-          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task2_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/UCIT/ArxivQA/test_3000.json
-          - --image-folder
-          - ${data_root}/UCIT
-          - --answers-file
-          - ./results/UCIT/each_dataset/ArxivQA/LoRA-task2/2_0.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '0'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task2_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/UCIT/ArxivQA/test_3000.json
-            image-folder: ${data_root}/UCIT
-            answers-file: ./results/UCIT/each_dataset/ArxivQA/LoRA-task2/2_0.jsonl
-            num-chunks: '2'
-            chunk-idx: '0'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_others
-          kind: eval
-          order: 13
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -612,7 +595,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_others
           kind: eval
+          order: 13
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_others
+          - --model-path
+          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task2_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ArxivQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --answers-file
+          - ./results/UCIT/each_dataset/ArxivQA/LoRA-task2/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task2_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ArxivQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            answers-file: ./results/UCIT/each_dataset/ArxivQA/LoRA-task2/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_others
+          kind: eval
           order: 14
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -632,7 +656,10 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 15
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -838,6 +865,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 19
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -875,6 +904,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 20
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -894,43 +925,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 21
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_others
-          - --model-path
-          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task3_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/UCIT/ArxivQA/test_3000.json
-          - --image-folder
-          - ${data_root}/UCIT
-          - --answers-file
-          - ./results/UCIT/each_dataset/ArxivQA/LoRA-task3/2_0.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '0'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task3_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/UCIT/ArxivQA/test_3000.json
-            image-folder: ${data_root}/UCIT
-            answers-file: ./results/UCIT/each_dataset/ArxivQA/LoRA-task3/2_0.jsonl
-            num-chunks: '2'
-            chunk-idx: '0'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_others
-          kind: eval
-          order: 23
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -967,7 +963,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_others
           kind: eval
+          order: 23
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_others
+          - --model-path
+          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task3_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ArxivQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --answers-file
+          - ./results/UCIT/each_dataset/ArxivQA/LoRA-task3/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task3_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ArxivQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            answers-file: ./results/UCIT/each_dataset/ArxivQA/LoRA-task3/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_others
+          kind: eval
           order: 24
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -987,43 +1024,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 25
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_others
-          - --model-path
-          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task3_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/UCIT/VizWiz-caption/test_3000.json
-          - --image-folder
-          - ${data_root}/UCIT
-          - --answers-file
-          - ./results/UCIT/each_dataset/VizWiz/LoRA-task3/2_0.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '0'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task3_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/UCIT/VizWiz-caption/test_3000.json
-            image-folder: ${data_root}/UCIT
-            answers-file: ./results/UCIT/each_dataset/VizWiz/LoRA-task3/2_0.jsonl
-            num-chunks: '2'
-            chunk-idx: '0'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_others
-          kind: eval
-          order: 27
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -1060,7 +1062,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_others
           kind: eval
+          order: 27
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_others
+          - --model-path
+          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task3_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/VizWiz-caption/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --answers-file
+          - ./results/UCIT/each_dataset/VizWiz/LoRA-task3/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task3_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/VizWiz-caption/test_3000.json
+            image-folder: ${data_root}/UCIT
+            answers-file: ./results/UCIT/each_dataset/VizWiz/LoRA-task3/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_others
+          kind: eval
           order: 28
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1080,7 +1123,10 @@ overrides:
           - llava.eval.CoIN.eval_caption
           kind: eval
           order: 29
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -1261,43 +1307,6 @@ overrides:
           - --image-folder
           - ${data_root}/UCIT
           - --answers-file
-          - ./results/UCIT/each_dataset/ImageNet-R/LoRA-task4/2_1.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '1'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task4_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
-            image-folder: ${data_root}/UCIT
-            answers-file: ./results/UCIT/each_dataset/ImageNet-R/LoRA-task4/2_1.jsonl
-            num-chunks: '2'
-            chunk-idx: '1'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_others
-          kind: eval
-          order: 33
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_others
-          - --model-path
-          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task4_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/UCIT/ImageNet-R/test_3000.json
-          - --image-folder
-          - ${data_root}/UCIT
-          - --answers-file
           - ./results/UCIT/each_dataset/ImageNet-R/LoRA-task4/2_0.jsonl
           - --num-chunks
           - '2'
@@ -1321,7 +1330,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_others
           kind: eval
+          order: 33
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_others
+          - --model-path
+          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task4_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --answers-file
+          - ./results/UCIT/each_dataset/ImageNet-R/LoRA-task4/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task4_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            image-folder: ${data_root}/UCIT
+            answers-file: ./results/UCIT/each_dataset/ImageNet-R/LoRA-task4/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_others
+          kind: eval
           order: 34
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -1341,6 +1391,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 35
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -1378,6 +1430,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 37
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -1415,6 +1469,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 38
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1434,43 +1490,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 39
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_others
-          - --model-path
-          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task4_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/UCIT/VizWiz-caption/test_3000.json
-          - --image-folder
-          - ${data_root}/UCIT
-          - --answers-file
-          - ./results/UCIT/each_dataset/VizWiz/LoRA-task4/2_0.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '0'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task4_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/UCIT/VizWiz-caption/test_3000.json
-            image-folder: ${data_root}/UCIT
-            answers-file: ./results/UCIT/each_dataset/VizWiz/LoRA-task4/2_0.jsonl
-            num-chunks: '2'
-            chunk-idx: '0'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_others
-          kind: eval
-          order: 41
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -1507,7 +1528,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_others
           kind: eval
+          order: 41
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_others
+          - --model-path
+          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task4_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/VizWiz-caption/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --answers-file
+          - ./results/UCIT/each_dataset/VizWiz/LoRA-task4/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task4_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/VizWiz-caption/test_3000.json
+            image-folder: ${data_root}/UCIT
+            answers-file: ./results/UCIT/each_dataset/VizWiz/LoRA-task4/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_others
+          kind: eval
           order: 42
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1527,6 +1589,8 @@ overrides:
           - llava.eval.CoIN.eval_caption
           kind: eval
           order: 43
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -1564,6 +1628,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 45
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -1601,6 +1667,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 46
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1620,7 +1688,10 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 47
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -1825,6 +1896,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 51
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -1862,6 +1935,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 52
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1881,6 +1956,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 53
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -1918,6 +1995,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 55
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -1955,6 +2034,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 56
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -1974,43 +2055,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 57
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_others
-          - --model-path
-          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task5_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/UCIT/VizWiz-caption/test_3000.json
-          - --image-folder
-          - ${data_root}/UCIT
-          - --answers-file
-          - ./results/UCIT/each_dataset/VizWiz/LoRA-task5/2_0.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '0'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task5_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/UCIT/VizWiz-caption/test_3000.json
-            image-folder: ${data_root}/UCIT
-            answers-file: ./results/UCIT/each_dataset/VizWiz/LoRA-task5/2_0.jsonl
-            num-chunks: '2'
-            chunk-idx: '0'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_others
-          kind: eval
-          order: 59
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2047,7 +2093,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_others
           kind: eval
+          order: 59
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_others
+          - --model-path
+          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task5_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/VizWiz-caption/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --answers-file
+          - ./results/UCIT/each_dataset/VizWiz/LoRA-task5/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task5_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/VizWiz-caption/test_3000.json
+            image-folder: ${data_root}/UCIT
+            answers-file: ./results/UCIT/each_dataset/VizWiz/LoRA-task5/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_others
+          kind: eval
           order: 60
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -2067,43 +2154,8 @@ overrides:
           - llava.eval.CoIN.eval_caption
           kind: eval
           order: 61
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_others
-          - --model-path
-          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task5_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/UCIT/IconQA/test_3000.json
-          - --image-folder
-          - ${data_root}/UCIT
-          - --answers-file
-          - ./results/UCIT/each_dataset/IconQA/LoRA-task5/2_1.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '1'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task5_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/UCIT/IconQA/test_3000.json
-            image-folder: ${data_root}/UCIT
-            answers-file: ./results/UCIT/each_dataset/IconQA/LoRA-task5/2_1.jsonl
-            num-chunks: '2'
-            chunk-idx: '1'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_others
-          kind: eval
-          order: 63
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2140,7 +2192,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_others
           kind: eval
+          order: 63
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_others
+          - --model-path
+          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task5_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/IconQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --answers-file
+          - ./results/UCIT/each_dataset/IconQA/LoRA-task5/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task5_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/IconQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            answers-file: ./results/UCIT/each_dataset/IconQA/LoRA-task5/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_others
+          kind: eval
           order: 64
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -2160,6 +2253,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 65
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2197,6 +2292,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 67
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -2234,6 +2331,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 68
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -2253,7 +2352,10 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 69
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -2459,6 +2561,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 73
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -2496,6 +2600,8 @@ overrides:
           - llava.eval.CoIN.model_others
           kind: eval
           order: 74
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -2515,43 +2621,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 75
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_others
-          - --model-path
-          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/UCIT/ArxivQA/test_3000.json
-          - --image-folder
-          - ${data_root}/UCIT
-          - --answers-file
-          - ./results/UCIT/each_dataset/ArxivQA/LoRA-task6/2_0.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '0'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/UCIT/ArxivQA/test_3000.json
-            image-folder: ${data_root}/UCIT
-            answers-file: ./results/UCIT/each_dataset/ArxivQA/LoRA-task6/2_0.jsonl
-            num-chunks: '2'
-            chunk-idx: '0'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_others
-          kind: eval
-          order: 77
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2588,7 +2659,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_others
           kind: eval
+          order: 77
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_others
+          - --model-path
+          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ArxivQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --answers-file
+          - ./results/UCIT/each_dataset/ArxivQA/LoRA-task6/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ArxivQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            answers-file: ./results/UCIT/each_dataset/ArxivQA/LoRA-task6/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_others
+          kind: eval
           order: 78
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -2608,43 +2720,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 79
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_others
-          - --model-path
-          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/UCIT/VizWiz-caption/test_3000.json
-          - --image-folder
-          - ${data_root}/UCIT
-          - --answers-file
-          - ./results/UCIT/each_dataset/VizWiz/LoRA-task6/2_1.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '1'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/UCIT/VizWiz-caption/test_3000.json
-            image-folder: ${data_root}/UCIT
-            answers-file: ./results/UCIT/each_dataset/VizWiz/LoRA-task6/2_1.jsonl
-            num-chunks: '2'
-            chunk-idx: '1'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_others
-          kind: eval
-          order: 81
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2681,7 +2758,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_others
           kind: eval
+          order: 81
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_others
+          - --model-path
+          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/VizWiz-caption/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --answers-file
+          - ./results/UCIT/each_dataset/VizWiz/LoRA-task6/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/VizWiz-caption/test_3000.json
+            image-folder: ${data_root}/UCIT
+            answers-file: ./results/UCIT/each_dataset/VizWiz/LoRA-task6/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_others
+          kind: eval
           order: 82
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -2701,43 +2819,8 @@ overrides:
           - llava.eval.CoIN.eval_caption
           kind: eval
           order: 83
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_others
-          - --model-path
-          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/UCIT/IconQA/test_3000.json
-          - --image-folder
-          - ${data_root}/UCIT
-          - --answers-file
-          - ./results/UCIT/each_dataset/IconQA/LoRA-task6/2_0.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '0'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/UCIT/IconQA/test_3000.json
-            image-folder: ${data_root}/UCIT
-            answers-file: ./results/UCIT/each_dataset/IconQA/LoRA-task6/2_0.jsonl
-            num-chunks: '2'
-            chunk-idx: '0'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_others
-          kind: eval
-          order: 85
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2774,7 +2857,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_others
           kind: eval
+          order: 85
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_others
+          - --model-path
+          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/IconQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --answers-file
+          - ./results/UCIT/each_dataset/IconQA/LoRA-task6/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/IconQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            answers-file: ./results/UCIT/each_dataset/IconQA/LoRA-task6/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_others
+          kind: eval
           order: 86
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -2794,43 +2918,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 87
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_others
-          - --model-path
-          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/UCIT/CLEVR-Math/test_3000.json
-          - --image-folder
-          - ${data_root}/UCIT
-          - --answers-file
-          - ./results/UCIT/each_dataset/CLEVR-Math/LoRA-task6/2_1.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '1'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/UCIT/CLEVR-Math/test_3000.json
-            image-folder: ${data_root}/UCIT
-            answers-file: ./results/UCIT/each_dataset/CLEVR-Math/LoRA-task6/2_1.jsonl
-            num-chunks: '2'
-            chunk-idx: '1'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_others
-          kind: eval
-          order: 89
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2867,7 +2956,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_others
           kind: eval
+          order: 89
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_others
+          - --model-path
+          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/CLEVR-Math/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --answers-file
+          - ./results/UCIT/each_dataset/CLEVR-Math/LoRA-task6/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/CLEVR-Math/test_3000.json
+            image-folder: ${data_root}/UCIT
+            answers-file: ./results/UCIT/each_dataset/CLEVR-Math/LoRA-task6/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_others
+          kind: eval
           order: 90
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -2887,43 +3017,8 @@ overrides:
           - llava.eval.CoIN.eval_deepseek_r1
           kind: eval
           order: 91
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_others
-          - --model-path
-          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/UCIT/Flickr30k-cap/test_3000.json
-          - --image-folder
-          - ${data_root}/UCIT
-          - --answers-file
-          - ./results/UCIT/each_dataset/Flickr30k/LoRA-task6/2_0.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '0'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/UCIT/Flickr30k-cap/test_3000.json
-            image-folder: ${data_root}/UCIT
-            answers-file: ./results/UCIT/each_dataset/Flickr30k/LoRA-task6/2_0.jsonl
-            num-chunks: '2'
-            chunk-idx: '0'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_others
-          kind: eval
-          order: 93
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2960,7 +3055,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_others
           kind: eval
+          order: 93
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_others
+          - --model-path
+          - ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/Flickr30k-cap/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --answers-file
+          - ./results/UCIT/each_dataset/Flickr30k/LoRA-task6/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/UCIT/LLaVA/Replay/Task6_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/Flickr30k-cap/test_3000.json
+            image-folder: ${data_root}/UCIT
+            answers-file: ./results/UCIT/each_dataset/Flickr30k/LoRA-task6/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_others
+          kind: eval
           order: 94
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -2980,7 +3116,10 @@ overrides:
           - llava.eval.CoIN.eval_caption
           kind: eval
           order: 95
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -3004,6 +3143,8 @@ overrides:
           test_path: ${data_root}/MLLM-CL/RS/test.json
           train_folder: ${data_root}/MLLM-CL/RS
           test_folder: ${data_root}/MLLM-CL/RS
+          replay_path: /your_data_path/MLLM-CL/RS/replay.json
+          router_folder: /your_data_path/MLLM-CL
         train_config:
           gpu_num: 2
           rank: 32
@@ -3042,7 +3183,9 @@ overrides:
           - --version
           - v1
           - --data_path
+          - ${data_root}/MLLM-CL/RS/replay.json
           - --image_folder
+          - ${data_root}/MLLM-CL
           - --vision_tower
           - ${model_root}/clip-vit-large-patch14-336
           - --mm_projector_type
@@ -3110,8 +3253,8 @@ overrides:
             model_name_or_path: ${model_root}/llava-v1.5-7b
             pretrain_mm_mlp_adapter: ${model_root}/llava-v1.5-7b/mm_projector.bin
             version: v1
-            data_path: true
-            image_folder: true
+            data_path: ${data_root}/MLLM-CL/RS/replay.json
+            image_folder: ${data_root}/MLLM-CL
             vision_tower: ${model_root}/clip-vit-large-patch14-336
             mm_projector_type: mlp2x_gelu
             mm_vision_select_layer: '-2'
@@ -3180,6 +3323,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 3
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3217,6 +3362,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 4
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3236,7 +3383,10 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 5
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -3417,43 +3567,6 @@ overrides:
           - --image-folder
           - ${data_root}/MLLM-CL/Med
           - --answers-file
-          - ./results/DCL/each_dataset/Med/LoRA-task2/2_0.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '0'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task2_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/MLLM-CL/Med/test.json
-            image-folder: ${data_root}/MLLM-CL/Med
-            answers-file: ./results/DCL/each_dataset/Med/LoRA-task2/2_0.jsonl
-            num-chunks: '2'
-            chunk-idx: '0'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_pvqa
-          kind: eval
-          order: 9
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_pvqa
-          - --model-path
-          - ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task2_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/MLLM-CL/Med/test.json
-          - --image-folder
-          - ${data_root}/MLLM-CL/Med
-          - --answers-file
           - ./results/DCL/each_dataset/Med/LoRA-task2/2_1.jsonl
           - --num-chunks
           - '2'
@@ -3477,7 +3590,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_pvqa
           kind: eval
+          order: 9
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_pvqa
+          - --model-path
+          - ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task2_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Med/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Med
+          - --answers-file
+          - ./results/DCL/each_dataset/Med/LoRA-task2/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task2_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Med/test.json
+            image-folder: ${data_root}/MLLM-CL/Med
+            answers-file: ./results/DCL/each_dataset/Med/LoRA-task2/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_pvqa
+          kind: eval
           order: 10
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3497,43 +3651,8 @@ overrides:
           - llava.eval.CoIN.eval_pvqa
           kind: eval
           order: 11
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_ai2d
-          - --model-path
-          - ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task2_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/MLLM-CL/RS/test.json
-          - --image-folder
-          - ${data_root}/MLLM-CL/RS
-          - --answers-file
-          - ./results/DCL/each_dataset/RS/LoRA-task2/2_1.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '1'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task2_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/MLLM-CL/RS/test.json
-            image-folder: ${data_root}/MLLM-CL/RS
-            answers-file: ./results/DCL/each_dataset/RS/LoRA-task2/2_1.jsonl
-            num-chunks: '2'
-            chunk-idx: '1'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_ai2d
-          kind: eval
-          order: 13
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -3570,7 +3689,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_ai2d
           kind: eval
+          order: 13
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task2_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/RS/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/RS
+          - --answers-file
+          - ./results/DCL/each_dataset/RS/LoRA-task2/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task2_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/RS/test.json
+            image-folder: ${data_root}/MLLM-CL/RS
+            answers-file: ./results/DCL/each_dataset/RS/LoRA-task2/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_ai2d
+          kind: eval
           order: 14
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3590,7 +3750,10 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 15
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -3795,6 +3958,8 @@ overrides:
           - llava.eval.CoIN.model_pvqa
           kind: eval
           order: 19
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3832,6 +3997,8 @@ overrides:
           - llava.eval.CoIN.model_pvqa
           kind: eval
           order: 20
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3851,6 +4018,8 @@ overrides:
           - llava.eval.CoIN.eval_pvqa
           kind: eval
           order: 21
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -3888,6 +4057,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 23
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3925,6 +4096,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 24
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3944,43 +4117,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 25
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_ai2d
-          - --model-path
-          - ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task3_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/MLLM-CL/AD/test.json
-          - --image-folder
-          - ${data_root}/MLLM-CL/AD
-          - --answers-file
-          - ./results/DCL/each_dataset/AD/LoRA-task3/2_0.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '0'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task3_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/MLLM-CL/AD/test.json
-            image-folder: ${data_root}/MLLM-CL/AD
-            answers-file: ./results/DCL/each_dataset/AD/LoRA-task3/2_0.jsonl
-            num-chunks: '2'
-            chunk-idx: '0'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_ai2d
-          kind: eval
-          order: 27
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -4017,7 +4155,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_ai2d
           kind: eval
+          order: 27
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task3_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/AD/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/AD
+          - --answers-file
+          - ./results/DCL/each_dataset/AD/LoRA-task3/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task3_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/AD/test.json
+            image-folder: ${data_root}/MLLM-CL/AD
+            answers-file: ./results/DCL/each_dataset/AD/LoRA-task3/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_ai2d
+          kind: eval
           order: 28
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -4037,7 +4216,10 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 29
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -4242,6 +4424,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 33
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -4279,6 +4463,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 34
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -4298,6 +4484,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 35
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -4335,6 +4523,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 37
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -4372,6 +4562,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 38
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -4391,43 +4583,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 39
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_pvqa
-          - --model-path
-          - ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task4_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/MLLM-CL/Med/test.json
-          - --image-folder
-          - ${data_root}/MLLM-CL/Med
-          - --answers-file
-          - ./results/DCL/each_dataset/Med/LoRA-task4/2_1.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '1'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task4_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/MLLM-CL/Med/test.json
-            image-folder: ${data_root}/MLLM-CL/Med
-            answers-file: ./results/DCL/each_dataset/Med/LoRA-task4/2_1.jsonl
-            num-chunks: '2'
-            chunk-idx: '1'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_pvqa
-          kind: eval
-          order: 41
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -4464,7 +4621,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_pvqa
           kind: eval
+          order: 41
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_pvqa
+          - --model-path
+          - ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task4_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Med/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Med
+          - --answers-file
+          - ./results/DCL/each_dataset/Med/LoRA-task4/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task4_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Med/test.json
+            image-folder: ${data_root}/MLLM-CL/Med
+            answers-file: ./results/DCL/each_dataset/Med/LoRA-task4/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_pvqa
+          kind: eval
           order: 42
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -4484,6 +4682,8 @@ overrides:
           - llava.eval.CoIN.eval_pvqa
           kind: eval
           order: 43
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -4521,6 +4721,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 45
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -4558,6 +4760,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 46
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -4577,7 +4781,10 @@ overrides:
           - llava.eval.CoIN.eval_sci
           kind: eval
           order: 47
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -4758,43 +4965,6 @@ overrides:
           - --image-folder
           - ${data_root}/MLLM-CL/AD
           - --answers-file
-          - ./results/DCL/each_dataset/AD/LoRA-task5/2_0.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '0'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task5_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/MLLM-CL/AD/test.json
-            image-folder: ${data_root}/MLLM-CL/AD
-            answers-file: ./results/DCL/each_dataset/AD/LoRA-task5/2_0.jsonl
-            num-chunks: '2'
-            chunk-idx: '0'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_ai2d
-          kind: eval
-          order: 51
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_ai2d
-          - --model-path
-          - ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task5_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/MLLM-CL/AD/test.json
-          - --image-folder
-          - ${data_root}/MLLM-CL/AD
-          - --answers-file
           - ./results/DCL/each_dataset/AD/LoRA-task5/2_1.jsonl
           - --num-chunks
           - '2'
@@ -4818,7 +4988,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_ai2d
           kind: eval
+          order: 51
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task5_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/AD/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/AD
+          - --answers-file
+          - ./results/DCL/each_dataset/AD/LoRA-task5/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task5_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/AD/test.json
+            image-folder: ${data_root}/MLLM-CL/AD
+            answers-file: ./results/DCL/each_dataset/AD/LoRA-task5/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_ai2d
+          kind: eval
           order: 52
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -4838,6 +5049,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 53
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -4875,6 +5088,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 55
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -4912,6 +5127,8 @@ overrides:
           - llava.eval.CoIN.model_ai2d
           kind: eval
           order: 56
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -4931,43 +5148,8 @@ overrides:
           - llava.eval.CoIN.eval_ai2d
           kind: eval
           order: 57
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_pvqa
-          - --model-path
-          - ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task5_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/MLLM-CL/Med/test.json
-          - --image-folder
-          - ${data_root}/MLLM-CL/Med
-          - --answers-file
-          - ./results/DCL/each_dataset/Med/LoRA-task5/2_0.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '0'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task5_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/MLLM-CL/Med/test.json
-            image-folder: ${data_root}/MLLM-CL/Med
-            answers-file: ./results/DCL/each_dataset/Med/LoRA-task5/2_0.jsonl
-            num-chunks: '2'
-            chunk-idx: '0'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_pvqa
-          kind: eval
-          order: 59
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -5004,7 +5186,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_pvqa
           kind: eval
+          order: 59
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_pvqa
+          - --model-path
+          - ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task5_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Med/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Med
+          - --answers-file
+          - ./results/DCL/each_dataset/Med/LoRA-task5/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task5_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Med/test.json
+            image-folder: ${data_root}/MLLM-CL/Med
+            answers-file: ./results/DCL/each_dataset/Med/LoRA-task5/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_pvqa
+          kind: eval
           order: 60
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -5024,43 +5247,8 @@ overrides:
           - llava.eval.CoIN.eval_pvqa
           kind: eval
           order: 61
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_ai2d
-          - --model-path
-          - ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task5_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/MLLM-CL/Sci/test.json
-          - --image-folder
-          - ${data_root}/MLLM-CL/Sci
-          - --answers-file
-          - ./results/DCL/each_dataset/Sci/LoRA-task5/2_1.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '1'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task5_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/MLLM-CL/Sci/test.json
-            image-folder: ${data_root}/MLLM-CL/Sci
-            answers-file: ./results/DCL/each_dataset/Sci/LoRA-task5/2_1.jsonl
-            num-chunks: '2'
-            chunk-idx: '1'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_ai2d
-          kind: eval
-          order: 63
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -5097,7 +5285,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_ai2d
           kind: eval
+          order: 63
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task5_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Sci/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Sci
+          - --answers-file
+          - ./results/DCL/each_dataset/Sci/LoRA-task5/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/Replay/Task5_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Sci/test.json
+            image-folder: ${data_root}/MLLM-CL/Sci
+            answers-file: ./results/DCL/each_dataset/Sci/LoRA-task5/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_ai2d
+          kind: eval
           order: 64
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -5117,6 +5346,8 @@ overrides:
           - llava.eval.CoIN.eval_sci
           kind: eval
           order: 65
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -5154,6 +5385,8 @@ overrides:
           - llava.eval.CoIN.model_fin
           kind: eval
           order: 67
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -5191,6 +5424,8 @@ overrides:
           - llava.eval.CoIN.model_fin
           kind: eval
           order: 68
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -5210,7 +5445,10 @@ overrides:
           - llava.eval.CoIN.eval_finvis
           kind: eval
           order: 69
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -5234,6 +5472,8 @@ overrides:
           test_path: ${data_root}/MLLM-CL/OCR_test/test.json
           train_folder: ${data_root}/MLLM-CL/OCR
           test_folder: ${data_root}/MLLM-CL/OCR_test
+          replay_path: /your_data_path/MLLM-CL/OCR/replay.json
+          router_folder: /your_data_path/MLLM-CL
         train_config:
           gpu_num: 2
           rank: 32
@@ -5272,7 +5512,9 @@ overrides:
           - --version
           - v1
           - --data_path
+          - ${data_root}/MLLM-CL/OCR/replay.json
           - --image_folder
+          - ${data_root}/MLLM-CL
           - --vision_tower
           - ${model_root}/clip-vit-large-patch14-336
           - --mm_projector_type
@@ -5340,8 +5582,8 @@ overrides:
             model_name_or_path: ${model_root}/llava-v1.5-7b
             pretrain_mm_mlp_adapter: ${model_root}/llava-v1.5-7b/mm_projector.bin
             version: v1
-            data_path: true
-            image_folder: true
+            data_path: ${data_root}/MLLM-CL/OCR/replay.json
+            image_folder: ${data_root}/MLLM-CL
             vision_tower: ${model_root}/clip-vit-large-patch14-336
             mm_projector_type: mlp2x_gelu
             mm_vision_select_layer: '-2'
@@ -5374,6 +5616,7 @@ overrides:
           order: 1
         eval_commands: []
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -5554,46 +5797,6 @@ overrides:
           - --image-folder
           - ${data_root}/MLLM-CL/Math_test
           - --answers-file
-          - ./results/ACL/each_dataset/Math/LoRA-task2/2_1.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '1'
-          - --output_xlsx
-          - ./results/ACL/each_dataset/Math/LoRA-task2/result.xlsx
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/MLLM-ACL/LLaVA/Replay/Task2_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/MLLM-CL/Math_test/test.json
-            image-folder: ${data_root}/MLLM-CL/Math_test
-            answers-file: ./results/ACL/each_dataset/Math/LoRA-task2/2_1.jsonl
-            num-chunks: '2'
-            chunk-idx: '1'
-            output_xlsx: ./results/ACL/each_dataset/Math/LoRA-task2/result.xlsx
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_math
-          kind: eval
-          order: 7
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_math
-          - --model-path
-          - ${ckpt_root}/MCITlib/MLLM-ACL/LLaVA/Replay/Task2_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/MLLM-CL/Math_test/test.json
-          - --image-folder
-          - ${data_root}/MLLM-CL/Math_test
-          - --answers-file
           - ./results/ACL/each_dataset/Math/LoRA-task2/2_0.jsonl
           - --num-chunks
           - '2'
@@ -5620,7 +5823,51 @@ overrides:
           - -m
           - llava.eval.CoIN.model_math
           kind: eval
+          order: 7
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_math
+          - --model-path
+          - ${ckpt_root}/MCITlib/MLLM-ACL/LLaVA/Replay/Task2_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Math_test/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Math_test
+          - --answers-file
+          - ./results/ACL/each_dataset/Math/LoRA-task2/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --output_xlsx
+          - ./results/ACL/each_dataset/Math/LoRA-task2/result.xlsx
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/MLLM-ACL/LLaVA/Replay/Task2_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Math_test/test.json
+            image-folder: ${data_root}/MLLM-CL/Math_test
+            answers-file: ./results/ACL/each_dataset/Math/LoRA-task2/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            output_xlsx: ./results/ACL/each_dataset/Math/LoRA-task2/result.xlsx
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_math
+          kind: eval
           order: 8
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -5634,7 +5881,10 @@ overrides:
           - llava.eval.CoIN.eval_math
           kind: eval
           order: 9
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -5815,46 +6065,6 @@ overrides:
           - --image-folder
           - ${data_root}/MLLM-CL/Math_test
           - --answers-file
-          - ./results/ACL/each_dataset/Math/LoRA-task3/2_0.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '0'
-          - --output_xlsx
-          - ./results/ACL/each_dataset/Math/LoRA-task3/result.xlsx
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/MLLM-ACL/LLaVA/Replay/Task3_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/MLLM-CL/Math_test/test.json
-            image-folder: ${data_root}/MLLM-CL/Math_test
-            answers-file: ./results/ACL/each_dataset/Math/LoRA-task3/2_0.jsonl
-            num-chunks: '2'
-            chunk-idx: '0'
-            output_xlsx: ./results/ACL/each_dataset/Math/LoRA-task3/result.xlsx
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_math
-          kind: eval
-          order: 14
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_math
-          - --model-path
-          - ${ckpt_root}/MCITlib/MLLM-ACL/LLaVA/Replay/Task3_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/MLLM-CL/Math_test/test.json
-          - --image-folder
-          - ${data_root}/MLLM-CL/Math_test
-          - --answers-file
           - ./results/ACL/each_dataset/Math/LoRA-task3/2_1.jsonl
           - --num-chunks
           - '2'
@@ -5881,7 +6091,51 @@ overrides:
           - -m
           - llava.eval.CoIN.model_math
           kind: eval
+          order: 14
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_math
+          - --model-path
+          - ${ckpt_root}/MCITlib/MLLM-ACL/LLaVA/Replay/Task3_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Math_test/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Math_test
+          - --answers-file
+          - ./results/ACL/each_dataset/Math/LoRA-task3/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --output_xlsx
+          - ./results/ACL/each_dataset/Math/LoRA-task3/result.xlsx
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/MLLM-ACL/LLaVA/Replay/Task3_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Math_test/test.json
+            image-folder: ${data_root}/MLLM-CL/Math_test
+            answers-file: ./results/ACL/each_dataset/Math/LoRA-task3/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            output_xlsx: ./results/ACL/each_dataset/Math/LoRA-task3/result.xlsx
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_math
+          kind: eval
           order: 15
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -5895,7 +6149,10 @@ overrides:
           - llava.eval.CoIN.eval_math
           kind: eval
           order: 16
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -6103,6 +6360,8 @@ overrides:
           - llava.eval.CoIN.model_math
           kind: eval
           order: 22
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -6143,6 +6402,8 @@ overrides:
           - llava.eval.CoIN.model_math
           kind: eval
           order: 23
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -6156,43 +6417,8 @@ overrides:
           - llava.eval.CoIN.eval_math
           kind: eval
           order: 24
-        - argv:
-          - python
-          - -m
-          - llava.eval.CoIN.model_ai2d
-          - --model-path
-          - ${ckpt_root}/MCITlib/MLLM-ACL/LLaVA/Replay/Task4_llava_lora
-          - --model-base
-          - ${model_root}/llava-v1.5-7b
-          - --question-file
-          - ${data_root}/MLLM-CL/APP_test/test.json
-          - --image-folder
-          - ${data_root}/MLLM-CL/APP_test
-          - --answers-file
-          - ./results/ACL/each_dataset/APP/LoRA-task4/2_1.jsonl
-          - --num-chunks
-          - '2'
-          - --chunk-idx
-          - '1'
-          - --temperature
-          - '0'
-          - --conv-mode
-          - vicuna_v1
-          args:
-            model-path: ${ckpt_root}/MCITlib/MLLM-ACL/LLaVA/Replay/Task4_llava_lora
-            model-base: ${model_root}/llava-v1.5-7b
-            question-file: ${data_root}/MLLM-CL/APP_test/test.json
-            image-folder: ${data_root}/MLLM-CL/APP_test
-            answers-file: ./results/ACL/each_dataset/APP/LoRA-task4/2_1.jsonl
-            num-chunks: '2'
-            chunk-idx: '1'
-            temperature: '0'
-            conv-mode: vicuna_v1
-          positional:
-          - -m
-          - llava.eval.CoIN.model_ai2d
-          kind: eval
-          order: 27
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -6229,7 +6455,48 @@ overrides:
           - -m
           - llava.eval.CoIN.model_ai2d
           kind: eval
+          order: 27
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.CoIN.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MCITlib/MLLM-ACL/LLaVA/Replay/Task4_llava_lora
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/APP_test/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/APP_test
+          - --answers-file
+          - ./results/ACL/each_dataset/APP/LoRA-task4/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MCITlib/MLLM-ACL/LLaVA/Replay/Task4_llava_lora
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/APP_test/test.json
+            image-folder: ${data_root}/MLLM-CL/APP_test
+            answers-file: ./results/ACL/each_dataset/APP/LoRA-task4/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.CoIN.model_ai2d
+          kind: eval
           order: 28
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -6246,7 +6513,10 @@ overrides:
           - llava.eval.CoIN.convert_result_to_submission
           kind: eval
           order: 29
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install

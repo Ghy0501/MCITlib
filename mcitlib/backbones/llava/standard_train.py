@@ -28,6 +28,7 @@ import torch
 import sys
 import transformers
 from mcitlib.backbones.llava.cleanup import remove_checkpoint_dirs
+from mcitlib.backbones.llava.model_config import TEXT_MODEL_OVERRIDES, inject_text_tower_config, normalize_generation_config
 
 from llava.constants import IGNORE_INDEX, IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN
 from peft.utils import WEIGHTS_NAME, set_peft_model_state_dict
@@ -58,7 +59,13 @@ class ModelArguments:
     freeze_backbone: bool = field(default=False)
     tune_mm_mlp_adapter: bool = field(default=False)
     vision_tower: Optional[str] = field(default=None)
+    text_tower: Optional[str] = field(default=None)
     mm_vision_select_layer: Optional[int] = field(default=-1)   # default to the last layer
+    mm_text_select_layer: Optional[int] = field(default=-1)
+    cur_task: Optional[int] = field(default=0)
+    prefix_len: Optional[int] = field(default=10)
+    num_tasks: Optional[int] = field(default=8)
+    transfer_num: Optional[int] = field(default=3)
     pretrain_mm_mlp_adapter: Optional[str] = field(default=None)
     mm_projector_type: Optional[str] = field(default='linear')
     mm_use_im_start_end: bool = field(default=False)
@@ -110,6 +117,8 @@ class TrainingArguments(transformers.TrainingArguments):
     lora_dropout: float = 0.05
     lora_weight_path: str = ""
     lora_bias: str = "none"
+    pt_enable: bool = False
+    regularization_info_path: Optional[str] = None
     freeze_lora_A: bool = field(default=False, metadata={"help": "Freeze LoRA A matrices, only train B matrices"})
     init_lora_from_gradients: Optional[str] = field(default=None, metadata={"help": "Path to gradient file (.pt) for SVD-based LoRA initialization"})
     mm_projector_lr: Optional[float] = None
@@ -793,11 +802,18 @@ class DataCollatorForSupervisedDataset(object):
 
 
 def make_supervised_data_module(tokenizer: transformers.PreTrainedTokenizer,
-                                data_args) -> Dict:
+                                data_args, prefix_len=0, cur_task=0, transfer_num=0) -> Dict:
     """Make dataset and collator for supervised fine-tuning."""
-    train_dataset = LazySupervisedDataset(tokenizer=tokenizer,
+    dataset_cls = LazySupervisedDataset
+    dataset_kwargs = {}
+    if os.environ.get("MCITLIB_METHOD") == "modalprompt":
+        from mcitlib.methods._modalprompt.data import ModalPromptLazySupervisedDataset
+        dataset_cls = ModalPromptLazySupervisedDataset
+        dataset_kwargs = {"prefix_len": prefix_len, "cur_task": cur_task, "transfer_num": transfer_num}
+    train_dataset = dataset_cls(tokenizer=tokenizer,
                                 data_path=data_args.data_path,
-                                data_args=data_args)
+                                data_args=data_args,
+                                **dataset_kwargs)
     data_collator = DataCollatorForSupervisedDataset(tokenizer=tokenizer)
     return dict(train_dataset=train_dataset,
                 eval_dataset=None,
@@ -873,10 +889,19 @@ def train():
                 **bnb_model_from_pretrained_args
             )
         else:
+            model_kwargs = dict(cache_dir=training_args.cache_dir, **bnb_model_from_pretrained_args)
+            if os.environ.get("MCITLIB_MODEL_OVERRIDE") in TEXT_MODEL_OVERRIDES:
+                model_kwargs["config"] = inject_text_tower_config(
+                    transformers.AutoConfig.from_pretrained(model_args.model_name_or_path),
+                    model_args.text_tower or model_args.vision_tower,
+                    model_args.mm_text_select_layer,
+                )
+            if os.environ.get("MCITLIB_METHOD") == "sefe":
+                model_kwargs["regularization_info_path"] = training_args.regularization_info_path
+                model_kwargs["torch_dtype"] = torch.bfloat16 if training_args.bf16 else None
             model = LlavaLlamaForCausalLM.from_pretrained(
                 model_args.model_name_or_path,
-                cache_dir=training_args.cache_dir,
-                **bnb_model_from_pretrained_args,
+                **model_kwargs,
             )
     else:
         model = transformers.LlamaForCausalLM.from_pretrained(
@@ -885,6 +910,8 @@ def train():
             **bnb_model_from_pretrained_args
         )
     model.config.use_cache = False
+    if os.environ.get("MCITLIB_MODEL_OVERRIDE") in TEXT_MODEL_OVERRIDES:
+        normalize_generation_config(model)
 
     if model_args.freeze_backbone:
         model.model.requires_grad_(False)
@@ -966,6 +993,25 @@ def train():
         else:
             conversation_lib.default_conversation = conversation_lib.conv_templates["vicuna_v1"]
 
+    if os.environ.get("MCITLIB_METHOD") == "modalprompt" and training_args.pt_enable:
+        assert not training_args.lora_enable, "Only one tuning can be turned on."
+        for param in model.parameters():
+            param.requires_grad = False
+        model.set_num_task(model_args.num_tasks)
+        tokenizer = model.set_comtinual_prompts_tokenizer(tokenizer=tokenizer, prefix_len=model_args.prefix_len)
+        clip_tokenizer = transformers.AutoTokenizer.from_pretrained(
+            model_args.text_tower,
+            cache_dir=training_args.cache_dir,
+            model_max_length=training_args.model_max_length,
+            padding_side="right",
+            use_fast=True,
+        )
+        model.set_cur_task(model_args.cur_task)
+        model.set_clip_tokenizer(clip_tokenizer)
+        model.set_proto_input_ids()
+        model.reset_vocab_size()
+        model.training = True
+
     if model_args.vision_tower is not None:
         model.get_model().initialize_vision_modules(
             model_args=model_args,
@@ -974,6 +1020,10 @@ def train():
         
         vision_tower = model.get_vision_tower()
         vision_tower.to(dtype=torch.bfloat16 if training_args.bf16 else torch.float16, device=training_args.device)
+        if os.environ.get("MCITLIB_MODEL_OVERRIDE") == "modalprompt" and training_args.pt_enable:
+            model.get_model().initialize_text_modules(model_args=model_args, fsdp=training_args.fsdp)
+            text_tower = model.get_text_tower()
+            text_tower.to(dtype=torch.bfloat16 if training_args.bf16 else torch.float16, device=training_args.device)
 
         data_args.image_processor = vision_tower.image_processor
         data_args.is_multimodal = True
@@ -1016,11 +1066,22 @@ def train():
                         module = module.to(torch.bfloat16)
 
     if model_args.previous_task_model_path is not None:
-        # load model from previous task
-        load_model_from_previous_task(model, model_args.previous_task_model_path)
+        if training_args.pt_enable:
+            assert not training_args.lora_enable, "only prompt tuning is implemented."
+            previous_path = os.path.join(model_args.previous_task_model_path, "non_lora_trainables.bin")
+            non_lora_trainables = torch.load(previous_path, map_location="cpu")
+            non_lora_trainables = {(k[11:] if k.startswith("base_model.") else k): v for k, v in non_lora_trainables.items()}
+            if any(k.startswith("model.model.") for k in non_lora_trainables):
+                non_lora_trainables = {(k[6:] if k.startswith("model.") else k): v for k, v in non_lora_trainables.items()}
+            model.load_state_dict(non_lora_trainables, strict=False)
+        else:
+            load_model_from_previous_task(model, model_args.previous_task_model_path)
 
     data_module = make_supervised_data_module(tokenizer=tokenizer,
-                                              data_args=data_args)
+                                              data_args=data_args,
+                                              prefix_len=model_args.prefix_len,
+                                              cur_task=model_args.cur_task,
+                                              transfer_num=model_args.transfer_num)
     trainer = LLaVATrainer(model=model,
                     tokenizer=tokenizer,
                     args=training_args,
@@ -1044,6 +1105,12 @@ def train():
         if training_args.local_rank == 0 or training_args.local_rank == -1:
             model.config.save_pretrained(training_args.output_dir)
             model.save_pretrained(training_args.output_dir, state_dict=state_dict)
+            torch.save(non_lora_state_dict, os.path.join(training_args.output_dir, 'non_lora_trainables.bin'))
+    elif training_args.pt_enable:
+        model.set_previou_transform_for_save(model_args.cur_task)
+        non_lora_state_dict = get_peft_state_non_lora_maybe_zero_3(model.named_parameters())
+        if training_args.local_rank == 0 or training_args.local_rank == -1:
+            model.config.save_pretrained(training_args.output_dir)
             torch.save(non_lora_state_dict, os.path.join(training_args.output_dir, 'non_lora_trainables.bin'))
     else:
         safe_save_model_for_hf_trainer(trainer=trainer,

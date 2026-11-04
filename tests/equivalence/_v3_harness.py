@@ -76,6 +76,8 @@ def main() -> None:
     examples = [dataset[0], dataset[1] if len(dataset) > 1 else dataset[0]]
     batch = collator(examples)
     output = {key: value for key, value in batch.items() if key in {"input_ids", "labels", "attention_mask", "images"}}
+    if args.method == "ModalPrompt":
+        output["modality_lengths"] = torch.tensor(dataset.modality_lengths)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     torch.save(output, args.out)
 

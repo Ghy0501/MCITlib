@@ -21,6 +21,9 @@ class ContinualMethod(ABC):
     separate_train_and_infer: ClassVar[bool] = False
     model_override: ClassVar[str | None] = None
 
+    def __init__(self, cfg: dict[str, Any] | None = None, ctx: Any = None):
+        self.cfg = cfg or {}
+
     @abstractmethod
     def select_train_data(self, task: TaskSpec) -> DataSource:
         raise NotImplementedError

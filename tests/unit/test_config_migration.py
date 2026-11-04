@@ -59,6 +59,8 @@ def source_paths(method: Any, benchmark: Any, task_name: str, task_id: int, rout
 def assert_task_matches(v3_root: Path, payload: dict[str, Any], actual: dict[str, Any], method: Any, benchmark: Any, task_name: str, task_id: int, router: bool = False) -> None:
     for key, relative in source_paths(method, benchmark, task_name, task_id, router).items():
         expected = normalise(json.loads((v3_root / "configs" / relative).read_text(encoding="utf-8")))
+        if relative in payload.get("config_placeholders", {}):
+            expected.update(payload["config_placeholders"][relative])
         assert actual[key] == expected, f"{method.id}/{benchmark.id}/task{task_id}: {key}"
         assert actual["source"][key] == relative
 
