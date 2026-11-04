@@ -47,7 +47,7 @@ def run_harness(repo_root: Path, v3_root: Path, implementation: str, entry: str,
     env.pop("CUDA_VISIBLE_DEVICES", None)
     result = subprocess.run(
         [sys.executable, str(harness), "--implementation", implementation, "--entry", entry,
-         "--data", str(data), "--image-folder", str(images), "--out", str(out)],
+         "--method", method_dir or "", "--data", str(data), "--image-folder", str(images), "--out", str(out)],
         cwd=repo_root,
         env=env,
         capture_output=True,
@@ -88,15 +88,16 @@ def test_standard_multi_image_data_matches_v3(repo_root: Path, v3_root: Path, tm
         assert torch.equal(v3[key], v4[key]), key
 
 
-@pytest.mark.parametrize("method_dir", ["OLoRA", "HiDe", "CL-MoE", "SMoLoRA", "DISCO"])
-def test_moe_variant_data_matches_their_v3_directories(repo_root: Path, v3_root: Path, tmp_path: Path, method_dir: str) -> None:
+@pytest.mark.parametrize("method_dir", ["OLoRA", "HiDe", "CL-MoE", "SMoLoRA", "DISCO", "ModalPrompt"])
+def test_variant_data_matches_their_v3_directories(repo_root: Path, v3_root: Path, tmp_path: Path, method_dir: str) -> None:
     data, images = make_fixture(tmp_path)
     stub = tmp_path / "stubs"
     stub.mkdir()
     (stub / "deepspeed.py").write_text("# import-only stub for data tests\n", encoding="utf-8")
     v3_output, v4_output = tmp_path / "v3.pt", tmp_path / "v4.pt"
-    run_harness(repo_root, v3_root, "v3", "moe", data, images, v3_output, stub, method_dir=method_dir)
-    run_harness(repo_root, v3_root, "v4", "moe", data, images, v4_output, stub)
+    entry = "standard" if method_dir == "ModalPrompt" else "moe"
+    run_harness(repo_root, v3_root, "v3", entry, data, images, v3_output, stub, method_dir=method_dir)
+    run_harness(repo_root, v3_root, "v4", entry, data, images, v4_output, stub)
     v3 = torch.load(v3_output, map_location="cpu")
     v4 = torch.load(v4_output, map_location="cpu")
     for key in v3:

@@ -40,6 +40,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--implementation", choices=["v3", "v4"], required=True)
     parser.add_argument("--entry", choices=["standard", "moe"], default="standard")
+    parser.add_argument("--method", default="")
     parser.add_argument("--data", type=Path, required=True)
     parser.add_argument("--image-folder", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
@@ -63,7 +64,8 @@ def main() -> None:
     data_args.mm_use_im_patch_token = False
     data_args.image_processor = ToyProcessor()
     tokenizer = ToyTokenizer()
-    module = module.make_supervised_data_module(tokenizer=tokenizer, data_args=data_args)
+    extra = {"prefix_len": 2, "cur_task": 1, "transfer_num": 3} if args.method == "ModalPrompt" else {}
+    module = module.make_supervised_data_module(tokenizer=tokenizer, data_args=data_args, **extra)
     dataset = module["train_dataset"]
     collator = module["data_collator"]
     examples = [dataset[0], dataset[1] if len(dataset) > 1 else dataset[0]]
