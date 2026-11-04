@@ -40,6 +40,21 @@ class PathResolver:
             repo_root=root,
         ))
 
+    def resolve_templates(self, value: str) -> str:
+        """Resolve path placeholders in argv/cwd without invoking a shell."""
+        replacements = {
+            "${model_root}": str(self.paths.model_root),
+            "${data_root}": str(self.paths.data_root),
+            "${ckpt_root}": str(self.paths.ckpt_root),
+            "${repo_root}": str(self.paths.repo_root),
+            "/your_model_path": str(self.paths.model_root),
+            "/your_data_path": str(self.paths.data_root),
+            "/your_ckpts_path": str(self.paths.ckpt_root),
+        }
+        for source, target in replacements.items():
+            value = value.replace(source, target)
+        return value
+
     def resolve(self, value: str | Path, kind: str = "data") -> Path:
         raw = os.path.expanduser(str(value))
         prefixes = {

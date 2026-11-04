@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 from mcitlib.cli import main
@@ -58,3 +59,27 @@ def test_cli_train_and_eval_dry_run(capsys) -> None:
     evaluate = json.loads(capsys.readouterr().out)
     assert evaluate
     assert all(command["kind"] == "eval" for command in evaluate)
+
+
+def test_cli_train_executes_and_resumes(tmp_path: Path, capsys) -> None:
+    from unittest.mock import patch
+
+    from mcitlib.config.schema import Command
+
+    output = tmp_path / "executed.txt"
+    command = Command(argv=[sys.executable, "-c", f"from pathlib import Path; Path({str(output)!r}).write_text('ok')"])
+    paths = tmp_path / "paths.yaml"
+    paths.write_text("model_root: models\ndata_root: data\nckpt_root: ckpts\n", encoding="utf-8")
+    argv = [
+        "train", "--method", "lora_ft", "--benchmark", "ucit",
+        "--config-root", str(tmp_path / "configs"), "--paths", str(paths),
+        "--run-dir", str(tmp_path / "run"),
+    ]
+    with patch("mcitlib.runner.build_sequence_commands", return_value=[command]):
+        assert main(argv) == 0
+        first = json.loads(capsys.readouterr().out)
+        assert first["steps"][0]["status"] == "completed"
+        assert main(argv + ["--resume"]) == 0
+        second = json.loads(capsys.readouterr().out)
+        assert second["steps"][0]["status"] == "skipped"
+    assert output.read_text() == "ok"

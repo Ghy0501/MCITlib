@@ -19,6 +19,8 @@ def _add_common(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--config-root", type=Path, default=Path("configs"))
     parser.add_argument("--sequence", choices=("train", "router"), default="train")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--resume", action="store_true", help="skip commands with completed markers")
+    parser.add_argument("--run-dir", type=Path, help="override checkpoint/log/marker directory")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -51,14 +53,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "metrics":
         print(json.dumps({"run_dir": str(args.run_dir), "status": "metrics implementation lands in L5"}, ensure_ascii=False))
         return 0
-    if not args.dry_run:
-        print("actual execution is installed in the GPU runner phase; use --dry-run for a command preview")
-        return 2
-    from .runner import build_sequence_commands
+    from .paths import PathResolver
+    from .runner import build_sequence_commands, execute_commands
+    repo_root = Path(args.config_root).resolve().parent
     paths = None
-    if args.paths:
-        from .paths import PathResolver
-        paths = PathResolver.from_file(args.paths, repo_root=Path.cwd())
+    if args.paths or not args.dry_run:
+        paths = PathResolver.from_file(args.paths, repo_root=repo_root)
     try:
         commands = build_sequence_commands(
             args.config_root,
@@ -73,7 +73,16 @@ def main(argv: list[str] | None = None) -> int:
     except (KeyError, ValueError, FileNotFoundError) as error:
         print(f"mcitlib: {error}", file=sys.stderr)
         return 2
-    print(json.dumps([command.as_dict() for command in commands], ensure_ascii=False, indent=2))
+    if args.dry_run:
+        print(json.dumps([command.as_dict() for command in commands], ensure_ascii=False, indent=2))
+        return 0
+    run_dir = args.run_dir or paths.run_dir(args.benchmark, args.method)
+    try:
+        results = execute_commands(commands, run_dir, repo_root, resume=args.resume)
+    except RuntimeError as error:
+        print(f"mcitlib: {error}", file=sys.stderr)
+        return 1
+    print(json.dumps({"run_dir": str(run_dir), "steps": results}, ensure_ascii=False, indent=2))
     return 0
 
 
