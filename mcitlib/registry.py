@@ -48,7 +48,7 @@ METHODS = (
     MethodSpec("disco", "DISCO", aliases=("DISCO",), train_entry="moe", required_capabilities=frozenset({"text_tower", "clip_features", "layer_index"}), model_override="disco"),
     MethodSpec("hide", "HiDe", aliases=("HiDe", "hide-llava"), train_entry="moe", required_capabilities=frozenset({"text_tower", "clip_features", "layer_index"}), model_override="hide"),
     MethodSpec("smolora", "SMoLoRA", aliases=("SMoLoRA", "smo-lora"), train_entry="moe"),
-    MethodSpec("modalprompt", "ModalPrompt", aliases=("ModalPrompt",), deepspeed_config="zero3_offload", separate_train_and_infer=True),
+    MethodSpec("modalprompt", "ModalPrompt", aliases=("ModalPrompt",), deepspeed_config="zero3_offload", required_capabilities=frozenset({"text_tower", "clip_features"}), separate_train_and_infer=True, model_override="modalprompt"),
     MethodSpec("sefe", "RegLoRA", aliases=("RegLoRA", "reglora", "SEFE"), env="llava-t437"),
     MethodSpec("keeplora", "KeepLoRA", aliases=("KeepLoRA", "keep-lora"), env="llava-t437"),
 )

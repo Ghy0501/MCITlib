@@ -9,6 +9,8 @@ def install_model_override(override: str | type | None) -> None:
         return
     if override == "disco":
         from ...methods._disco.llava_overrides import LlavaLlamaForCausalLM as override_cls
+    elif override == "modalprompt":
+        from ...methods._modalprompt.llava_overrides import MCITModalPrompt as override_cls
     elif override == "hide":
         from ...methods._hide.llava_overrides import LlavaLlamaForCausalLM as override_cls
     elif isinstance(override, str):

@@ -83,7 +83,8 @@ def build_sequence_commands(
             train.metadata["order"] = values["train_command"].get("order", -1)
             train.sequence = sequence
             commands.append(train)
-        commands.extend(_recorded_commands(values, task, include_extra=not only_eval, sequence=sequence))
+        if only_eval or not method.separate_train_and_infer:
+            commands.extend(_recorded_commands(values, task, include_extra=not only_eval, sequence=sequence))
     commands.sort(key=lambda command: (command.task_id or 0, command.metadata.get("order", -1)))
     return commands
 
