@@ -205,6 +205,41 @@ def _apply_replay_placeholders(configs_root: Path, benchmark_id: str) -> dict[st
     return placeholders
 
 
+# AR-7: v3's ModalPrompt UCIT/MLLM-DCL evaluation scripts read configuration keys that do not exist
+# (model_path from the *model* config, model_base, num_task) and never read result_path, so the
+# commands come out with empty --model-path/--model-base/--num-tasks and write to "/<TASK>/...".
+# Its ACL scripts (and every other method) use the correct form below.
+_AR7_REPLACEMENTS = (
+    ('MODELPATH=$(read_config "$MODEL_CONFIG" model_path)', 'MODELPATH=$(read_config "$TRAIN_CONFIG" model_path)'),
+    ('MODELBASE=$(read_config "$TRAIN_CONFIG" model_base)', 'MODELBASE=$(read_config "$MODEL_CONFIG" model_name)'),
+    ('NUM_TASK=$(read_config "$TRAIN_CONFIG" num_task)', 'NUM_TASK=$(read_config "$TRAIN_CONFIG" num_tasks)'),
+)
+_AR7_RESULT_PATH = 'RESULT_PATH=$(read_config "$TRAIN_CONFIG" result_path)\n'
+
+
+def _repair_modalprompt_eval_scripts(scripts_root: Path, method_id: str) -> list[str]:
+    """Apply AR-7 to the temporary copy only; the v3 tree is never modified."""
+    if method_id != "modalprompt":
+        return []
+    repaired: list[str] = []
+    for directory in ("Eval_UCIT", "Eval_MLLM_DCL"):
+        for script in sorted((scripts_root / "MCITlib" / directory).glob("eval_*.sh")):
+            text = original = script.read_text(encoding="utf-8")
+            for old, new in _AR7_REPLACEMENTS:
+                text = text.replace(old, new)
+            if "RESULT_PATH=$(read_config" not in text:
+                lines = text.splitlines(keepends=True)
+                for index, line in enumerate(lines):
+                    if line.startswith("STAGE=$(read_config"):
+                        lines.insert(index + 1, _AR7_RESULT_PATH)
+                        break
+                text = "".join(lines)
+            if text != original:
+                script.write_text(text, encoding="utf-8")
+                repaired.append(f"scripts/MCITlib/{directory}/{script.name}")
+    return repaired
+
+
 def _classify(argv: list[str]) -> str:
     executable = argv[0] if argv else ""
     text = " ".join(argv)
@@ -287,6 +322,7 @@ def run_sequence(
         _copy_tree_with_root(source_method / "scripts", temp_root / "scripts", temp_root)
         _copy_tree_with_root(v3_root / "configs", temp_root / "configs", temp_root)
         config_aliases = _apply_config_aliases(temp_root / "scripts", method.id)
+        script_repairs = {"AR-7": _repair_modalprompt_eval_scripts(temp_root / "scripts", method.id)}
         sequence_repairs: list[int] = []
         if not router:
             sequence_repairs = _repair_commented_tasks(
@@ -317,6 +353,25 @@ def run_sequence(
             check=False,
         )
         commands = _read_commands(log, temp_root, sequence, method.id)
+        eval_drivers: list[str] = []
+        if commands and not router and not any(item["kind"] == "eval" for item in commands):
+            # v3's ModalPrompt UCIT/DCL train drivers never call evaluation ("training and
+            # inference are run separately").  Its per-task driver Eval_*/Eval_finetune1.sh does
+            # exist, so record what it would run after each task, in task order.
+            driver = f"scripts/MCITlib/{benchmark.eval_dir}/Eval_finetune1.sh"
+            if (temp_root / driver).is_file():
+                for task_id in range(1, len(benchmark.tasks) + 1):
+                    eval_log = temp_root / f"eval-{task_id}.jsonl"
+                    eval_env = dict(env, MCITLIB_DUMP_LOG=str(eval_log))
+                    subprocess.run(
+                        ["bash", driver, str(task_id)], cwd=temp_root, env=eval_env,
+                        capture_output=True, text=True, check=False,
+                    )
+                    for index, record in enumerate(_read_commands(eval_log, temp_root, sequence, method.id)):
+                        record["task_id"] = task_id
+                        record["order"] = 100_000 + task_id * 1_000 + index
+                        commands.append(record)
+                eval_drivers.append(driver)
         if not commands:
             raise RuntimeError(
                 f"no commands recorded for {method_id}/{benchmark_id}: "
@@ -336,6 +391,8 @@ def run_sequence(
             "script_aliases": script_aliases,
             "config_placeholders": config_placeholders,
             "sequence_repairs": sequence_repairs,
+            "eval_drivers": eval_drivers,
+            "script_repairs": script_repairs,
             "path_placeholders": HARD_CODED_PATH_PLACEHOLDERS,
             "runner_exit_code": completed.returncode,
             "commands": commands,

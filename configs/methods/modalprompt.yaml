@@ -211,8 +211,132 @@ overrides:
           positional: []
           kind: train
           order: 1
-        eval_commands: []
+        eval_commands:
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task1_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '1'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task1/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task1_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '1'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task1/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 101001
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task1_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '1'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task1/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task1_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '1'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task1/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 101002
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          - --annotation-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task1/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task1
+          args:
+            annotation-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            result-file: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task1/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          kind: eval
+          order: 101003
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -401,8 +525,255 @@ overrides:
           positional: []
           kind: train
           order: 3
-        eval_commands: []
+        eval_commands:
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task2_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '2'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task2/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task2_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '2'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task2/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 102001
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task2_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '2'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task2/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task2_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '2'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task2/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 102002
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          - --annotation-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task2/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task2
+          args:
+            annotation-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            result-file: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task2/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task2
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          kind: eval
+          order: 102003
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task2_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ArxivQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '2'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task2/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task2_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ArxivQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '2'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task2/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 102005
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task2_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ArxivQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '2'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task2/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task2_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ArxivQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '2'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task2/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 102006
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          - --annotation-file
+          - ${data_root}/UCIT/ArxivQA/test_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task2/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task2
+          args:
+            annotation-file: ${data_root}/UCIT/ArxivQA/test_3000.json
+            result-file: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task2/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task2
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          kind: eval
+          order: 102007
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -592,8 +963,378 @@ overrides:
           positional: []
           kind: train
           order: 5
-        eval_commands: []
+        eval_commands:
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task3_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '3'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task3/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task3_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '3'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task3/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 103001
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task3_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '3'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task3/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task3_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '3'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task3/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 103002
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          - --annotation-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task3/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task3
+          args:
+            annotation-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            result-file: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task3/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task3
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          kind: eval
+          order: 103003
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task3_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ArxivQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '3'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task3/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task3_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ArxivQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '3'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task3/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 103005
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task3_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ArxivQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '3'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task3/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task3_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ArxivQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '3'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task3/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 103006
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          - --annotation-file
+          - ${data_root}/UCIT/ArxivQA/test_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task3/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task3
+          args:
+            annotation-file: ${data_root}/UCIT/ArxivQA/test_3000.json
+            result-file: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task3/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task3
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          kind: eval
+          order: 103007
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task3_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/VizWiz-caption/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '3'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task3/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task3_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/VizWiz-caption/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '3'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task3/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 103009
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task3_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/VizWiz-caption/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '3'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task3/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task3_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/VizWiz-caption/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '3'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task3/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 103010
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_caption
+          - --annotation-file
+          - ${data_root}/UCIT/VizWiz-caption/val_coco_type_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task3/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task3
+          args:
+            annotation-file: ${data_root}/UCIT/VizWiz-caption/val_coco_type_3000.json
+            result-file: ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task3/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task3
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_caption
+          kind: eval
+          order: 103011
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -782,8 +1523,501 @@ overrides:
           positional: []
           kind: train
           order: 7
-        eval_commands: []
+        eval_commands:
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task4_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '4'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task4/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task4_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '4'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task4/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 104001
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task4_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '4'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task4/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task4_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '4'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task4/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 104002
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          - --annotation-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task4/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task4
+          args:
+            annotation-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            result-file: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task4/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task4
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          kind: eval
+          order: 104003
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task4_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ArxivQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '4'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task4/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task4_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ArxivQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '4'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task4/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 104005
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task4_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ArxivQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '4'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task4/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task4_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ArxivQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '4'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task4/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 104006
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          - --annotation-file
+          - ${data_root}/UCIT/ArxivQA/test_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task4/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task4
+          args:
+            annotation-file: ${data_root}/UCIT/ArxivQA/test_3000.json
+            result-file: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task4/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task4
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          kind: eval
+          order: 104007
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task4_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/VizWiz-caption/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '4'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task4/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task4_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/VizWiz-caption/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '4'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task4/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 104009
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task4_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/VizWiz-caption/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '4'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task4/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task4_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/VizWiz-caption/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '4'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task4/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 104010
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_caption
+          - --annotation-file
+          - ${data_root}/UCIT/VizWiz-caption/val_coco_type_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task4/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task4
+          args:
+            annotation-file: ${data_root}/UCIT/VizWiz-caption/val_coco_type_3000.json
+            result-file: ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task4/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task4
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_caption
+          kind: eval
+          order: 104011
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task4_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/IconQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '4'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/IconQA/ModalPrompt-task4/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task4_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/IconQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '4'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/IconQA/ModalPrompt-task4/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 104013
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task4_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/IconQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '4'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/IconQA/ModalPrompt-task4/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task4_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/IconQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '4'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/IconQA/ModalPrompt-task4/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 104014
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          - --annotation-file
+          - ${data_root}/UCIT/IconQA/test_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/IconQA/ModalPrompt-task4/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/IconQA/ModalPrompt-task4
+          args:
+            annotation-file: ${data_root}/UCIT/IconQA/test_3000.json
+            result-file: ./results/UCIT/each_dataset/IconQA/ModalPrompt-task4/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/IconQA/ModalPrompt-task4
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          kind: eval
+          order: 104015
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -972,8 +2206,624 @@ overrides:
           positional: []
           kind: train
           order: 9
-        eval_commands: []
+        eval_commands:
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ArxivQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task5/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ArxivQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '5'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task5/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 105001
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ArxivQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task5/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ArxivQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '5'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task5/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 105002
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          - --annotation-file
+          - ${data_root}/UCIT/ArxivQA/test_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task5/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task5
+          args:
+            annotation-file: ${data_root}/UCIT/ArxivQA/test_3000.json
+            result-file: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task5/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task5
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          kind: eval
+          order: 105003
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task5/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '5'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task5/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 105005
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task5/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '5'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task5/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 105006
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          - --annotation-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task5/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task5
+          args:
+            annotation-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            result-file: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task5/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task5
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          kind: eval
+          order: 105007
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/VizWiz-caption/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task5/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/VizWiz-caption/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '5'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task5/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 105009
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/VizWiz-caption/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task5/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/VizWiz-caption/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '5'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task5/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 105010
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_caption
+          - --annotation-file
+          - ${data_root}/UCIT/VizWiz-caption/val_coco_type_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task5/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task5
+          args:
+            annotation-file: ${data_root}/UCIT/VizWiz-caption/val_coco_type_3000.json
+            result-file: ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task5/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task5
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_caption
+          kind: eval
+          order: 105011
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/IconQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/IconQA/ModalPrompt-task5/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/IconQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '5'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/IconQA/ModalPrompt-task5/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 105013
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/IconQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/IconQA/ModalPrompt-task5/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/IconQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '5'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/IconQA/ModalPrompt-task5/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 105014
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          - --annotation-file
+          - ${data_root}/UCIT/IconQA/test_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/IconQA/ModalPrompt-task5/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/IconQA/ModalPrompt-task5
+          args:
+            annotation-file: ${data_root}/UCIT/IconQA/test_3000.json
+            result-file: ./results/UCIT/each_dataset/IconQA/ModalPrompt-task5/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/IconQA/ModalPrompt-task5
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          kind: eval
+          order: 105015
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/CLEVR-Math/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/CLEVR-Math/ModalPrompt-task5/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/CLEVR-Math/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '5'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/CLEVR-Math/ModalPrompt-task5/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 105017
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/CLEVR-Math/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/CLEVR-Math/ModalPrompt-task5/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/CLEVR-Math/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '5'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/CLEVR-Math/ModalPrompt-task5/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 105018
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          - --annotation-file
+          - ${data_root}/UCIT/CLEVR-Math/test_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/CLEVR-Math/ModalPrompt-task5/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/CLEVR-Math/ModalPrompt-task5
+          args:
+            annotation-file: ${data_root}/UCIT/CLEVR-Math/test_3000.json
+            result-file: ./results/UCIT/each_dataset/CLEVR-Math/ModalPrompt-task5/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/CLEVR-Math/ModalPrompt-task5
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          kind: eval
+          order: 105019
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -1163,8 +3013,747 @@ overrides:
           positional: []
           kind: train
           order: 11
-        eval_commands: []
+        eval_commands:
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '6'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task6/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '6'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task6/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 106001
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '6'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task6/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '6'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task6/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 106002
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          - --annotation-file
+          - ${data_root}/UCIT/ImageNet-R/test_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task6/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task6
+          args:
+            annotation-file: ${data_root}/UCIT/ImageNet-R/test_3000.json
+            result-file: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task6/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/ImageNet-R/ModalPrompt-task6
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          kind: eval
+          order: 106003
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ArxivQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '6'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task6/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ArxivQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '6'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task6/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 106005
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/ArxivQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '6'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task6/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/ArxivQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '6'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task6/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 106006
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          - --annotation-file
+          - ${data_root}/UCIT/ArxivQA/test_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task6/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task6
+          args:
+            annotation-file: ${data_root}/UCIT/ArxivQA/test_3000.json
+            result-file: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task6/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/ArxivQA/ModalPrompt-task6
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          kind: eval
+          order: 106007
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/VizWiz-caption/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '6'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task6/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/VizWiz-caption/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '6'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task6/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 106009
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/VizWiz-caption/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '6'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task6/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/VizWiz-caption/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '6'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task6/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 106010
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_caption
+          - --annotation-file
+          - ${data_root}/UCIT/VizWiz-caption/val_coco_type_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task6/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task6
+          args:
+            annotation-file: ${data_root}/UCIT/VizWiz-caption/val_coco_type_3000.json
+            result-file: ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task6/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/VizWiz/ModalPrompt-task6
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_caption
+          kind: eval
+          order: 106011
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/IconQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '6'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/IconQA/ModalPrompt-task6/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/IconQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '6'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/IconQA/ModalPrompt-task6/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 106013
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/IconQA/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '6'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/IconQA/ModalPrompt-task6/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/IconQA/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '6'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/IconQA/ModalPrompt-task6/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 106014
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          - --annotation-file
+          - ${data_root}/UCIT/IconQA/test_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/IconQA/ModalPrompt-task6/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/IconQA/ModalPrompt-task6
+          args:
+            annotation-file: ${data_root}/UCIT/IconQA/test_3000.json
+            result-file: ./results/UCIT/each_dataset/IconQA/ModalPrompt-task6/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/IconQA/ModalPrompt-task6
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          kind: eval
+          order: 106015
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/CLEVR-Math/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '6'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/CLEVR-Math/ModalPrompt-task6/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/CLEVR-Math/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '6'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/CLEVR-Math/ModalPrompt-task6/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 106017
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/CLEVR-Math/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '6'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/CLEVR-Math/ModalPrompt-task6/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/CLEVR-Math/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '6'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/CLEVR-Math/ModalPrompt-task6/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 106018
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          - --annotation-file
+          - ${data_root}/UCIT/CLEVR-Math/test_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/CLEVR-Math/ModalPrompt-task6/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/CLEVR-Math/ModalPrompt-task6
+          args:
+            annotation-file: ${data_root}/UCIT/CLEVR-Math/test_3000.json
+            result-file: ./results/UCIT/each_dataset/CLEVR-Math/ModalPrompt-task6/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/CLEVR-Math/ModalPrompt-task6
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_deepseek_r1
+          kind: eval
+          order: 106019
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/Flickr30k-cap/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '6'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/Flickr30k/ModalPrompt-task6/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/Flickr30k-cap/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '6'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/Flickr30k/ModalPrompt-task6/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 106021
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          - --model-path
+          - ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/UCIT/Flickr30k-cap/test_3000.json
+          - --image-folder
+          - ${data_root}/UCIT
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '10'
+          - --cur-task
+          - '6'
+          - --num-tasks
+          - '6'
+          - --answers-file
+          - ./results/UCIT/each_dataset/Flickr30k/ModalPrompt-task6/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/UCIT/LLaVA/ModalPrompt/Task6_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/UCIT/Flickr30k-cap/test_3000.json
+            image-folder: ${data_root}/UCIT
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '10'
+            cur-task: '6'
+            num-tasks: '6'
+            answers-file: ./results/UCIT/each_dataset/Flickr30k/ModalPrompt-task6/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_others
+          kind: eval
+          order: 106022
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_caption
+          - --annotation-file
+          - ${data_root}/UCIT/Flickr30k-cap/val_coco_type_3000.json
+          - --result-file
+          - ./results/UCIT/each_dataset/Flickr30k/ModalPrompt-task6/merge.jsonl
+          - --output-dir
+          - ./results/UCIT/each_dataset/Flickr30k/ModalPrompt-task6
+          args:
+            annotation-file: ${data_root}/UCIT/Flickr30k-cap/val_coco_type_3000.json
+            result-file: ./results/UCIT/each_dataset/Flickr30k/ModalPrompt-task6/merge.jsonl
+            output-dir: ./results/UCIT/each_dataset/Flickr30k/ModalPrompt-task6
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_caption
+          kind: eval
+          order: 106023
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -1346,8 +3935,132 @@ overrides:
           positional: []
           kind: train
           order: 1
-        eval_commands: []
+        eval_commands:
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task1_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/RS/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/RS
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '1'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task1/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task1_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/RS/test.json
+            image-folder: ${data_root}/MLLM-CL/RS
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '1'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/RS/ModalPrompt-task1/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 101001
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task1_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/RS/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/RS
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '1'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task1/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task1_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/RS/test.json
+            image-folder: ${data_root}/MLLM-CL/RS
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '1'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/RS/ModalPrompt-task1/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 101002
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_ai2d
+          - --annotation-file
+          - ${data_root}/MLLM-CL/RS/test.json
+          - --result-file
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task1/merge.jsonl
+          - --output-dir
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task1
+          args:
+            annotation-file: ${data_root}/MLLM-CL/RS/test.json
+            result-file: ./results/DCL/each_dataset/RS/ModalPrompt-task1/merge.jsonl
+            output-dir: ./results/DCL/each_dataset/RS/ModalPrompt-task1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_ai2d
+          kind: eval
+          order: 101003
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -1536,8 +4249,255 @@ overrides:
           positional: []
           kind: train
           order: 3
-        eval_commands: []
+        eval_commands:
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_pvqa
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task2_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Med/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Med
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '2'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/Med/ModalPrompt-task2/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task2_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Med/test.json
+            image-folder: ${data_root}/MLLM-CL/Med
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '2'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/Med/ModalPrompt-task2/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_pvqa
+          kind: eval
+          order: 102001
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_pvqa
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task2_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Med/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Med
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '2'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/Med/ModalPrompt-task2/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task2_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Med/test.json
+            image-folder: ${data_root}/MLLM-CL/Med
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '2'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/Med/ModalPrompt-task2/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_pvqa
+          kind: eval
+          order: 102002
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_pvqa
+          - --annotation-file
+          - ${data_root}/MLLM-CL/Med/test.json
+          - --result-file
+          - ./results/DCL/each_dataset/Med/ModalPrompt-task2/merge.jsonl
+          - --output-dir
+          - ./results/DCL/each_dataset/Med/ModalPrompt-task2
+          args:
+            annotation-file: ${data_root}/MLLM-CL/Med/test.json
+            result-file: ./results/DCL/each_dataset/Med/ModalPrompt-task2/merge.jsonl
+            output-dir: ./results/DCL/each_dataset/Med/ModalPrompt-task2
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_pvqa
+          kind: eval
+          order: 102003
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task2_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/RS/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/RS
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '2'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task2/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task2_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/RS/test.json
+            image-folder: ${data_root}/MLLM-CL/RS
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '2'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/RS/ModalPrompt-task2/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 102005
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task2_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/RS/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/RS
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '2'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task2/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task2_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/RS/test.json
+            image-folder: ${data_root}/MLLM-CL/RS
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '2'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/RS/ModalPrompt-task2/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 102006
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_ai2d
+          - --annotation-file
+          - ${data_root}/MLLM-CL/RS/test.json
+          - --result-file
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task2/merge.jsonl
+          - --output-dir
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task2
+          args:
+            annotation-file: ${data_root}/MLLM-CL/RS/test.json
+            result-file: ./results/DCL/each_dataset/RS/ModalPrompt-task2/merge.jsonl
+            output-dir: ./results/DCL/each_dataset/RS/ModalPrompt-task2
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_ai2d
+          kind: eval
+          order: 102007
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -1726,8 +4686,378 @@ overrides:
           positional: []
           kind: train
           order: 5
-        eval_commands: []
+        eval_commands:
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_pvqa
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task3_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Med/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Med
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '3'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/Med/ModalPrompt-task3/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task3_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Med/test.json
+            image-folder: ${data_root}/MLLM-CL/Med
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '3'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/Med/ModalPrompt-task3/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_pvqa
+          kind: eval
+          order: 103001
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_pvqa
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task3_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Med/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Med
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '3'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/Med/ModalPrompt-task3/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task3_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Med/test.json
+            image-folder: ${data_root}/MLLM-CL/Med
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '3'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/Med/ModalPrompt-task3/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_pvqa
+          kind: eval
+          order: 103002
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_pvqa
+          - --annotation-file
+          - ${data_root}/MLLM-CL/Med/test.json
+          - --result-file
+          - ./results/DCL/each_dataset/Med/ModalPrompt-task3/merge.jsonl
+          - --output-dir
+          - ./results/DCL/each_dataset/Med/ModalPrompt-task3
+          args:
+            annotation-file: ${data_root}/MLLM-CL/Med/test.json
+            result-file: ./results/DCL/each_dataset/Med/ModalPrompt-task3/merge.jsonl
+            output-dir: ./results/DCL/each_dataset/Med/ModalPrompt-task3
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_pvqa
+          kind: eval
+          order: 103003
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task3_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/RS/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/RS
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '3'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task3/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task3_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/RS/test.json
+            image-folder: ${data_root}/MLLM-CL/RS
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '3'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/RS/ModalPrompt-task3/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 103005
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task3_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/RS/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/RS
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '3'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task3/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task3_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/RS/test.json
+            image-folder: ${data_root}/MLLM-CL/RS
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '3'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/RS/ModalPrompt-task3/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 103006
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_ai2d
+          - --annotation-file
+          - ${data_root}/MLLM-CL/RS/test.json
+          - --result-file
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task3/merge.jsonl
+          - --output-dir
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task3
+          args:
+            annotation-file: ${data_root}/MLLM-CL/RS/test.json
+            result-file: ./results/DCL/each_dataset/RS/ModalPrompt-task3/merge.jsonl
+            output-dir: ./results/DCL/each_dataset/RS/ModalPrompt-task3
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_ai2d
+          kind: eval
+          order: 103007
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task3_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/AD/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/AD
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '3'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/AD/ModalPrompt-task3/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task3_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/AD/test.json
+            image-folder: ${data_root}/MLLM-CL/AD
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '3'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/AD/ModalPrompt-task3/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 103009
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task3_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/AD/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/AD
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '3'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/AD/ModalPrompt-task3/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task3_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/AD/test.json
+            image-folder: ${data_root}/MLLM-CL/AD
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '3'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/AD/ModalPrompt-task3/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 103010
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_ai2d
+          - --annotation-file
+          - ${data_root}/MLLM-CL/AD/test.json
+          - --result-file
+          - ./results/DCL/each_dataset/AD/ModalPrompt-task3/merge.jsonl
+          - --output-dir
+          - ./results/DCL/each_dataset/AD/ModalPrompt-task3
+          args:
+            annotation-file: ${data_root}/MLLM-CL/AD/test.json
+            result-file: ./results/DCL/each_dataset/AD/ModalPrompt-task3/merge.jsonl
+            output-dir: ./results/DCL/each_dataset/AD/ModalPrompt-task3
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_ai2d
+          kind: eval
+          order: 103011
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -1916,8 +5246,501 @@ overrides:
           positional: []
           kind: train
           order: 7
-        eval_commands: []
+        eval_commands:
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/AD/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/AD
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '4'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/AD/ModalPrompt-task4/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/AD/test.json
+            image-folder: ${data_root}/MLLM-CL/AD
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '4'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/AD/ModalPrompt-task4/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 104001
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/AD/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/AD
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '4'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/AD/ModalPrompt-task4/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/AD/test.json
+            image-folder: ${data_root}/MLLM-CL/AD
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '4'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/AD/ModalPrompt-task4/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 104002
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_ai2d
+          - --annotation-file
+          - ${data_root}/MLLM-CL/AD/test.json
+          - --result-file
+          - ./results/DCL/each_dataset/AD/ModalPrompt-task4/merge.jsonl
+          - --output-dir
+          - ./results/DCL/each_dataset/AD/ModalPrompt-task4
+          args:
+            annotation-file: ${data_root}/MLLM-CL/AD/test.json
+            result-file: ./results/DCL/each_dataset/AD/ModalPrompt-task4/merge.jsonl
+            output-dir: ./results/DCL/each_dataset/AD/ModalPrompt-task4
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_ai2d
+          kind: eval
+          order: 104003
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/RS/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/RS
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '4'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task4/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/RS/test.json
+            image-folder: ${data_root}/MLLM-CL/RS
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '4'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/RS/ModalPrompt-task4/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 104005
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/RS/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/RS
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '4'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task4/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/RS/test.json
+            image-folder: ${data_root}/MLLM-CL/RS
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '4'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/RS/ModalPrompt-task4/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 104006
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_ai2d
+          - --annotation-file
+          - ${data_root}/MLLM-CL/RS/test.json
+          - --result-file
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task4/merge.jsonl
+          - --output-dir
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task4
+          args:
+            annotation-file: ${data_root}/MLLM-CL/RS/test.json
+            result-file: ./results/DCL/each_dataset/RS/ModalPrompt-task4/merge.jsonl
+            output-dir: ./results/DCL/each_dataset/RS/ModalPrompt-task4
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_ai2d
+          kind: eval
+          order: 104007
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_pvqa
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Med/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Med
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '4'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/Med/ModalPrompt-task4/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Med/test.json
+            image-folder: ${data_root}/MLLM-CL/Med
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '4'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/Med/ModalPrompt-task4/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_pvqa
+          kind: eval
+          order: 104009
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_pvqa
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Med/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Med
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '4'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/Med/ModalPrompt-task4/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Med/test.json
+            image-folder: ${data_root}/MLLM-CL/Med
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '4'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/Med/ModalPrompt-task4/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_pvqa
+          kind: eval
+          order: 104010
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_pvqa
+          - --annotation-file
+          - ${data_root}/MLLM-CL/Med/test.json
+          - --result-file
+          - ./results/DCL/each_dataset/Med/ModalPrompt-task4/merge.jsonl
+          - --output-dir
+          - ./results/DCL/each_dataset/Med/ModalPrompt-task4
+          args:
+            annotation-file: ${data_root}/MLLM-CL/Med/test.json
+            result-file: ./results/DCL/each_dataset/Med/ModalPrompt-task4/merge.jsonl
+            output-dir: ./results/DCL/each_dataset/Med/ModalPrompt-task4
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_pvqa
+          kind: eval
+          order: 104011
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Sci/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Sci
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '4'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/Sci/ModalPrompt-task4/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Sci/test.json
+            image-folder: ${data_root}/MLLM-CL/Sci
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '4'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/Sci/ModalPrompt-task4/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 104013
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Sci/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Sci
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '4'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/Sci/ModalPrompt-task4/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Sci/test.json
+            image-folder: ${data_root}/MLLM-CL/Sci
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '4'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/Sci/ModalPrompt-task4/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 104014
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_sci
+          - --annotation-file
+          - ${data_root}/MLLM-CL/Sci/test.json
+          - --result-file
+          - ./results/DCL/each_dataset/Sci/ModalPrompt-task4/merge.jsonl
+          - --output-dir
+          - ./results/DCL/each_dataset/Sci/ModalPrompt-task4
+          args:
+            annotation-file: ${data_root}/MLLM-CL/Sci/test.json
+            result-file: ./results/DCL/each_dataset/Sci/ModalPrompt-task4/merge.jsonl
+            output-dir: ./results/DCL/each_dataset/Sci/ModalPrompt-task4
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_sci
+          kind: eval
+          order: 104015
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -2106,8 +5929,624 @@ overrides:
           positional: []
           kind: train
           order: 9
-        eval_commands: []
+        eval_commands:
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/AD/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/AD
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/AD/ModalPrompt-task5/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/AD/test.json
+            image-folder: ${data_root}/MLLM-CL/AD
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '5'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/AD/ModalPrompt-task5/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 105001
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/AD/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/AD
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/AD/ModalPrompt-task5/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/AD/test.json
+            image-folder: ${data_root}/MLLM-CL/AD
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '5'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/AD/ModalPrompt-task5/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 105002
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_ai2d
+          - --annotation-file
+          - ${data_root}/MLLM-CL/AD/test.json
+          - --result-file
+          - ./results/DCL/each_dataset/AD/ModalPrompt-task5/merge.jsonl
+          - --output-dir
+          - ./results/DCL/each_dataset/AD/ModalPrompt-task5
+          args:
+            annotation-file: ${data_root}/MLLM-CL/AD/test.json
+            result-file: ./results/DCL/each_dataset/AD/ModalPrompt-task5/merge.jsonl
+            output-dir: ./results/DCL/each_dataset/AD/ModalPrompt-task5
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_ai2d
+          kind: eval
+          order: 105003
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/RS/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/RS
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task5/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/RS/test.json
+            image-folder: ${data_root}/MLLM-CL/RS
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '5'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/RS/ModalPrompt-task5/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 105005
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/RS/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/RS
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task5/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/RS/test.json
+            image-folder: ${data_root}/MLLM-CL/RS
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '5'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/RS/ModalPrompt-task5/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 105006
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_ai2d
+          - --annotation-file
+          - ${data_root}/MLLM-CL/RS/test.json
+          - --result-file
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task5/merge.jsonl
+          - --output-dir
+          - ./results/DCL/each_dataset/RS/ModalPrompt-task5
+          args:
+            annotation-file: ${data_root}/MLLM-CL/RS/test.json
+            result-file: ./results/DCL/each_dataset/RS/ModalPrompt-task5/merge.jsonl
+            output-dir: ./results/DCL/each_dataset/RS/ModalPrompt-task5
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_ai2d
+          kind: eval
+          order: 105007
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_pvqa
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Med/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Med
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/Med/ModalPrompt-task5/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Med/test.json
+            image-folder: ${data_root}/MLLM-CL/Med
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '5'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/Med/ModalPrompt-task5/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_pvqa
+          kind: eval
+          order: 105009
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_pvqa
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Med/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Med
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/Med/ModalPrompt-task5/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Med/test.json
+            image-folder: ${data_root}/MLLM-CL/Med
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '5'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/Med/ModalPrompt-task5/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_pvqa
+          kind: eval
+          order: 105010
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_pvqa
+          - --annotation-file
+          - ${data_root}/MLLM-CL/Med/test.json
+          - --result-file
+          - ./results/DCL/each_dataset/Med/ModalPrompt-task5/merge.jsonl
+          - --output-dir
+          - ./results/DCL/each_dataset/Med/ModalPrompt-task5
+          args:
+            annotation-file: ${data_root}/MLLM-CL/Med/test.json
+            result-file: ./results/DCL/each_dataset/Med/ModalPrompt-task5/merge.jsonl
+            output-dir: ./results/DCL/each_dataset/Med/ModalPrompt-task5
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_pvqa
+          kind: eval
+          order: 105011
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Sci/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Sci
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/Sci/ModalPrompt-task5/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Sci/test.json
+            image-folder: ${data_root}/MLLM-CL/Sci
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '5'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/Sci/ModalPrompt-task5/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 105013
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Sci/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Sci
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/Sci/ModalPrompt-task5/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Sci/test.json
+            image-folder: ${data_root}/MLLM-CL/Sci
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '5'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/Sci/ModalPrompt-task5/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_ai2d
+          kind: eval
+          order: 105014
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_sci
+          - --annotation-file
+          - ${data_root}/MLLM-CL/Sci/test.json
+          - --result-file
+          - ./results/DCL/each_dataset/Sci/ModalPrompt-task5/merge.jsonl
+          - --output-dir
+          - ./results/DCL/each_dataset/Sci/ModalPrompt-task5
+          args:
+            annotation-file: ${data_root}/MLLM-CL/Sci/test.json
+            result-file: ./results/DCL/each_dataset/Sci/ModalPrompt-task5/merge.jsonl
+            output-dir: ./results/DCL/each_dataset/Sci/ModalPrompt-task5
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_sci
+          kind: eval
+          order: 105015
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_fin
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Fin/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Fin
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/Fin/ModalPrompt-task5/2_0.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '0'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Fin/test.json
+            image-folder: ${data_root}/MLLM-CL/Fin
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '5'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/Fin/ModalPrompt-task5/2_0.jsonl
+            num-chunks: '2'
+            chunk-idx: '0'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_fin
+          kind: eval
+          order: 105017
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.model_fin
+          - --model-path
+          - ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+          - --model-base
+          - ${model_root}/llava-v1.5-7b
+          - --question-file
+          - ${data_root}/MLLM-CL/Fin/test.json
+          - --image-folder
+          - ${data_root}/MLLM-CL/Fin
+          - --text-tower
+          - ${model_root}/clip-vit-large-patch14-336
+          - --prefix-len
+          - '20'
+          - --cur-task
+          - '5'
+          - --num-tasks
+          - '5'
+          - --answers-file
+          - ./results/DCL/each_dataset/Fin/ModalPrompt-task5/2_1.jsonl
+          - --num-chunks
+          - '2'
+          - --chunk-idx
+          - '1'
+          - --temperature
+          - '0'
+          - --conv-mode
+          - vicuna_v1
+          args:
+            model-path: ${ckpt_root}/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava
+            model-base: ${model_root}/llava-v1.5-7b
+            question-file: ${data_root}/MLLM-CL/Fin/test.json
+            image-folder: ${data_root}/MLLM-CL/Fin
+            text-tower: ${model_root}/clip-vit-large-patch14-336
+            prefix-len: '20'
+            cur-task: '5'
+            num-tasks: '5'
+            answers-file: ./results/DCL/each_dataset/Fin/ModalPrompt-task5/2_1.jsonl
+            num-chunks: '2'
+            chunk-idx: '1'
+            temperature: '0'
+            conv-mode: vicuna_v1
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.model_fin
+          kind: eval
+          order: 105018
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
+        - argv:
+          - python
+          - -m
+          - llava.eval.ModalPrompt.eval_finvis
+          - --annotation-file
+          - ${data_root}/MLLM-CL/Fin/test.json
+          - --result-file
+          - ./results/DCL/each_dataset/Fin/ModalPrompt-task5/merge.jsonl
+          - --output-dir
+          - ./results/DCL/each_dataset/Fin/ModalPrompt-task5
+          args:
+            annotation-file: ${data_root}/MLLM-CL/Fin/test.json
+            result-file: ./results/DCL/each_dataset/Fin/ModalPrompt-task5/merge.jsonl
+            output-dir: ./results/DCL/each_dataset/Fin/ModalPrompt-task5
+          positional:
+          - -m
+          - llava.eval.ModalPrompt.eval_finvis
+          kind: eval
+          order: 105019
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -2339,6 +6778,8 @@ overrides:
           - llava.eval.ModalPrompt.model_ocr
           kind: eval
           order: 10
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -2388,6 +6829,8 @@ overrides:
           - llava.eval.ModalPrompt.model_ocr
           kind: eval
           order: 11
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -2407,7 +6850,10 @@ overrides:
           - llava.eval.ModalPrompt.eval_ocr
           kind: eval
           order: 12
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -2646,6 +7092,8 @@ overrides:
           - llava.eval.ModalPrompt.model_ocr
           kind: eval
           order: 15
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -2695,6 +7143,8 @@ overrides:
           - llava.eval.ModalPrompt.model_ocr
           kind: eval
           order: 16
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -2714,6 +7164,8 @@ overrides:
           - llava.eval.ModalPrompt.eval_ocr
           kind: eval
           order: 17
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -2766,6 +7218,8 @@ overrides:
           - llava.eval.ModalPrompt.model_math
           kind: eval
           order: 19
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -2818,6 +7272,8 @@ overrides:
           - llava.eval.ModalPrompt.model_math
           kind: eval
           order: 20
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -2831,7 +7287,10 @@ overrides:
           - llava.eval.ModalPrompt.eval_math
           kind: eval
           order: 21
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -3070,6 +7529,8 @@ overrides:
           - llava.eval.ModalPrompt.model_ocr
           kind: eval
           order: 24
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3119,6 +7580,8 @@ overrides:
           - llava.eval.ModalPrompt.model_ocr
           kind: eval
           order: 25
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3138,6 +7601,8 @@ overrides:
           - llava.eval.ModalPrompt.eval_ocr
           kind: eval
           order: 26
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -3190,6 +7655,8 @@ overrides:
           - llava.eval.ModalPrompt.model_math
           kind: eval
           order: 28
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3242,6 +7709,8 @@ overrides:
           - llava.eval.ModalPrompt.model_math
           kind: eval
           order: 29
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3255,6 +7724,8 @@ overrides:
           - llava.eval.ModalPrompt.eval_math
           kind: eval
           order: 30
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -3304,6 +7775,8 @@ overrides:
           - llava.eval.ModalPrompt.model_sat
           kind: eval
           order: 32
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3353,6 +7826,8 @@ overrides:
           - llava.eval.ModalPrompt.model_sat
           kind: eval
           order: 33
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3372,7 +7847,10 @@ overrides:
           - llava.eval.ModalPrompt.eval_sat
           kind: eval
           order: 34
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install
@@ -3611,6 +8089,8 @@ overrides:
           - llava.eval.ModalPrompt.model_ocr
           kind: eval
           order: 37
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3660,6 +8140,8 @@ overrides:
           - llava.eval.ModalPrompt.model_ocr
           kind: eval
           order: 38
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3679,6 +8161,8 @@ overrides:
           - llava.eval.ModalPrompt.eval_ocr
           kind: eval
           order: 39
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -3731,6 +8215,8 @@ overrides:
           - llava.eval.ModalPrompt.model_math
           kind: eval
           order: 41
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3783,6 +8269,8 @@ overrides:
           - llava.eval.ModalPrompt.model_math
           kind: eval
           order: 42
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3796,6 +8284,8 @@ overrides:
           - llava.eval.ModalPrompt.eval_math
           kind: eval
           order: 43
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -3845,6 +8335,8 @@ overrides:
           - llava.eval.ModalPrompt.model_sat
           kind: eval
           order: 45
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -3894,6 +8386,8 @@ overrides:
           - llava.eval.ModalPrompt.model_sat
           kind: eval
           order: 46
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -3913,6 +8407,8 @@ overrides:
           - llava.eval.ModalPrompt.eval_sat
           kind: eval
           order: 47
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         - argv:
           - python
           - -m
@@ -3962,6 +8458,8 @@ overrides:
           - llava.eval.ModalPrompt.model_ai2d
           kind: eval
           order: 49
+          env:
+            CUDA_VISIBLE_DEVICES: '1'
         - argv:
           - python
           - -m
@@ -4011,6 +8509,8 @@ overrides:
           - llava.eval.ModalPrompt.model_ai2d
           kind: eval
           order: 50
+          env:
+            CUDA_VISIBLE_DEVICES: '0'
         - argv:
           - python
           - -m
@@ -4027,7 +8527,10 @@ overrides:
           - llava.eval.ModalPrompt.convert_result_to_submission
           kind: eval
           order: 51
+          env:
+            CUDA_VISIBLE_DEVICES: 0,1
         extra_commands: []
+        other_commands: []
         removed_install_commands:
         - - pip
           - install

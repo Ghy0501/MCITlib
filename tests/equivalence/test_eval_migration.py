@@ -3,6 +3,7 @@
 """B4: migrated evaluation sources preserve each method's v3 implementation."""
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from mcitlib.registry import BENCHMARKS, METHODS
@@ -24,9 +25,13 @@ def _without_added_headers(text: str) -> str:
     return "\n".join(lines).rstrip()
 
 
+# v3 files that put their own directory on sys.path; removed in v4 (no hard-coded paths).
+V3_PATH_HACK = re.compile(r"^sys\.path\.append\('/your_path/[^']*'\)\n", re.MULTILINE)
+
+
 def _source_text(path: Path) -> str:
     text = path.read_text().replace(COiN_IMPORT, MCIT_IMPORT).replace(SMOLORA_V3_IMPORT, SMOLORA_V4_IMPORT)
-    return _without_added_headers(text)
+    return _without_added_headers(V3_PATH_HACK.sub("", text))
 
 
 def test_eval_files_match_their_method_specific_v3_sources(repo_root: Path, v3_root: Path) -> None:
@@ -40,6 +45,8 @@ def test_eval_files_match_their_method_specific_v3_sources(repo_root: Path, v3_r
             only_eval=True, sequence=sequence,
         )
         for command in commands:
+            if command.metadata.get("merge_chunks"):
+                continue
             source_module = command.metadata["source_eval_module"]
             key = (method.id, source_module)
             if key in checked:
@@ -47,7 +54,15 @@ def test_eval_files_match_their_method_specific_v3_sources(repo_root: Path, v3_r
             checked.add(key)
             source = v3_root / "LLaVA" / method.v3_dir / Path(*source_module.split("."))
             source = source.with_suffix(".py")
-            if not source.is_file():
+            if not source.is_file() and source_module.startswith("llava.eval.ModalPrompt."):
+                # AR-6: the module named by v3's ModalPrompt scripts does not exist in v3; its own
+                # tree keeps the same scorer one level up (llava/eval/<leaf>.py).
+                leaf = source_module.rsplit(".", 1)[1]
+                source = v3_root / "LLaVA" / method.v3_dir / "llava/eval" / f"{leaf}.py"
+                assert source.is_file(), source
+                shared_copy = v3_root / "LLaVA/LoRA-FT/llava/eval/CoIN" / f"{leaf}.py"
+                assert source.read_bytes() == shared_copy.read_bytes(), f"{leaf}: ModalPrompt scorer differs from CoIN's"
+            elif not source.is_file():
                 # KeepLoRA relies on the shared conversion implementation.
                 source = v3_root / "LLaVA/LoRA-FT" / Path(*source_module.split("."))
                 source = source.with_suffix(".py")
@@ -57,7 +72,7 @@ def test_eval_files_match_their_method_specific_v3_sources(repo_root: Path, v3_r
             assert source.is_file(), source
             assert target.is_file(), target
             assert _source_text(target) == _source_text(source), f"{method.id}: {source_module}"
-    assert len(checked) == 178
+    assert len(checked) == 178 + 9, len(checked)  # + ModalPrompt UCIT/DCL evaluation modules
 
 
 def test_router_scripts_only_change_the_configurable_results_root(repo_root: Path, v3_root: Path) -> None:

@@ -14,6 +14,7 @@ from typing import Any
 
 from .config.loader import deep_merge, load_layered_config
 from .config.schema import Command, DataSource, RunConfig, TaskSpec
+from .eval.chunks import insert_merge_steps
 from .methods import create_method
 from .paths import process_env, vendored_pythonpath
 from .registry import get_backbone, get_benchmark, get_method
@@ -159,7 +160,8 @@ def build_sequence_commands(
             command.env = {key: paths.resolve_templates(str(value)) for key, value in command.env.items()}
     _ensure_pythonpath(commands, config_root)
     commands.sort(key=lambda command: (command.task_id or 0, command.metadata.get("order", -1)))
-    return commands
+    # v3 merged the per-GPU chunk files with shell `cat` before scoring; restore that step.
+    return insert_merge_steps(commands)
 
 
 def _step_identity(command: Command) -> str:

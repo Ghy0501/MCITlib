@@ -12,6 +12,24 @@
   "script_aliases": {},
   "config_placeholders": {},
   "sequence_repairs": [],
+  "eval_drivers": [
+    "scripts/MCITlib/Eval_MLLM_DCL/Eval_finetune1.sh"
+  ],
+  "script_repairs": {
+    "AR-7": [
+      "scripts/MCITlib/Eval_UCIT/eval_arxivqa.sh",
+      "scripts/MCITlib/Eval_UCIT/eval_clevr.sh",
+      "scripts/MCITlib/Eval_UCIT/eval_flickr30k.sh",
+      "scripts/MCITlib/Eval_UCIT/eval_iconqa.sh",
+      "scripts/MCITlib/Eval_UCIT/eval_imagenet.sh",
+      "scripts/MCITlib/Eval_UCIT/eval_vizwiz.sh",
+      "scripts/MCITlib/Eval_MLLM_DCL/eval_ad.sh",
+      "scripts/MCITlib/Eval_MLLM_DCL/eval_fin.sh",
+      "scripts/MCITlib/Eval_MLLM_DCL/eval_med.sh",
+      "scripts/MCITlib/Eval_MLLM_DCL/eval_rs.sh",
+      "scripts/MCITlib/Eval_MLLM_DCL/eval_sci.sh"
+    ]
+  },
   "path_placeholders": {
     "/home/hongbo_zhao/ghy-cl-codebase/clip-vit-large-patch14-336": "/your_model_path/clip-vit-large-patch14-336",
     "/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints": "/your_ckpts_path",
@@ -29,9 +47,7 @@
         "."
       ],
       "cwd": "/private__V3_ROOT__",
-      "env": {
-        "PYTHONPATH": "."
-      },
+      "env": {},
       "kind": "install",
       "task_id": 1,
       "sequence": "train"
@@ -129,9 +145,7 @@
         "none"
       ],
       "cwd": "/private__V3_ROOT__",
-      "env": {
-        "PYTHONPATH": "."
-      },
+      "env": {},
       "kind": "train",
       "task_id": 1,
       "sequence": "train"
@@ -145,9 +159,7 @@
         "."
       ],
       "cwd": "/private__V3_ROOT__",
-      "env": {
-        "PYTHONPATH": "."
-      },
+      "env": {},
       "kind": "install",
       "task_id": 1,
       "sequence": "train"
@@ -247,9 +259,7 @@
         "none"
       ],
       "cwd": "/private__V3_ROOT__",
-      "env": {
-        "PYTHONPATH": "."
-      },
+      "env": {},
       "kind": "train",
       "task_id": 2,
       "sequence": "train"
@@ -263,9 +273,7 @@
         "."
       ],
       "cwd": "/private__V3_ROOT__",
-      "env": {
-        "PYTHONPATH": "."
-      },
+      "env": {},
       "kind": "install",
       "task_id": 2,
       "sequence": "train"
@@ -365,9 +373,7 @@
         "none"
       ],
       "cwd": "/private__V3_ROOT__",
-      "env": {
-        "PYTHONPATH": "."
-      },
+      "env": {},
       "kind": "train",
       "task_id": 3,
       "sequence": "train"
@@ -381,9 +387,7 @@
         "."
       ],
       "cwd": "/private__V3_ROOT__",
-      "env": {
-        "PYTHONPATH": "."
-      },
+      "env": {},
       "kind": "install",
       "task_id": 3,
       "sequence": "train"
@@ -483,9 +487,7 @@
         "none"
       ],
       "cwd": "/private__V3_ROOT__",
-      "env": {
-        "PYTHONPATH": "."
-      },
+      "env": {},
       "kind": "train",
       "task_id": 4,
       "sequence": "train"
@@ -499,9 +501,7 @@
         "."
       ],
       "cwd": "/private__V3_ROOT__",
-      "env": {
-        "PYTHONPATH": "."
-      },
+      "env": {},
       "kind": "install",
       "task_id": 4,
       "sequence": "train"
@@ -601,10 +601,1763 @@
         "none"
       ],
       "cwd": "/private__V3_ROOT__",
-      "env": {
-        "PYTHONPATH": "."
-      },
+      "env": {},
       "kind": "train",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 101000,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {},
+      "kind": "install",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 101001,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task1_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/RS",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "1",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task1/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "kind": "eval",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 101002,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task1_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/RS",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "1",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task1/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1"
+      },
+      "kind": "eval",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 101003,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.eval_ai2d",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task1/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1"
+      },
+      "kind": "eval",
+      "task_id": 1,
+      "sequence": "train"
+    },
+    {
+      "order": 102000,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {},
+      "kind": "install",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 102001,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_pvqa",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task2_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/Med/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/Med",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "2",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/Med/ModalPrompt-task2/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "kind": "eval",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 102002,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_pvqa",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task2_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/Med/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/Med",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "2",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/Med/ModalPrompt-task2/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1"
+      },
+      "kind": "eval",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 102003,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.eval_pvqa",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Med/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Med/ModalPrompt-task2/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Med/ModalPrompt-task2"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1"
+      },
+      "kind": "eval",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 102004,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {},
+      "kind": "install",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 102005,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task2_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/RS",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "2",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task2/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1"
+      },
+      "kind": "eval",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 102006,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task2_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/RS",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "2",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task2/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "kind": "eval",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 102007,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.eval_ai2d",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task2/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task2"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1"
+      },
+      "kind": "eval",
+      "task_id": 2,
+      "sequence": "train"
+    },
+    {
+      "order": 103000,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {},
+      "kind": "install",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 103001,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_pvqa",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task3_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/Med/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/Med",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "3",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/Med/ModalPrompt-task3/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 103002,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_pvqa",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task3_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/Med/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/Med",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "3",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/Med/ModalPrompt-task3/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1"
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 103003,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.eval_pvqa",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Med/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Med/ModalPrompt-task3/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Med/ModalPrompt-task3"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1"
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 103004,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {},
+      "kind": "install",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 103005,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task3_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/RS",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "3",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task3/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1"
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 103006,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task3_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/RS",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "3",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task3/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 103007,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.eval_ai2d",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task3/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task3"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1"
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 103008,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {},
+      "kind": "install",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 103009,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task3_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/AD/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/AD",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "3",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/AD/ModalPrompt-task3/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1"
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 103010,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task3_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/AD/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/AD",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "3",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/AD/ModalPrompt-task3/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 103011,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.eval_ai2d",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/AD/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/AD/ModalPrompt-task3/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/AD/ModalPrompt-task3"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1"
+      },
+      "kind": "eval",
+      "task_id": 3,
+      "sequence": "train"
+    },
+    {
+      "order": 104000,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {},
+      "kind": "install",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 104001,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/AD/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/AD",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "4",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/AD/ModalPrompt-task4/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 104002,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/AD/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/AD",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "4",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/AD/ModalPrompt-task4/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1"
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 104003,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.eval_ai2d",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/AD/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/AD/ModalPrompt-task4/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/AD/ModalPrompt-task4"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1"
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 104004,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {},
+      "kind": "install",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 104005,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/RS",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "4",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task4/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 104006,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/RS",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "4",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task4/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1"
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 104007,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.eval_ai2d",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task4/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task4"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1"
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 104008,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {},
+      "kind": "install",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 104009,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_pvqa",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/Med/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/Med",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "4",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/Med/ModalPrompt-task4/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1"
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 104010,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_pvqa",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/Med/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/Med",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "4",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/Med/ModalPrompt-task4/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 104011,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.eval_pvqa",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Med/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Med/ModalPrompt-task4/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Med/ModalPrompt-task4"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1"
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 104012,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {},
+      "kind": "install",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 104013,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/Sci/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/Sci",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "4",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/Sci/ModalPrompt-task4/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1"
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 104014,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task4_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/Sci/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/Sci",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "4",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/Sci/ModalPrompt-task4/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 104015,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.eval_sci",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Sci/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Sci/ModalPrompt-task4/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Sci/ModalPrompt-task4"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1"
+      },
+      "kind": "eval",
+      "task_id": 4,
+      "sequence": "train"
+    },
+    {
+      "order": 105000,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {},
+      "kind": "install",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 105001,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/AD/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/AD",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "5",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/AD/ModalPrompt-task5/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1"
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 105002,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/AD/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/AD",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "5",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/AD/ModalPrompt-task5/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 105003,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.eval_ai2d",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/AD/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/AD/ModalPrompt-task5/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/AD/ModalPrompt-task5"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1"
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 105004,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {},
+      "kind": "install",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 105005,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/RS",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "5",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task5/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1"
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 105006,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/RS",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "5",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task5/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 105007,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.eval_ai2d",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/RS/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task5/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/RS/ModalPrompt-task5"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1"
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 105008,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {},
+      "kind": "install",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 105009,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_pvqa",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/Med/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/Med",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "5",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/Med/ModalPrompt-task5/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1"
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 105010,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_pvqa",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/Med/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/Med",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "5",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/Med/ModalPrompt-task5/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 105011,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.eval_pvqa",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Med/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Med/ModalPrompt-task5/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Med/ModalPrompt-task5"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1"
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 105012,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {},
+      "kind": "install",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 105013,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/Sci/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/Sci",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "5",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/Sci/ModalPrompt-task5/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1"
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 105014,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_ai2d",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/Sci/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/Sci",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "5",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/Sci/ModalPrompt-task5/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 105015,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.eval_sci",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Sci/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Sci/ModalPrompt-task5/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Sci/ModalPrompt-task5"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1"
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 105016,
+      "argv": [
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {},
+      "kind": "install",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 105017,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_fin",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/Fin/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/Fin",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "5",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/Fin/ModalPrompt-task5/2_0.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "0",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 105018,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.model_fin",
+        "--model-path",
+        "/your_ckpts_path/MLLM-DCL/LLaVA/ModalPrompt/Task5_llava",
+        "--model-base",
+        "/your_model_path/llava-v1.5-7b",
+        "--question-file",
+        "/your_data_path/MLLM-CL/Fin/test.json",
+        "--image-folder",
+        "/your_data_path/MLLM-CL/Fin",
+        "--text-tower",
+        "/your_model_path/clip-vit-large-patch14-336",
+        "--prefix-len",
+        "20",
+        "--cur-task",
+        "5",
+        "--num-tasks",
+        "5",
+        "--answers-file",
+        "./results/DCL/each_dataset/Fin/ModalPrompt-task5/2_1.jsonl",
+        "--num-chunks",
+        "2",
+        "--chunk-idx",
+        "1",
+        "--temperature",
+        "0",
+        "--conv-mode",
+        "vicuna_v1"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1"
+      },
+      "kind": "eval",
+      "task_id": 5,
+      "sequence": "train"
+    },
+    {
+      "order": 105019,
+      "argv": [
+        "python",
+        "-m",
+        "llava.eval.ModalPrompt.eval_finvis",
+        "--annotation-file",
+        "/your_data_path/MLLM-CL/Fin/test.json",
+        "--result-file",
+        "./results/DCL/each_dataset/Fin/ModalPrompt-task5/merge.jsonl",
+        "--output-dir",
+        "./results/DCL/each_dataset/Fin/ModalPrompt-task5"
+      ],
+      "cwd": "/private__V3_ROOT__",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1"
+      },
+      "kind": "eval",
       "task_id": 5,
       "sequence": "train"
     }

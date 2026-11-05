@@ -55,6 +55,11 @@ def normalise(value: Any, method_id: str | None = None) -> Any:
     return value
 
 
+def without_merge_steps(commands: list[Any]) -> list[Any]:
+    """The only v4-added step: explicit chunk merging (v3's shell ``cat``); verified in test_chunk_merge."""
+    return [c for c in commands if not getattr(c, "metadata", {}).get("merge_chunks")]
+
+
 def command_signature(command: Any, method_id: str) -> tuple[Any, ...]:
     argv = normalise(command.argv, method_id)
     metadata = getattr(command, "metadata", {})
@@ -132,7 +137,9 @@ def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spe
             kind=item["kind"], task_id=item["task_id"], argv=argv,
             env={key: value for key, value in item.get("env", {}).items() if key == "CUDA_VISIBLE_DEVICES"},
         ))
-    actual_commands = build_sequence_commands(repo_root / "configs", "llava", method_spec.id, benchmark.id)
+    actual_commands = without_merge_steps(
+        build_sequence_commands(repo_root / "configs", "llava", method_spec.id, benchmark.id)
+    )
     expected_train = [
         c for c in expected_commands
         if not method_spec.separate_train_and_infer or c.kind != "eval"
@@ -146,9 +153,9 @@ def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spe
 
     for task_id in range(1, len(benchmark.tasks) + 1):
         expected_eval = [c for c in expected_commands if c.kind == "eval" and c.task_id == task_id]
-        actual_eval = build_sequence_commands(
+        actual_eval = without_merge_steps(build_sequence_commands(
             repo_root / "configs", "llava", method_spec.id, benchmark.id, task_id=task_id, only_eval=True
-        )
+        ))
         assert signature(actual_eval) == signature(expected_eval)
 
 
@@ -177,16 +184,16 @@ def test_mrlora_router_dry_run_matches_v3(repo_root: Path, benchmark: Any) -> No
             index = next(i for i, value in enumerate(argv) if value.endswith(".py"))
             argv = argv[:index] + LAUNCHER_ENTRY + argv[index + 1:]
         expected.append((item["kind"], item["task_id"], normalise(argv)))
-    actual = build_sequence_commands(
+    actual = without_merge_steps(build_sequence_commands(
         repo_root / "configs", "llava", "mrlora", benchmark.id, sequence="router"
-    )
+    ))
     assert [command_signature(c, "mrlora") for c in actual] == expected
     assert all(c.sequence == "router" for c in actual)
     for task_id in range(1, len(benchmark.tasks) + 1):
-        actual_eval = build_sequence_commands(
+        actual_eval = without_merge_steps(build_sequence_commands(
             repo_root / "configs", "llava", "mrlora", benchmark.id,
             task_id=task_id, only_eval=True, sequence="router",
-        )
+        ))
         expected_eval = [item for item in expected if item[0] == "eval" and item[1] == task_id]
         assert [command_signature(c, "mrlora") for c in actual_eval] == expected_eval
 

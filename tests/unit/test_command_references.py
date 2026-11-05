@@ -31,8 +31,9 @@ def test_all_1696_commands_reference_existing_code(repo_root: Path) -> None:
     scripts: set[Path] = set()
     ordinary_count = 0
     for method, benchmark, commands in _sequences(repo_root):
+        merge_steps = sum(1 for c in commands if c.metadata.get("merge_chunks"))
         if method.id != "mrlora" or not any(c.sequence == "router" for c in commands):
-            ordinary_count += len(commands)
+            ordinary_count += len(commands) - merge_steps  # 1696 v3-recorded commands, plus explicit merges
         for command in commands:
             argv = command.argv
             prefix = f"{method.id}/{benchmark.id}/{command.task_id}/{command.kind}"
