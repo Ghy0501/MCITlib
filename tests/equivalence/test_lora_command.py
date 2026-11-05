@@ -11,7 +11,7 @@ from typing import Any
 import pytest
 
 from mcitlib.backbones.llava.adapter import LlavaAdapter
-from mcitlib.backbones.llava.args import ENTRY_MODULE
+from mcitlib.backbones.llava.args import LAUNCHER_ENTRY
 from mcitlib.config.loader import load_layered_config
 from mcitlib.config.schema import DataSource, RunConfig, TaskSpec
 from mcitlib.registry import BENCHMARKS, METHODS
@@ -83,7 +83,7 @@ def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spe
     def expected_training_argv(item):
         argv = list(item["argv"])
         entry_index = next(i for i, value in enumerate(argv) if value.endswith(".py"))
-        argv = argv[:entry_index] + ["python", "-m", ENTRY_MODULE] + argv[entry_index + 1:]
+        argv = argv[:entry_index] + LAUNCHER_ENTRY + argv[entry_index + 1:]
         if method_spec.id == "replay":
             values = load_layered_config(
                 repo_root / "configs", "llava", benchmark.id, method_spec.id, task_id=item["task_id"]
@@ -175,7 +175,7 @@ def test_mrlora_router_dry_run_matches_v3(repo_root: Path, benchmark: Any) -> No
         argv = list(item["argv"])
         if item["kind"] == "train":
             index = next(i for i, value in enumerate(argv) if value.endswith(".py"))
-            argv = argv[:index] + ["python", "-m", ENTRY_MODULE] + argv[index + 1:]
+            argv = argv[:index] + LAUNCHER_ENTRY + argv[index + 1:]
         expected.append((item["kind"], item["task_id"], normalise(argv)))
     actual = build_sequence_commands(
         repo_root / "configs", "llava", "mrlora", benchmark.id, sequence="router"

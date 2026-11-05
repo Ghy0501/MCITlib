@@ -10,6 +10,10 @@ from typing import Any
 from ...config.schema import Command, RunConfig, TaskSpec
 
 ENTRY_MODULE = "mcitlib.backbones.llava.train_entry"
+# deepspeed treats the first positional argument as the user script. Running a
+# module therefore needs the launcher flag ``--module`` *before* the module name;
+# "python -m X" would make every rank execute ``python -u python -m X``.
+LAUNCHER_ENTRY = ["--module", ENTRY_MODULE]
 
 
 def _resolve(value: Any, run_cfg: RunConfig) -> Any:
@@ -46,7 +50,7 @@ def build_train_command(
     entry_index = next((i for i, value in enumerate(argv) if value.endswith(".py")), None)
     if entry_index is None:
         raise ValueError(f"v3 training entry not found in argv: {original}")
-    argv = argv[:entry_index] + ["python", "-m", ENTRY_MODULE] + argv[entry_index + 1:]
+    argv = argv[:entry_index] + LAUNCHER_ENTRY + argv[entry_index + 1:]
     argv = _resolve(argv, run_cfg)
     repo_root = Path(run_cfg.values.get("repo_root", ".")).resolve()
     config_name = run_cfg.values.get("deepspeed_config", "zero2")

@@ -182,7 +182,7 @@ def _repair_training_argv(
 
 def _v4_training_argv(original: list[str], repo_root: Path, method: Any) -> list[str]:
     entry_index = next(i for i, value in enumerate(original) if value.endswith(".py"))
-    result = original[:entry_index] + ["python", "-m", "mcitlib.backbones.llava.train_entry"] + original[entry_index + 1:]
+    result = original[:entry_index] + ["--module", "mcitlib.backbones.llava.train_entry"] + original[entry_index + 1:]
     deepspeed = repo_root / "configs/deepspeed" / f"{method.deepspeed_config}.json"
     _set_option(result, "--deepspeed", deepspeed)
     return result

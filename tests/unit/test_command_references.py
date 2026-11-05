@@ -46,6 +46,8 @@ def test_all_1696_commands_reference_existing_code(repo_root: Path) -> None:
                 path = Path(argv[argv.index("--deepspeed") + 1])
                 if not path.is_file():
                     errors.append(f"{prefix}: missing deepspeed config {path}")
+            if "--module" in argv:  # deepspeed launcher form used by training commands
+                modules.add(argv[argv.index("--module") + 1])
             if "-m" in argv:
                 index = argv.index("-m")
                 module = argv[index + 1]

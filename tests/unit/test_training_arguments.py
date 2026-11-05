@@ -33,7 +33,7 @@ def test_all_training_argv_parse(
         if command.kind != "train":
             continue
         argv = list(command.argv)
-        argv = argv[argv.index("-m") + 2:]
+        argv = argv[argv.index("--module") + 2:]
         deepspeed_index = argv.index("--deepspeed")
         del argv[deepspeed_index:deepspeed_index + 2]
         # Deepspeed path existence/contents and launcher integration are covered
