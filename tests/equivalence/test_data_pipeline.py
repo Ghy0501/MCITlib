@@ -13,7 +13,7 @@ import pytest
 import torch
 from PIL import Image
 
-from tests.conftest import write_deepspeed_stub
+from tests.conftest import reference_env, write_deepspeed_stub
 
 
 def make_fixture(root: Path, multi_image: bool = False) -> tuple[Path, Path]:
@@ -44,8 +44,7 @@ def run_harness(repo_root: Path, v3_root: Path, implementation: str, entry: str,
         pythonpath = os.pathsep.join((str(v3_root / "LLaVA" / method_dir), str(v3_root / "LLaVA/LoRA-FT"), str(stub), str(repo_root)))
     else:
         pythonpath = os.pathsep.join((str(repo_root), str(repo_root / "third_party/LLaVA"), str(repo_root / "third_party/peft"), str(stub)))
-    env = os.environ.copy()
-    env["PYTHONPATH"] = pythonpath
+    env = reference_env(implementation, pythonpath)
     if method_dir == "ModalPrompt":
         env["MCITLIB_METHOD"] = "modalprompt"
     env.pop("CUDA_VISIBLE_DEVICES", None)

@@ -11,6 +11,8 @@ from pathlib import Path
 import pytest
 import torch
 
+from tests.conftest import reference_env
+
 
 def run(repo_root: Path, v3_root: Path, implementation: str, method: str, output: Path, case: str = "default") -> None:
     if implementation == "v3":
@@ -18,8 +20,7 @@ def run(repo_root: Path, v3_root: Path, implementation: str, method: str, output
         pythonpath = os.pathsep.join((str(v3_root / "LLaVA" / method_dir), str(v3_root / "LLaVA/LoRA-FT")))
     else:
         pythonpath = os.pathsep.join((str(repo_root), str(repo_root / "third_party/LLaVA"), str(repo_root / "third_party/peft")))
-    env = os.environ.copy()
-    env["PYTHONPATH"] = pythonpath
+    env = reference_env(implementation, pythonpath)
     result = subprocess.run(
         [sys.executable, str(repo_root / "tests/equivalence/_tuner_harness.py"),
          "--implementation", implementation, "--method", method, "--case", case, "--out", str(output)],

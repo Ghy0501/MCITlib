@@ -5,7 +5,7 @@ import json
 
 def process_cl_results():
     # 1. 基础路径
-    base_path = os.path.join(os.environ.get("MCITLIB_RESULTS_ROOT", os.path.join(os.getcwd(), "results")), "MLLM-ACL", "each_dataset")
+    base_path = os.path.join(os.environ.get("MCITLIB_RESULTS_ROOT", os.path.join(os.getcwd(), "results")), "ACL", "each_dataset")
     
     # 2. 定义 CL 任务顺序 (Task ID -> Domain Name & Pred Code)
     # 映射结构: Pred Code -> (Domain Folder Name, Task ID)

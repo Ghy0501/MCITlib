@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util  # noqa: E402
 import json
 import sys
 from importlib.machinery import ModuleSpec
@@ -16,9 +17,10 @@ from torch import nn
 
 from mcitlib.backbones.llava.overrides import allow_t437_llava_registration
 
-deepspeed_stub = ModuleType("deepspeed")
-deepspeed_stub.__spec__ = ModuleSpec("deepspeed", loader=None)
-sys.modules.setdefault("deepspeed", deepspeed_stub)
+if importlib.util.find_spec("deepspeed") is None:  # a stub would shadow (and break) a real install
+    deepspeed_stub = ModuleType("deepspeed")
+    deepspeed_stub.__spec__ = ModuleSpec("deepspeed", loader=None)
+    sys.modules.setdefault("deepspeed", deepspeed_stub)
 
 
 class Block(nn.Module):

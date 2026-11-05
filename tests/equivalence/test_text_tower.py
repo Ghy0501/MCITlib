@@ -10,17 +10,18 @@ from pathlib import Path
 
 import torch
 
+from tests.conftest import reference_env
+
 
 def test_shared_clip_capability_matches_v3(repo_root: Path, v3_root: Path, tmp_path: Path) -> None:
     outputs = []
     for implementation in ("v3", "v4"):
         output = tmp_path / f"{implementation}.pt"
-        env = os.environ.copy()
-        env["PYTHONPATH"] = os.pathsep.join((
+        env = reference_env(implementation, os.pathsep.join((
             str(v3_root / "LLaVA/HiDe") if implementation == "v3" else str(repo_root),
             str(v3_root / "LLaVA/LoRA-FT") if implementation == "v3" else str(repo_root / "third_party/LLaVA"),
             str(repo_root / "third_party/peft"),
-        ))
+        )))
         result = subprocess.run(
             [sys.executable, str(repo_root / "tests/equivalence/_text_tower_harness.py"),
              "--implementation", implementation, "--out", str(output)],

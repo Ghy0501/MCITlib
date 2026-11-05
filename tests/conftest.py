@@ -45,3 +45,20 @@ def write_deepspeed_stub(directory: "Path") -> None:
 
     if importlib.util.find_spec("deepspeed") is None:
         (directory / "deepspeed.py").write_text("# import-only stub for CPU tests\n", encoding="utf-8")
+
+
+def reference_env(implementation: str, pythonpath: str, extra: dict[str, str] | None = None) -> dict[str, str]:
+    """Environment for an equivalence-test subprocess.
+
+    ``v3`` subprocesses run the original v3 code and must import *v3's* ``llava``/``peft`` from
+    ``pythonpath``, so ``import mcitlib`` must not put the vendored copies in front of them.
+    ``v4`` subprocesses behave like a real run.
+    """
+    env = {key: value for key, value in os.environ.items() if key != "PYTHONPATH"}
+    env["PYTHONPATH"] = pythonpath
+    if implementation == "v3":
+        env["MCITLIB_NO_VENDORED_PATH"] = "1"
+    else:
+        env.pop("MCITLIB_NO_VENDORED_PATH", None)
+    env.update(extra or {})
+    return env

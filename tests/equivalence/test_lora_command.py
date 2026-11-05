@@ -37,6 +37,9 @@ def normalise(value: Any, method_id: str | None = None) -> Any:
         }
         if value in script_aliases:
             return script_aliases[value]
+        if method_id and (value == f"${{results_root}}/{method_id}" or value.startswith(f"${{results_root}}/{method_id}/")):
+            # v4 gives every method its own result folder (G6); v3 wrote to ./results.
+            return "./results" + value[len(f"${{results_root}}/{method_id}"):]
         asset_prefix = "/your_ckpts_path/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_"
         if value.startswith(asset_prefix):
             return "${repo_root}/assets/smolora/ins_emb_multi_" + value[len(asset_prefix):]
@@ -183,7 +186,7 @@ def test_mrlora_router_dry_run_matches_v3(repo_root: Path, benchmark: Any) -> No
         if item["kind"] == "train":
             index = next(i for i, value in enumerate(argv) if value.endswith(".py"))
             argv = argv[:index] + LAUNCHER_ENTRY + argv[index + 1:]
-        expected.append((item["kind"], item["task_id"], normalise(argv)))
+        expected.append((item["kind"], item["task_id"], normalise(argv, "mrlora")))
     actual = without_merge_steps(build_sequence_commands(
         repo_root / "configs", "llava", "mrlora", benchmark.id, sequence="router"
     ))

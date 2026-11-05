@@ -13,7 +13,7 @@ import pytest
 import torch
 import transformers
 
-from tests.conftest import write_deepspeed_stub
+from tests.conftest import reference_env, write_deepspeed_stub
 
 pytestmark = pytest.mark.env("llava-t437")
 if transformers.__version__ != "4.37.2":
@@ -29,8 +29,7 @@ def run(repo_root: Path, v3_root: Path, implementation: str, regularization: Pat
         pythonpath = os.pathsep.join((str(v3_root / "LLaVA/RegLoRA"), str(v3_root / "LLaVA/LoRA-FT"), str(repo_root)))
     else:
         pythonpath = os.pathsep.join((str(repo_root), str(repo_root / "third_party/LLaVA"), str(repo_root / "third_party/peft")))
-    env = os.environ.copy()
-    env["PYTHONPATH"] = pythonpath
+    env = reference_env(implementation, pythonpath)
     result = subprocess.run(
         [sys.executable, str(repo_root / "tests/equivalence/_sefe_harness.py"),
          "--implementation", implementation, "--regularization", str(regularization), "--out", str(output)],

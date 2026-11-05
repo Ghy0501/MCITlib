@@ -81,8 +81,10 @@ def test_router_scripts_only_change_the_configurable_results_root(repo_root: Pat
         source = v3_root / f"LLaVA/MR-LoRA/scripts/{source_name}_extract_router_result.py"
         expected = source.read_text()
         v3_names = {"UCIT": "UCIT", "DCL": "DCL", "ACL": "MLLM-ACL"}
+        # AR-8: v3's ACL extraction reads results/MLLM-ACL while the ACL evaluation writes results/ACL.
+        v4_names = {"UCIT": "UCIT", "DCL": "DCL", "ACL": "ACL"}
         old = f'"/your_path/MCITlib_v3/LLaVA/MR-LoRA/results/{v3_names[source_name]}/each_dataset"'
-        new = f'os.path.join(os.environ.get("MCITLIB_RESULTS_ROOT", os.path.join(os.getcwd(), "results")), "{v3_names[source_name]}", "each_dataset")'
+        new = f'os.path.join(os.environ.get("MCITLIB_RESULTS_ROOT", os.path.join(os.getcwd(), "results")), "{v4_names[source_name]}", "each_dataset")'
         if source_name == "DCL":
             old = old.replace('"/your_path', 'BASE_PATH = "/your_path')
             new = "BASE_PATH = " + new

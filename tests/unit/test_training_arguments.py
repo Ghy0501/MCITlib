@@ -3,6 +3,7 @@
 """Parse every v3 training argv with the selected shared MCITlib entry."""
 from __future__ import annotations
 
+import importlib.util
 import sys
 from importlib.machinery import ModuleSpec
 from pathlib import Path
@@ -20,9 +21,10 @@ from mcitlib.runner import build_sequence_commands
 def test_all_training_argv_parse(
     repo_root: Path, method, benchmark, monkeypatch
 ) -> None:
-    deepspeed_stub = ModuleType("deepspeed")
-    deepspeed_stub.__spec__ = ModuleSpec("deepspeed", loader=None)
-    monkeypatch.setitem(sys.modules, "deepspeed", deepspeed_stub)
+    if importlib.util.find_spec("deepspeed") is None:  # never shadow a real install
+        deepspeed_stub = ModuleType("deepspeed")
+        deepspeed_stub.__spec__ = ModuleSpec("deepspeed", loader=None)
+        monkeypatch.setitem(sys.modules, "deepspeed", deepspeed_stub)
     if method.train_entry == "moe":
         from mcitlib.backbones.llava import moe_train as module
     else:

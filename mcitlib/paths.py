@@ -81,11 +81,13 @@ class PathResolver:
             candidate = Path(os.path.expanduser(str(raw)))
             return (candidate if candidate.is_absolute() else root / candidate).resolve()
 
+        ckpt_root = resolve_root("ckpt_root", "./ckpts")
         return cls(PathSet(
             model_root=resolve_root("model_root", "./models"),
             data_root=resolve_root("data_root", "./data"),
-            ckpt_root=resolve_root("ckpt_root", "./ckpts"),
+            ckpt_root=ckpt_root,
             repo_root=root,
+            results_root=resolve_root("results_root", str(ckpt_root / "results")),
         ))
 
     def resolve_templates(self, value: str) -> str:
@@ -95,6 +97,7 @@ class PathResolver:
             "${data_root}": str(self.paths.data_root),
             "${ckpt_root}": str(self.paths.ckpt_root),
             "${repo_root}": str(self.paths.repo_root),
+            "${results_root}": str(self.paths.results_root or self.paths.ckpt_root / "results"),
             "/your_model_path": str(self.paths.model_root),
             "/your_data_path": str(self.paths.data_root),
             "/your_ckpts_path": str(self.paths.ckpt_root),
@@ -118,6 +121,10 @@ class PathResolver:
             return candidate.resolve()
         roots = {"model": self.paths.model_root, "data": self.paths.data_root, "ckpt": self.paths.ckpt_root}
         return (roots.get(kind, self.paths.repo_root) / candidate).resolve()
+
+    def method_results_dir(self, method: str) -> Path:
+        """Evaluation output of one method (methods must not share result folders)."""
+        return (self.paths.results_root or self.paths.ckpt_root / "results") / method
 
     def run_dir(self, benchmark: str, method: str, task_id: int | None = None) -> Path:
         base = self.paths.ckpt_root / benchmark / "llava" / method

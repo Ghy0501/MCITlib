@@ -21,3 +21,12 @@ openai
 validators
 einops==0.6.1
 scipy==1.10.1
+# MLLM-ACL Math scoring (MathVista table .xlsx, optional .env, token counting for the judge)
+openpyxl
+xlsxwriter
+python-dotenv
+tiktoken
+# flash-attn is NOT installable from this file: it must match your CUDA and torch build.
+#   pip install flash_attn-2.6.3+cu118torch2.0cxx11abiFALSE-cp310-cp310-linux_x86_64.whl   (CUDA 11.8, torch 2.0, Python 3.10)
+#   or: pip install flash-attn==2.5.8 --no-build-isolation
+# Run `mcitlib doctor --method <m> --benchmark <b>` afterwards; it fails if flash_attn cannot be imported.

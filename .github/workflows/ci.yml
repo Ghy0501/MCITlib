@@ -4,6 +4,10 @@ on:
   push:
   pull_request:
 
+# No job sets PYTHONPATH: MCITlib puts its vendored LLaVA/peft first by itself, and the tests run
+# in the same conditions as a user's shell. flash-attn needs a GPU toolchain, so the entry-point
+# tests use an import-only stand-in (tests/fixtures/fake_flash_attn).
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -18,8 +22,10 @@ jobs:
   test-llava:
     runs-on: ubuntu-latest
     env:
-      PYTHONPATH: .:third_party/LLaVA:third_party/peft
       MCITLIB_REQUIRE_V3: '1'
+      MCITLIB_REQUIRE_FULL_ENV: '1'
+      MCITLIB_REQUIRE_DEEPSPEED: '1'
+      DS_BUILD_OPS: '0'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,16 +34,18 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      - run: python -m pip install '.[dev]'
       - run: python -m pip install torch==2.0.1 --index-url https://download.pytorch.org/whl/cpu
-      - run: python -m pip install transformers==4.31.0
+      - run: python -m pip install -r envs/llava.txt --extra-index-url https://download.pytorch.org/whl/cpu
+      - run: python -m pip install -e '.[dev]'
       - run: python -m pytest -q -m 'not env'
 
   test-llava-t437:
     runs-on: ubuntu-latest
     env:
-      PYTHONPATH: .:third_party/LLaVA:third_party/peft
       MCITLIB_REQUIRE_V3: '1'
+      MCITLIB_REQUIRE_FULL_ENV: '1'
+      MCITLIB_REQUIRE_DEEPSPEED: '1'
+      DS_BUILD_OPS: '0'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -46,10 +54,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      - run: python -m pip install '.[dev]'
       - run: python -m pip install torch==2.0.1 --index-url https://download.pytorch.org/whl/cpu
-      - run: python -m pip install transformers==4.37.2
-      - run: python -m pytest -q tests/equivalence/test_sefe.py tests/equivalence/test_keeplora.py tests/unit/test_environment.py
+      - run: python -m pip install -r envs/llava-t437.txt --extra-index-url https://download.pytorch.org/whl/cpu
+      - run: python -m pip install -e '.[dev]'
+      - run: python -m pytest -q tests/equivalence/test_sefe.py tests/equivalence/test_keeplora.py tests/unit/test_environment.py tests/integration
 
   spdx:
     runs-on: ubuntu-latest

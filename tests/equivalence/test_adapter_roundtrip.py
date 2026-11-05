@@ -21,13 +21,15 @@ from pathlib import Path
 import pytest
 import torch
 
+from tests.conftest import reference_env
+
 METHODS = ["moelora", "mrlora", "olora", "clmoe", "smolora"]
 V3_DIR = {"moelora": "MoELoRA", "mrlora": "MR-LoRA", "olora": "OLoRA", "clmoe": "CL-MoE", "smolora": "SMoLoRA"}
 
 
 def _run(repo_root: Path, pythonpath: list[str], *args: str) -> None:
-    env = {key: value for key, value in os.environ.items() if key != "PYTHONPATH"}
-    env["PYTHONPATH"] = os.pathsep.join(pythonpath)
+    implementation = args[args.index("--implementation") + 1]
+    env = reference_env(implementation, os.pathsep.join(pythonpath))
     result = subprocess.run(
         [sys.executable, str(repo_root / "tests/equivalence/_adapter_roundtrip_harness.py"), *args],
         cwd=repo_root, env=env, capture_output=True, text=True, check=False,

@@ -15,6 +15,7 @@ from typing import Any
 from .config.loader import deep_merge, load_layered_config
 from .config.schema import Command, DataSource, RunConfig, TaskSpec
 from .eval.chunks import insert_merge_steps
+from .gpus import apply_gpu_assignment
 from .methods import create_method
 from .paths import process_env, vendored_pythonpath
 from .registry import get_backbone, get_benchmark, get_method
@@ -79,6 +80,32 @@ def _apply_script_aliases(commands: list[Command], method: Any) -> list[Command]
     return commands
 
 
+RESULTS_PREFIXES = ("./results", "results")
+
+
+def _isolate_results(commands: list[Command], method_id: str) -> None:
+    """Give every method its own result folder.
+
+    v3 ran each method in its own directory, so every ``./results/...`` was private.  From the
+    repository root they would collide (LoRA-FT and Replay both write ``LoRA-task<k>``) and the
+    later method would overwrite or mix with the earlier one's files.  Evaluation output goes
+    to ``<results_root>/<method>/...`` instead; the MR-LoRA router extraction scripts get the same
+    root through ``MCITLIB_RESULTS_ROOT``.
+    """
+    root = f"${{results_root}}/{method_id}"
+
+    def rewrite(value: str) -> str:
+        for prefix in RESULTS_PREFIXES:
+            if value == prefix or value.startswith(prefix + "/"):
+                return root + value[len(prefix):]
+        return value
+
+    for command in commands:
+        command.argv = [rewrite(str(value)) for value in command.argv]
+        if any("router_results" in str(value) for value in command.argv):
+            command.env["MCITLIB_RESULTS_ROOT"] = root
+
+
 def _ensure_pythonpath(commands: list[Command], config_root: str | Path) -> None:
     """Every child process imports the vendored llava/peft, not whatever is installed."""
     pythonpath = os.pathsep.join(vendored_pythonpath(Path(config_root).resolve().parent))
@@ -98,6 +125,8 @@ def build_sequence_commands(
     model_path: str | None = None,
     model_base: str | None = None,
     num_chunks: int | None = None,
+    gpus: str | None = None,
+    master_port: int | None = None,
 ) -> list[Command]:
     """Build v3-ordered commands; NB-5 install commands are never emitted."""
     backbone = get_backbone(backbone_id)
@@ -112,6 +141,7 @@ def build_sequence_commands(
         commands = build_general_commands(
             config_root, method.id, task_id, model_path, model_base, num_chunks
         )
+        _isolate_results(commands, method.id)
         if paths is not None:
             for command in commands:
                 command.argv = [paths.resolve_templates(str(value)) for value in command.argv]
@@ -153,11 +183,13 @@ def build_sequence_commands(
         if only_eval or not method.separate_train_and_infer:
             recorded = _recorded_commands(values, task, include_extra=not only_eval, sequence=sequence)
             commands.extend(_apply_script_aliases(recorded, method))
+    _isolate_results(commands, method.id)
     if paths is not None:
         for command in commands:
             command.argv = [paths.resolve_templates(str(value)) for value in command.argv]
             command.cwd = paths.resolve_templates(command.cwd)
             command.env = {key: paths.resolve_templates(str(value)) for key, value in command.env.items()}
+    apply_gpu_assignment(commands, gpus, master_port)
     _ensure_pythonpath(commands, config_root)
     commands.sort(key=lambda command: (command.task_id or 0, command.metadata.get("order", -1)))
     # v3 merged the per-GPU chunk files with shell `cat` before scoring; restore that step.
@@ -176,61 +208,111 @@ def _write_marker(path: Path, payload: dict[str, Any]) -> None:
     temporary.replace(path)
 
 
+def _parallel_batches(commands: list[Command]) -> list[list[tuple[int, Command]]]:
+    """Group consecutive chunked-inference commands of one dataset so they run side by side.
+
+    v3 started the ``N`` chunks of a dataset in the background (``... &``), one per GPU, and
+    ``wait``ed for all of them.  Everything else is strictly sequential.
+    """
+    batches: list[list[tuple[int, Command]]] = []
+    for index, command in enumerate(commands):
+        group = command.metadata.get("parallel_group")
+        if group and batches and batches[-1][0][1].metadata.get("parallel_group") == group:
+            batches[-1].append((index, command))
+        else:
+            batches.append([(index, command)])
+    return batches
+
+
+class _Step:
+    """One running command: process handle, log file and the data for its marker."""
+
+    def __init__(self, index: int, command: Command, repo_root: Path, logs: Path, identity: str):
+        argv = list(command.argv)
+        if not argv:
+            raise ValueError(f"empty command at sequence index {index}")
+        if argv[0] in {"python", "python3"}:
+            argv[0] = sys.executable
+        cwd = Path(command.cwd)
+        cwd = cwd if cwd.is_absolute() else repo_root / cwd
+        # Vendored llava/peft always come first, whatever the user's environment holds.
+        env = process_env(command.env, repo_root)
+        env["PATH"] = str(Path(sys.executable).parent) + os.pathsep + env.get("PATH", "")
+        self.index, self.command, self.identity = index, command, identity
+        self.log = logs / f"{index:05d}-{identity}.log"
+        self.log.parent.mkdir(parents=True, exist_ok=True)
+        self.started = datetime.now(timezone.utc).isoformat()
+        self.handle = self.log.open("w", encoding="utf-8")
+        self.process = subprocess.Popen(
+            argv, cwd=cwd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1,
+        )
+
+    def pump(self, prefix: str = "") -> int:
+        assert self.process.stdout is not None
+        for line in self.process.stdout:
+            self.handle.write(line)
+            self.handle.flush()
+            sys.stdout.write(prefix + line)
+        code = self.process.wait()
+        self.handle.close()
+        return code
+
+
 def execute_commands(
     commands: list[Command],
     run_dir: str | Path,
     repo_root: str | Path,
     resume: bool = False,
 ) -> list[dict[str, Any]]:
-    """Execute commands sequentially with durable logs and resume markers."""
+    """Execute commands with durable logs and resume markers.
+
+    Steps run one after another, except the chunks of one evaluation dataset, which run in
+    parallel (one GPU each, as in v3) and are all waited for before the next step starts.  If any
+    member fails the others are allowed to finish, every outcome is recorded, and the run stops.
+    """
+    from concurrent.futures import ThreadPoolExecutor
+
     run_dir = Path(run_dir).resolve()
     repo_root = Path(repo_root).resolve()
     markers = run_dir / ".mcitlib" / "steps"
     logs = run_dir / ".mcitlib" / "logs"
-    results = []
-    for index, command in enumerate(commands):
-        identity = _step_identity(command)
-        marker = markers / f"{identity}.json"
-        if resume and marker.is_file():
-            completed = json.loads(marker.read_text(encoding="utf-8"))
-            if completed.get("status") == "completed":
-                results.append({"index": index, "id": identity, "status": "skipped"})
-                continue
-        argv = list(command.argv)
-        if argv and argv[0] in {"python", "python3"}:
-            argv[0] = sys.executable
-        if not argv:
-            raise ValueError(f"empty command at sequence index {index}")
-        cwd = Path(command.cwd)
-        if not cwd.is_absolute():
-            cwd = repo_root / cwd
-        # Vendored llava/peft always come first, whatever the user's environment holds.
-        env = process_env(command.env, repo_root)
-        env["PATH"] = str(Path(sys.executable).parent) + os.pathsep + env.get("PATH", "")
-        log = logs / f"{index:05d}-{identity}.log"
-        log.parent.mkdir(parents=True, exist_ok=True)
-        started = datetime.now(timezone.utc).isoformat()
-        with log.open("w", encoding="utf-8") as handle:
-            process = subprocess.Popen(
-                argv, cwd=cwd, env=env, stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT, text=True, bufsize=1,
+    results: list[dict[str, Any]] = []
+    for batch in _parallel_batches(commands):
+        pending: list[_Step] = []
+        for index, command in batch:
+            identity = _step_identity(command)
+            marker = markers / f"{identity}.json"
+            if resume and marker.is_file():
+                if json.loads(marker.read_text(encoding="utf-8")).get("status") == "completed":
+                    results.append({"index": index, "id": identity, "status": "skipped"})
+                    continue
+            pending.append(_Step(index, command, repo_root, logs, identity))
+        if not pending:
+            continue
+        if len(pending) == 1:
+            codes = [pending[0].pump()]
+        else:
+            with ThreadPoolExecutor(max_workers=len(pending)) as pool:
+                futures = [pool.submit(step.pump, f"[chunk {n}] ") for n, step in enumerate(pending)]
+                codes = [future.result() for future in futures]
+        failed: list[_Step] = []
+        for step, code in zip(pending, codes):
+            status = "completed" if code == 0 else "failed"
+            _write_marker(markers / f"{step.identity}.json", {
+                "id": step.identity, "index": step.index, "status": status,
+                "return_code": code, "command": step.command.as_dict(),
+                "log": str(step.log), "started_at": step.started,
+                "finished_at": datetime.now(timezone.utc).isoformat(),
+            })
+            results.append({"index": step.index, "id": step.identity, "status": status, "return_code": code})
+            if code != 0:
+                failed.append(step)
+        if failed:
+            first = failed[0]
+            raise RuntimeError(
+                f"command {first.index} failed with exit {codes[pending.index(first)]}; log: {first.log}"
+                + (f" (+{len(failed) - 1} more in the same parallel group)" if len(failed) > 1 else "")
             )
-            assert process.stdout is not None
-            for line in process.stdout:
-                handle.write(line)
-                handle.flush()
-                sys.stdout.write(line)
-            return_code = process.wait()
-        finished = datetime.now(timezone.utc).isoformat()
-        status = "completed" if return_code == 0 else "failed"
-        _write_marker(marker, {
-            "id": identity, "index": index, "status": status,
-            "return_code": return_code, "command": command.as_dict(),
-            "log": str(log), "started_at": started, "finished_at": finished,
-        })
-        results.append({"index": index, "id": identity, "status": status, "return_code": return_code})
-        if return_code != 0:
-            raise RuntimeError(f"command {index} failed with exit {return_code}; log: {log}")
     return results
 
 

@@ -10,14 +10,15 @@ from pathlib import Path
 
 import torch
 
+from tests.conftest import reference_env
+
 
 def run(repo_root: Path, v3_root: Path, implementation: str, output: Path) -> None:
     if implementation == "v3":
         pythonpath = os.pathsep.join((str(v3_root / "LLaVA/ModalPrompt"), str(v3_root / "LLaVA/LoRA-FT")))
     else:
         pythonpath = os.pathsep.join((str(repo_root), str(repo_root / "third_party/LLaVA"), str(repo_root / "third_party/peft")))
-    env = os.environ.copy()
-    env["PYTHONPATH"] = pythonpath
+    env = reference_env(implementation, pythonpath)
     result = subprocess.run(
         [sys.executable, str(repo_root / "tests/equivalence/_modalprompt_harness.py"),
          "--implementation", implementation, "--out", str(output)],
