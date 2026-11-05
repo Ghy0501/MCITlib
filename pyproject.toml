@@ -25,6 +25,7 @@ include = ["mcitlib*"]
 testpaths = ["tests"]
 markers = [
   "env: required runtime environment (llava or llava-t437)",
+  "entrypoints: starts real subprocesses for every generated entry point (needs the full environment)",
 ]
 
 [tool.ruff]
@@ -36,6 +37,8 @@ select = ["E", "F", "I"]
 ignore = ["E501"]
 
 [tool.ruff.lint.per-file-ignores]
+# imports are ordered on purpose: `import mcitlib` must run before `import peft`.
+"tests/equivalence/_adapter_roundtrip_harness.py" = ["I"]
 # These files intentionally retain upstream implementation style while imports
 # and ownership boundaries are migrated; new adapter code remains fully linted.
 "mcitlib/backbones/llava/standard_train.py" = ["E", "F", "I"]

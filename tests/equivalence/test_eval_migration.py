@@ -10,6 +10,9 @@ from mcitlib.runner import build_sequence_commands
 
 COiN_IMPORT = "from llava.eval.CoIN.coin_utils import get_model_name_from_path"
 MCIT_IMPORT = "from mcitlib.backbones.llava.eval_runners.coin.coin_utils import get_model_name_from_path"
+# v3 imported the per-method peft fork; v4 has one shared SMoLoRA tuner.
+SMOLORA_V3_IMPORT = "from CoIN.peft.tuners.smolora import SMoLoraLinear"
+SMOLORA_V4_IMPORT = "from mcitlib.tuners.mcit_separable_expert_lora import MCITSeparableExpertLoraLinear as SMoLoraLinear"
 
 
 def _without_added_headers(text: str) -> str:
@@ -22,7 +25,8 @@ def _without_added_headers(text: str) -> str:
 
 
 def _source_text(path: Path) -> str:
-    return _without_added_headers(path.read_text().replace(COiN_IMPORT, MCIT_IMPORT))
+    text = path.read_text().replace(COiN_IMPORT, MCIT_IMPORT).replace(SMOLORA_V3_IMPORT, SMOLORA_V4_IMPORT)
+    return _without_added_headers(text)
 
 
 def test_eval_files_match_their_method_specific_v3_sources(repo_root: Path, v3_root: Path) -> None:

@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2025-2026 MCITlib authors
+"""Import-only stand-in for flash-attn used by CPU entry-point tests (never executes kernels)."""
+
+
+def flash_attn_func(*args, **kwargs):
+    raise RuntimeError("fake flash_attn: import check only")
+
+
+flash_attn_varlen_func = flash_attn_func

@@ -14,6 +14,8 @@ import pytest
 import torch
 import transformers
 
+from tests.conftest import write_deepspeed_stub
+
 pytestmark = pytest.mark.env("llava-t437")
 if transformers.__version__ != "4.37.2":
     pytest.skip("KeepLoRA tests require transformers 4.37.2", allow_module_level=True)
@@ -89,7 +91,7 @@ def test_keeplora_data_matches_v3_in_t437(repo_root: Path, v3_root: Path, tmp_pa
     run_harness = helpers["run_harness"]
     stub = tmp_path / "stubs"
     stub.mkdir()
-    (stub / "deepspeed.py").write_text("# import-only stub\n", encoding="utf-8")
+    write_deepspeed_stub(stub)
     v3_output, v4_output = tmp_path / "v3-data.pt", tmp_path / "v4-data.pt"
     run_harness(repo_root, v3_root, "v3", "standard", data, images, v3_output, stub, method_dir="KeepLoRA")
     run_harness(repo_root, v3_root, "v4", "standard", data, images, v4_output, stub, method_dir="KeepLoRA")

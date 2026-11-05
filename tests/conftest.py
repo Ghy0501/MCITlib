@@ -24,3 +24,24 @@ def v3_root(repo_root: Path) -> Path:
             pytest.fail(message)
         pytest.skip(message)
     return path
+
+
+def require_module(name: str):
+    """Import ``name`` or skip; with MCITLIB_REQUIRE_FULL_ENV=1 (CI) a missing package is a failure."""
+    import importlib
+
+    if os.environ.get("MCITLIB_REQUIRE_FULL_ENV") == "1":
+        return importlib.import_module(name)
+    return pytest.importorskip(name)
+
+
+def write_deepspeed_stub(directory: "Path") -> None:
+    """Import-only deepspeed stand-in, written only when the real package is absent.
+
+    Light CPU environments have no deepspeed; with the real one installed a stub would
+    shadow it and break transformers/accelerate imports.
+    """
+    import importlib.util
+
+    if importlib.util.find_spec("deepspeed") is None:
+        (directory / "deepspeed.py").write_text("# import-only stub for CPU tests\n", encoding="utf-8")

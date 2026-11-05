@@ -16,7 +16,7 @@ def _add_common(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--method", required=True)
     parser.add_argument("--benchmark", required=True)
     parser.add_argument("--paths", type=Path)
-    parser.add_argument("--config-root", type=Path, default=Path("configs"))
+    parser.add_argument("--config-root", type=Path, default=None, help="default: <checkout>/configs")
     parser.add_argument("--sequence", choices=("train", "router"), default="train")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--resume", action="store_true", help="skip commands with completed markers")
@@ -69,8 +69,17 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
-    from .paths import PathResolver
+    from .paths import PathResolver, bootstrap_sys_path
+    from .paths import repo_root as checkout_root
     from .runner import build_sequence_commands, execute_commands
+
+    try:
+        if args.config_root is None:
+            args.config_root = checkout_root() / "configs"
+        bootstrap_sys_path(Path(args.config_root).resolve().parent)
+    except RuntimeError as error:
+        print(f"mcitlib: {error}", file=sys.stderr)
+        return 2
     repo_root = Path(args.config_root).resolve().parent
     paths = None
     if args.paths or not args.dry_run:

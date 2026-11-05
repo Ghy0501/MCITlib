@@ -47,9 +47,57 @@ def allow_t437_llava_registration():
             delattr(module, name)
 
 
+@contextmanager
+def llava_import_context():
+    """Make ``import llava`` valid under every supported transformers version.
+
+    transformers >= 4.36 ships its own ``llava`` model type; the vendored LLaVA
+    registers the same name when it is first imported, so that first import has to
+    run inside :func:`allow_t437_llava_registration`.  With transformers 4.31 there
+    is nothing to do.
+    """
+    from transformers.models.auto.configuration_auto import CONFIG_MAPPING_NAMES
+
+    if "llava" in CONFIG_MAPPING_NAMES:
+        with allow_t437_llava_registration():
+            yield
+    else:
+        yield
+
+
+def import_llava():
+    """Import the vendored ``llava`` and ``peft`` exactly once and prove their origin.
+
+    Every MCITlib entry point calls this before touching ``llava``.  It fails with a
+    clear message when an older v3 installation shadows the vendored packages, which
+    would otherwise silently run v3 code.
+    """
+    import sys
+    from pathlib import Path
+
+    from ...paths import repo_root
+
+    with llava_import_context():
+        import llava.model  # noqa: F401
+        import peft  # noqa: F401
+
+        import llava  # noqa: F401
+    third_party = repo_root() / "third_party"
+    for name in ("llava", "peft"):
+        origin = Path(sys.modules[name].__file__).resolve()
+        if third_party not in origin.parents:
+            raise RuntimeError(
+                f"`{name}` was imported from {origin}, not from {third_party}. A stale v3 editable install "
+                f"is probably shadowing the vendored package; run `pip uninstall -y {name}` (or use a fresh "
+                "environment) and make sure MCITlib's PYTHONPATH is set by `mcitlib train/eval`."
+            )
+    return sys.modules["llava"]
+
+
 def install_model_override(override: str | type | None) -> None:
     if override is None:
         return
+    import_llava()
     if override == "disco":
         from ...methods._disco.llava_overrides import LlavaLlamaForCausalLM as override_cls
     elif override == "modalprompt":

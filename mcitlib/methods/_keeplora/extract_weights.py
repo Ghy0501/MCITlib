@@ -7,10 +7,14 @@ import json
 from pathlib import Path
 
 import torch
-from llava.mm_utils import get_model_name_from_path
-from llava.utils import disable_torch_init
 
-from .llava_overrides.builder import load_pretrained_model
+from mcitlib.backbones.llava.overrides import import_llava
+
+import_llava()  # first llava import must happen inside the transformers-4.37 compatibility context
+from llava.mm_utils import get_model_name_from_path  # noqa: E402
+from llava.utils import disable_torch_init  # noqa: E402
+
+from .llava_overrides.builder import load_pretrained_model  # noqa: E402
 
 
 def extract_weights(model_config_path, output_dir, energy_threshold, target_modules):

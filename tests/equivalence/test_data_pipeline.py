@@ -13,6 +13,8 @@ import pytest
 import torch
 from PIL import Image
 
+from tests.conftest import write_deepspeed_stub
+
 
 def make_fixture(root: Path, multi_image: bool = False) -> tuple[Path, Path]:
     image_dir = root / "images"
@@ -65,7 +67,7 @@ def test_single_image_data_matches_v3(repo_root: Path, v3_root: Path, tmp_path: 
     data, images = make_fixture(tmp_path)
     stub = tmp_path / "stubs"
     stub.mkdir()
-    (stub / "deepspeed.py").write_text("# import-only stub for data tests\n", encoding="utf-8")
+    write_deepspeed_stub(stub)
     v3_output, v4_output = tmp_path / "v3.pt", tmp_path / "v4.pt"
     run_harness(repo_root, v3_root, "v3", entry, data, images, v3_output, stub)
     run_harness(repo_root, v3_root, "v4", entry, data, images, v4_output, stub)
@@ -80,7 +82,7 @@ def test_standard_multi_image_data_matches_v3(repo_root: Path, v3_root: Path, tm
     data, images = make_fixture(tmp_path, multi_image=True)
     stub = tmp_path / "stubs"
     stub.mkdir()
-    (stub / "deepspeed.py").write_text("# import-only stub for data tests\n", encoding="utf-8")
+    write_deepspeed_stub(stub)
     v3_output, v4_output = tmp_path / "v3.pt", tmp_path / "v4.pt"
     run_harness(repo_root, v3_root, "v3", "standard", data, images, v3_output, stub)
     run_harness(repo_root, v3_root, "v4", "standard", data, images, v4_output, stub)
@@ -95,7 +97,7 @@ def test_variant_data_matches_their_v3_directories(repo_root: Path, v3_root: Pat
     data, images = make_fixture(tmp_path)
     stub = tmp_path / "stubs"
     stub.mkdir()
-    (stub / "deepspeed.py").write_text("# import-only stub for data tests\n", encoding="utf-8")
+    write_deepspeed_stub(stub)
     v3_output, v4_output = tmp_path / "v3.pt", tmp_path / "v4.pt"
     entry = "standard" if method_dir == "ModalPrompt" else "moe"
     run_harness(repo_root, v3_root, "v3", entry, data, images, v3_output, stub, method_dir=method_dir)

@@ -8,14 +8,18 @@ import os
 from pathlib import Path
 
 import torch
-from llava.mm_utils import get_model_name_from_path
-from llava.utils import disable_torch_init
-from torch.utils.data import DataLoader, Subset
-from tqdm import tqdm
 
-from mcitlib.backbones.llava.standard_train import DataArguments, make_supervised_data_module
+from mcitlib.backbones.llava.overrides import import_llava
 
-from .llava_overrides.builder import load_pretrained_model
+import_llava()  # first llava import must happen inside the transformers-4.37 compatibility context
+from llava.mm_utils import get_model_name_from_path  # noqa: E402
+from llava.utils import disable_torch_init  # noqa: E402
+from torch.utils.data import DataLoader, Subset  # noqa: E402
+from tqdm import tqdm  # noqa: E402
+
+from mcitlib.backbones.llava.standard_train import DataArguments, make_supervised_data_module  # noqa: E402
+
+from .llava_overrides.builder import load_pretrained_model  # noqa: E402
 
 
 def extract_gradients(args):

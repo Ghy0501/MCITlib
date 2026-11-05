@@ -13,7 +13,7 @@ from llava.model.builder import load_pretrained_model
 from llava.utils import disable_torch_init
 from llava.mm_utils import tokenizer_image_token, get_model_name_from_path, KeywordsStoppingCriteria
 from mcitlib.backbones.llava.eval_runners.coin.coin_utils import get_model_name_from_path
-from CoIN.peft.tuners.smolora import SMoLoraLinear
+from mcitlib.tuners.mcit_separable_expert_lora import MCITSeparableExpertLoraLinear as SMoLoraLinear
 
 from PIL import Image
 import math

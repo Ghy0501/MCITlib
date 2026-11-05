@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from ...config.schema import Command, RunConfig, TaskSpec
+from ...paths import vendored_pythonpath
 
 ENTRY_MODULE = "mcitlib.backbones.llava.train_entry"
 # deepspeed treats the first positional argument as the user script. Running a
@@ -57,7 +58,7 @@ def build_train_command(
     config_path = run_cfg.values["deepspeed_configs"][config_name]
     deepspeed_index = argv.index("--deepspeed") + 1
     argv[deepspeed_index] = str((repo_root / config_path).resolve())
-    pythonpath = os.pathsep.join((str(repo_root / "third_party/LLaVA"), str(repo_root / "third_party/peft")))
+    pythonpath = os.pathsep.join(vendored_pythonpath(repo_root))
     env = {"MCITLIB_TRAIN_ENTRY": entry, "MCITLIB_METHOD": run_cfg.method, "PYTHONPATH": pythonpath}
     if model_override:
         env["MCITLIB_MODEL_OVERRIDE"] = model_override

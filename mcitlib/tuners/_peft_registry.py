@@ -12,7 +12,9 @@ from peft.utils import PeftType
 from .mcit_expert_lora import MCITExpertLoraConfig, MCITExpertLoraModel
 from .mcit_separable_expert_lora import MCITSeparableExpertLoraConfig, MCITSeparableExpertLoraModel
 from .variants.clmoe import MCITClMoELoraConfig, MCITClMoELoraModel
+from .variants.disco import MCITDiscoLoraConfig, MCITDiscoLoraModel
 from .variants.hide import MCITHiDeLoraConfig, MCITHiDeLoraModel
+from .variants.olora import MCITOrthogonalLoraConfig, MCITOrthogonalLoraModel
 
 # These aliases are compatibility only. Shared implementation classes use MCIT.
 CoINMOELoraConfig = MCITExpertLoraConfig
@@ -67,10 +69,91 @@ def tuner_model_context(peft_type: str, model_class, config_class=None):
                 PEFT_TYPE_TO_CONFIG_MAPPING[peft_type] = previous_config
 
 
+# peft 0.4.0 only knows how to read/write adapter weights for its own PeftTypes.  Every v3 method
+# fork added its serialized type to the LoRA branch of ``get/set_peft_model_state_dict``
+# (``if config.peft_type in (LORA, ADALORA, <its type>)``).  The vendored peft stays pristine, so
+# the same behaviour is installed here; without it the first ``save_pretrained`` of every
+# expert-LoRA method (and every ``PeftModel.from_pretrained`` in evaluation) raises
+# ``NotImplementedError``.
+LORA_LIKE_PEFT_TYPES = frozenset({"MOE_LORA_CoIN", "MOE_LORA_HiDe", "MOE_LORA_CLMoE", "SMOLORA"})
+
+
+def install_state_dict_support() -> None:
+    import peft
+    import peft.peft_model as peft_model_module
+    import peft.utils as peft_utils
+    import peft.utils.save_and_load as save_and_load
+
+    if getattr(save_and_load, "_mcit_lora_like_support", False):
+        return
+    original_get = save_and_load.get_peft_model_state_dict
+    original_set = save_and_load.set_peft_model_state_dict
+
+    def _as_lora(model, adapter_name, call):
+        config = model.peft_config[adapter_name]
+        if str(getattr(config.peft_type, "value", config.peft_type)) not in LORA_LIKE_PEFT_TYPES:
+            return call()
+        serialized = config.peft_type
+        config.peft_type = PeftType.LORA
+        try:
+            return call()
+        finally:
+            config.peft_type = serialized
+
+    def get_peft_model_state_dict(model, state_dict=None, adapter_name="default"):
+        return _as_lora(model, adapter_name, lambda: original_get(model, state_dict=state_dict, adapter_name=adapter_name))
+
+    def set_peft_model_state_dict(model, peft_model_state_dict, adapter_name="default"):
+        return _as_lora(
+            model, adapter_name,
+            lambda: original_set(model, peft_model_state_dict, adapter_name=adapter_name),
+        )
+
+    for module in (save_and_load, peft_utils, peft, peft_model_module):
+        if hasattr(module, "get_peft_model_state_dict"):
+            module.get_peft_model_state_dict = get_peft_model_state_dict
+        if hasattr(module, "set_peft_model_state_dict"):
+            module.set_peft_model_state_dict = set_peft_model_state_dict
+    save_and_load._mcit_lora_like_support = True
+
+
+# Which tuner implements the serialized PeftType for each method.  v3 had one ``CoIN`` /
+# ``HiDe`` / ``CLMoE`` package per method directory, so "MOE_LORA_CoIN" meant a different
+# class depending on the method; v4 selects it explicitly.  Training does this through
+# ``tuner_model_context``; evaluation processes call ``install_method_adapter``.
+METHOD_ADAPTERS = {
+    "moelora": ("MOE_LORA_CoIN", MCITExpertLoraConfig, MCITExpertLoraModel),
+    "mrlora": ("MOE_LORA_CoIN", MCITExpertLoraConfig, MCITExpertLoraModel),
+    "olora": ("MOE_LORA_CoIN", MCITOrthogonalLoraConfig, MCITOrthogonalLoraModel),
+    "disco": ("MOE_LORA_CoIN", MCITDiscoLoraConfig, MCITDiscoLoraModel),
+    "hide": ("MOE_LORA_HiDe", MCITHiDeLoraConfig, MCITHiDeLoraModel),
+    "clmoe": ("MOE_LORA_CLMoE", MCITClMoELoraConfig, MCITClMoELoraModel),
+    "smolora": ("SMOLORA", MCITSeparableExpertLoraConfig, MCITSeparableExpertLoraModel),
+}
+
+
+def install_method_adapter(method_id: str | None) -> bool:
+    """Make ``PeftModel.from_pretrained`` build ``method_id``'s own tuner for the whole process.
+
+    Without this an evaluation process fails with ``KeyError: 'MOE_LORA_CoIN'`` (nothing has
+    registered the serialized type) or, worse, builds the wrong variant.  Methods that use
+    plain LoRA (lora_ft, replay, sefe, keeplora, modalprompt) need nothing and return False.
+    """
+    entry = METHOD_ADAPTERS.get(method_id or "")
+    if entry is None:
+        return False
+    peft_type, config_class, model_class = entry
+    PEFT_TYPE_TO_CONFIG_MAPPING[peft_type] = config_class
+    PEFT_TYPE_TO_MODEL_MAPPING[peft_type] = model_class
+    return True
+
+
 register_mcit_tuners()
+install_state_dict_support()
 
 __all__ = [
     "CoINMOELoraConfig", "CoINMOELoraModel", "HiDeMOELoraConfig", "HiDeMOELoraModel",
     "CLMoEMOELoraConfig", "CLMoEMOELoraModel", "SMoLoraConfig", "SMoLoraModel",
-    "register_mcit_tuners", "tuner_model_context",
+    "register_mcit_tuners", "tuner_model_context", "METHOD_ADAPTERS", "install_method_adapter",
+    "LORA_LIKE_PEFT_TYPES", "install_state_dict_support",
 ]

@@ -12,6 +12,54 @@ import yaml
 from .config.schema import PathSet
 
 
+def repo_root() -> Path:
+    """Checkout that contains this package (``pip install -e .`` is required)."""
+    root = Path(__file__).resolve().parents[1]
+    if not (root / "third_party").is_dir():
+        raise RuntimeError(
+            f"{root} has no third_party/ directory; install MCITlib from a checkout with `pip install -e .`"
+        )
+    return root
+
+
+def vendored_pythonpath(root: str | Path | None = None) -> list[str]:
+    """Import roots every MCITlib process needs, highest priority first.
+
+    The vendored LLaVA and peft must shadow any ``llava``/``peft`` that an older
+    v3 editable install left in the environment; ``doctor`` verifies the result.
+    """
+    base = Path(root).resolve() if root else repo_root()
+    return [str(base), str(base / "third_party" / "LLaVA"), str(base / "third_party" / "peft")]
+
+
+def merge_pythonpath(*groups: str | None, root: str | Path | None = None) -> str:
+    """Vendored roots first, then every other entry once, in order."""
+    entries = list(vendored_pythonpath(root))
+    for group in groups:
+        for item in (group or "").split(os.pathsep):
+            if item and item not in entries:
+                entries.append(item)
+    return os.pathsep.join(entries)
+
+
+def bootstrap_sys_path(root: str | Path | None = None) -> None:
+    """Put the vendored roots in front of ``sys.path`` for the current process."""
+    import sys
+
+    for item in reversed(vendored_pythonpath(root)):
+        if item in sys.path:
+            sys.path.remove(item)
+        sys.path.insert(0, item)
+
+
+def process_env(command_env: dict[str, str], root: str | Path | None = None) -> dict[str, str]:
+    """Environment for a child process: ours, the command's, and a safe PYTHONPATH."""
+    env = os.environ.copy()
+    env.update(command_env)
+    env["PYTHONPATH"] = merge_pythonpath(command_env.get("PYTHONPATH"), os.environ.get("PYTHONPATH"), root=root)
+    return env
+
+
 class PathResolver:
     def __init__(self, paths: PathSet):
         self.paths = paths

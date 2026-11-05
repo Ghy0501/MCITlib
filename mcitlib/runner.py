@@ -15,6 +15,7 @@ from typing import Any
 from .config.loader import deep_merge, load_layered_config
 from .config.schema import Command, DataSource, RunConfig, TaskSpec
 from .methods import create_method
+from .paths import process_env, vendored_pythonpath
 from .registry import get_backbone, get_benchmark, get_method
 
 
@@ -77,6 +78,13 @@ def _apply_script_aliases(commands: list[Command], method: Any) -> list[Command]
     return commands
 
 
+def _ensure_pythonpath(commands: list[Command], config_root: str | Path) -> None:
+    """Every child process imports the vendored llava/peft, not whatever is installed."""
+    pythonpath = os.pathsep.join(vendored_pythonpath(Path(config_root).resolve().parent))
+    for command in commands:
+        command.env.setdefault("PYTHONPATH", pythonpath)
+
+
 def build_sequence_commands(
     config_root: str | Path,
     backbone_id: str,
@@ -108,6 +116,7 @@ def build_sequence_commands(
                 command.argv = [paths.resolve_templates(str(value)) for value in command.argv]
                 command.cwd = paths.resolve_templates(command.cwd)
                 command.env = {key: paths.resolve_templates(str(value)) for key, value in command.env.items()}
+        _ensure_pythonpath(commands, config_root)
         return commands
     if sequence not in {"train", "router"}:
         raise ValueError(f"unknown sequence: {sequence}")
@@ -148,6 +157,7 @@ def build_sequence_commands(
             command.argv = [paths.resolve_templates(str(value)) for value in command.argv]
             command.cwd = paths.resolve_templates(command.cwd)
             command.env = {key: paths.resolve_templates(str(value)) for key, value in command.env.items()}
+    _ensure_pythonpath(commands, config_root)
     commands.sort(key=lambda command: (command.task_id or 0, command.metadata.get("order", -1)))
     return commands
 
@@ -192,14 +202,8 @@ def execute_commands(
         cwd = Path(command.cwd)
         if not cwd.is_absolute():
             cwd = repo_root / cwd
-        env = os.environ.copy()
-        env.update(command.env)
-        pythonpath = [str(repo_root)]
-        if command.env.get("PYTHONPATH"):
-            pythonpath.append(command.env["PYTHONPATH"])
-        elif env.get("PYTHONPATH"):
-            pythonpath.append(env["PYTHONPATH"])
-        env["PYTHONPATH"] = os.pathsep.join(pythonpath)
+        # Vendored llava/peft always come first, whatever the user's environment holds.
+        env = process_env(command.env, repo_root)
         env["PATH"] = str(Path(sys.executable).parent) + os.pathsep + env.get("PATH", "")
         log = logs / f"{index:05d}-{identity}.log"
         log.parent.mkdir(parents=True, exist_ok=True)
