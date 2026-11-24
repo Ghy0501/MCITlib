@@ -111,4 +111,5 @@ class PathSet:
     data_root: Path
     ckpt_root: Path
     repo_root: Path
-    results_root: Path | None = None  # evaluation output; default <ckpt_root>/results
+    results_root: Path | None = None  # evaluation output; default <repo_root>/results
+    logs_root: Path | None = None  # run records; default <repo_root>/logs

@@ -24,6 +24,7 @@ import re
 
 from .multimodal_encoder.builder import build_vision_tower, build_text_tower
 from .multimodal_projector.builder import IdentityMap, build_vision_projector
+from mcitlib.backbones.llava.zero3_loading import load_zero3_state_dict
 
 from llava.constants import IGNORE_INDEX, IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_PATCH_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN
 from einops import repeat, rearrange
@@ -118,7 +119,7 @@ class LlavaMetaModel:
             def get_w(weights, keyword):
                 return {k.split(keyword + '.')[1]: v for k, v in weights.items() if keyword in k}
             
-            self.mm_projector.load_state_dict(get_w(mm_projector_weights, 'mm_projector'),strict = False)
+            load_zero3_state_dict(self.mm_projector, get_w(mm_projector_weights, 'mm_projector'), strict=False)
             print('load pretrained weights of mm projector.')
 
     def initialize_text_modules(self, model_args, fsdp=None):

@@ -17,6 +17,8 @@ from mcitlib.runner import build_sequence_commands
 def _all_sequences(repo_root: Path):
     for method in METHODS:
         for benchmark in BENCHMARKS:
+            if method.supported_benchmarks is not None and benchmark.id not in method.supported_benchmarks:
+                continue
             if benchmark.id == "general":
                 continue
             yield method.id, benchmark.id, build_sequence_commands(repo_root / "configs", "llava", method.id, benchmark.id)

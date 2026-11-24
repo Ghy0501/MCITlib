@@ -39,10 +39,11 @@ def test_defaults_match_v3(repo_root: Path) -> None:
 def test_every_evaluation_chunk_is_pinned_to_its_own_gpu(repo_root: Path) -> None:
     for method in METHODS:
         for benchmark in BENCHMARKS:
-            if benchmark.id == "general":
+            if benchmark.id == "general" or (method.supported_benchmarks is not None and benchmark.id not in method.supported_benchmarks):
                 continue
             seen: dict[str, set[str]] = {}
-            for command in build_sequence_commands(repo_root / "configs", "llava", method.id, benchmark.id, gpus="2,3"):
+            options = {"task_id": 2, "only_eval": True} if method.id == "dgg" else {}
+            for command in build_sequence_commands(repo_root / "configs", "llava", method.id, benchmark.id, gpus="2,3", **options):
                 if "--chunk-idx" in command.argv:
                     index = int(command.argv[command.argv.index("--chunk-idx") + 1])
                     assert command.env["CUDA_VISIBLE_DEVICES"] == ["2", "3"][index], (method.id, benchmark.id)
@@ -81,7 +82,7 @@ def test_chunks_of_a_group_run_concurrently_and_the_next_step_waits(tmp_path: Pa
         _sleeper(out, 0.0, "after", None),
     ]
     started = time.time()
-    results = execute_commands(commands, tmp_path / "run", repo_root=tmp_path)
+    results = execute_commands(commands, tmp_path / "logs/run", repo_root=tmp_path)
     elapsed = time.time() - started
     assert [item["status"] for item in results] == ["completed"] * 3
     assert elapsed < 1.9, f"chunks ran one after the other ({elapsed:.1f}s)"
@@ -98,14 +99,14 @@ def test_one_failed_chunk_lets_the_others_finish_records_all_and_stops(tmp_path:
         _sleeper(out, 0.3, "ok", "g"), _sleeper(out, 0.0, "bad", "g", code=3), _sleeper(out, 0.0, "never", None),
     ]
     with pytest.raises(RuntimeError, match="exit 3"):
-        execute_commands(commands, tmp_path / "run", repo_root=tmp_path)
+        execute_commands(commands, tmp_path / "logs/run", repo_root=tmp_path)
     assert (out / "ok.end").exists(), "the healthy chunk must not be killed half-way"
     assert not (out / "never.start").exists()
     states = sorted(
-        __import__("json").loads(path.read_text())["status"] for path in (tmp_path / "run/.mcitlib/steps").glob("*.json")
+        __import__("json").loads(path.read_text())["status"] for path in (tmp_path / "logs/run/.mcitlib/steps").glob("*.json")
     )
     assert states == ["completed", "failed"]
     results = execute_commands(
-        [commands[0], _sleeper(out, 0.0, "bad", "g"), commands[2]], tmp_path / "run", repo_root=tmp_path, resume=True,
+        [commands[0], _sleeper(out, 0.0, "bad", "g"), commands[2]], tmp_path / "logs/run", repo_root=tmp_path, resume=True,
     )
     assert [item["status"] for item in results][0] == "skipped"

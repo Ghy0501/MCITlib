@@ -1,0 +1,34 @@
+{
+  "status": "deferred_by_user",
+  "download_or_sample": false,
+  "datasets": {
+    "mvbench": {
+      "root": "${MVBENCH_ROOT}",
+      "video_dir": "${MVBENCH_ROOT}/videos",
+      "json_dir": "${MVBENCH_ROOT}/json"
+    },
+    "longvideobench": {
+      "root": "${LONGVIDEOBENCH_ROOT}",
+      "video_dir": "${LONGVIDEOBENCH_ROOT}/videos/videos",
+      "question_file": "${LONGVIDEOBENCH_ROOT}/val_json/longvideobench.json",
+      "subtitle_dir": "${LONGVIDEOBENCH_ROOT}/subtitles"
+    },
+    "videomme": {
+      "root": "${VIDEOMME_ROOT}",
+      "video_dir": "${VIDEOMME_ROOT}/videos/data",
+      "json_dir": "${VIDEOMME_ROOT}/json"
+    },
+    "mmvu": {
+      "root": "${MMVU_ROOT}",
+      "test_q_path": "${MMVU_ROOT}/MMVU_test_q.json",
+      "test_a_path": "${MMVU_ROOT}/MMVU_test_a.json",
+      "test_folder": "${MMVU_ROOT}/videos"
+    },
+    "nextqa": {
+      "root": "${NEXTQA_ROOT}",
+      "test_q_path": "${NEXTQA_ROOT}/scripts/val.q.json",
+      "test_a_path": "${NEXTQA_ROOT}/scripts/val.a.json",
+      "test_folder": "${NEXTQA_ROOT}/NExTVideo"
+    }
+  }
+}

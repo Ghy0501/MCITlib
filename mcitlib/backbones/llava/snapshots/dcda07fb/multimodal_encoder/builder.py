@@ -5,6 +5,12 @@ from .clip_encoder import CLIPVisionTower, CLIPVisionTowerS2
 
 
 def build_vision_tower(vision_tower_cfg, **kwargs):
+    from mcitlib.backbones.internvl.detect import is_intern_vit, vision_name
+
+    if is_intern_vit(vision_name(vision_tower_cfg)):
+        from mcitlib.backbones.internvl.vision_tower import build_intern_vision_tower
+
+        return build_intern_vision_tower(vision_tower_cfg, **kwargs)
     vision_tower = getattr(vision_tower_cfg, 'mm_vision_tower', getattr(vision_tower_cfg, 'vision_tower', None))
     is_absolute_path_exists = os.path.exists(vision_tower)
     use_s2 = getattr(vision_tower_cfg, 's2', False)

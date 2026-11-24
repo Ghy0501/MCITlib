@@ -1,7 +1,7 @@
 {
   "gpu_num": 2,
-  "previous_model": "/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints/UCIT/LLaVA/ModalPrompt/Task1_llava",
-  "output_dir": "/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints/UCIT/LLaVA/ModalPrompt/Task1_llava",
+  "previous_model": "/opt/mcitlib-example/MCITlib/checkpoints/UCIT/LLaVA/ModalPrompt/Task1_llava",
+  "output_dir": "/opt/mcitlib-example/MCITlib/checkpoints/UCIT/LLaVA/ModalPrompt/Task1_llava",
   "prefix_len": 10,
   "num_tasks": 6,
   "cur_task": 2,

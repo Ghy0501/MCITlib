@@ -1,6 +1,6 @@
 {
-  "model_name": "/your_model_path/Internvl-chat-7b",
-  "mm_projector": "/your_model_path/Internvl-chat-7b/mm_projector.bin",
-  "vision_tower": "/your_model_path/InternViT-6B-224px",
-  "clip_tower": "/your_model_path/clip-vit-large-patch14-336"
+  "model_name": "${model_root}/InternVL-Chat-ViT-6B-Vicuna-7B",
+  "mm_projector": "${model_root}/InternVL-Chat-ViT-6B-Vicuna-7B/mm_projector.bin",
+  "vision_tower": "${model_root}/InternViT-6B-224px",
+  "clip_tower": "${model_root}/clip-vit-large-patch14-336"
 }

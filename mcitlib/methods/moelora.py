@@ -6,6 +6,7 @@ from __future__ import annotations
 from typing import Any
 
 from ..config.schema import DataSource, TaskSpec
+from ..tuners._peft_registry import tuner_model_context
 from ..tuners.mcit_expert_lora import MCITExpertLoraConfig, MCITExpertLoraModel
 from .base import ContinualMethod
 
@@ -36,7 +37,8 @@ class MoELoRAMethod(ContinualMethod):
             task_embedding_dim=self.cfg.get("task_embedding_dim", 64),
             expert_num=self.cfg.get("expert_num", 4),
         )
-        return get_peft_model(model, config)
+        with tuner_model_context("MOE_LORA_CoIN", MCITExpertLoraModel, MCITExpertLoraConfig):
+            return get_peft_model(model, config)
 
 
 __all__ = ["MCITExpertLoraModel", "MoELoRAMethod"]

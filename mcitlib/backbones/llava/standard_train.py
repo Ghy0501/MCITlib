@@ -70,6 +70,7 @@ class ModelArguments:
     mm_projector_type: Optional[str] = field(default='linear')
     mm_use_im_start_end: bool = field(default=False)
     mm_use_im_patch_token: bool = field(default=True)
+    mm_patch_merge_type: Optional[str] = field(default='flat')
     mm_vision_select_feature: Optional[str] = field(default="patch")
 
 
@@ -125,6 +126,11 @@ class TrainingArguments(transformers.TrainingArguments):
     group_by_modality_length: bool = field(default=False)
     is_SAT: bool = field(default=False,
                          metadata={"help":"whether SAT data (different group_by_modality_length)"})
+    dgg_history_model_path: Optional[str] = None
+    dgg_probability: float = 0.1
+    dgg_resume_from_checkpoint: Optional[str] = None
+    dgg_expected_data_sha256: Optional[str] = None
+    dgg_replay_manifest: Optional[str] = None
 
 
 def maybe_zero_3(param, ignore_status=False, name=None):
@@ -977,22 +983,6 @@ def train():
             use_fast=True,
         )
 
-    if model_args.version == "v0":
-        if tokenizer.pad_token is None:
-            smart_tokenizer_and_embedding_resize(
-                special_tokens_dict=dict(pad_token="[PAD]"),
-                tokenizer=tokenizer,
-                model=model,
-            )
-    elif model_args.version == "v0.5":
-        tokenizer.pad_token = tokenizer.unk_token
-    else:
-        tokenizer.pad_token = tokenizer.unk_token
-        if model_args.version in conversation_lib.conv_templates:
-            conversation_lib.default_conversation = conversation_lib.conv_templates[model_args.version]
-        else:
-            conversation_lib.default_conversation = conversation_lib.conv_templates["vicuna_v1"]
-
     if os.environ.get("MCITLIB_METHOD") == "modalprompt" and training_args.pt_enable:
         assert not training_args.lora_enable, "Only one tuning can be turned on."
         for param in model.parameters():
@@ -1011,6 +1001,22 @@ def train():
         model.set_proto_input_ids()
         model.reset_vocab_size()
         model.training = True
+
+    if model_args.version == "v0":
+        if tokenizer.pad_token is None:
+            smart_tokenizer_and_embedding_resize(
+                special_tokens_dict=dict(pad_token="[PAD]"),
+                tokenizer=tokenizer,
+                model=model,
+            )
+    elif model_args.version == "v0.5":
+        tokenizer.pad_token = tokenizer.unk_token
+    else:
+        tokenizer.pad_token = tokenizer.unk_token
+        if model_args.version in conversation_lib.conv_templates:
+            conversation_lib.default_conversation = conversation_lib.conv_templates[model_args.version]
+        else:
+            conversation_lib.default_conversation = conversation_lib.conv_templates["vicuna_v1"]
 
     if model_args.vision_tower is not None:
         model.get_model().initialize_vision_modules(
@@ -1065,6 +1071,14 @@ def train():
                     if training_args.bf16 and module.weight.dtype == torch.float32:
                         module = module.to(torch.bfloat16)
 
+    if os.environ.get("MCITLIB_METHOD") == "pclr":
+        if training_args.lora_enable or training_args.pt_enable:
+            raise ValueError("PCLR uses its own rank pools; PEFT/prompt tuning must be disabled")
+        from mcitlib.methods._pclr.llava import run as run_pclr
+
+        run_pclr(model, tokenizer, data_args, training_args, model_args.previous_task_model_path)
+        return
+
     if model_args.previous_task_model_path is not None:
         if training_args.pt_enable:
             assert not training_args.lora_enable, "only prompt tuning is implemented."
@@ -1073,25 +1087,77 @@ def train():
             non_lora_trainables = {(k[11:] if k.startswith("base_model.") else k): v for k, v in non_lora_trainables.items()}
             if any(k.startswith("model.model.") for k in non_lora_trainables):
                 non_lora_trainables = {(k[6:] if k.startswith("model.") else k): v for k, v in non_lora_trainables.items()}
-            model.load_state_dict(non_lora_trainables, strict=False)
+            from mcitlib.backbones.llava.zero3_loading import load_zero3_state_dict
+            load_zero3_state_dict(model, non_lora_trainables, strict=False)
         else:
             load_model_from_previous_task(model, model_args.previous_task_model_path)
+
+    octopus_method = None
+    if os.environ.get("MCITLIB_METHOD") == "octopus" and os.environ.get("MCITLIB_OCTOPUS_STAGE") == "2":
+        from mcitlib.methods._octopus.runtime import setup_stage_two
+        octopus_method = setup_stage_two(model, training_args.gradient_accumulation_steps)
+
+    trainer_class = LLaVATrainer
+    trainer_extras = {}
+    if os.environ.get("MCITLIB_METHOD") == "modalprompt" and training_args.pt_enable:
+        from mcitlib.methods._modalprompt.trainer import ModalPromptTrainer, capture_origin
+        # v3 snapshots the embedding after the previous task is loaded and
+        # before constructing the trainer/DeepSpeed optimizer.
+        trainer_extras["origin"] = capture_origin(model)
+        trainer_class = ModalPromptTrainer
 
     data_module = make_supervised_data_module(tokenizer=tokenizer,
                                               data_args=data_args,
                                               prefix_len=model_args.prefix_len,
                                               cur_task=model_args.cur_task,
                                               transfer_num=model_args.transfer_num)
-    trainer = LLaVATrainer(model=model,
+    trainer = trainer_class(model=model,
                     tokenizer=tokenizer,
                     args=training_args,
-                    **data_module)
+                    **data_module, **trainer_extras)
+    if octopus_method is not None:
+        trainer.mcit_method = octopus_method
 
-    # if list(pathlib.Path(training_args.output_dir).glob("checkpoint-*")):
-    #     trainer.train(resume_from_checkpoint=True)
-    # else:
-    trainer.train()
+    dgg_callback = None
+    is_dgg = os.environ.get("MCITLIB_METHOD") == "dgg"
+    if is_dgg:
+        from mcitlib.methods._dgg.runtime import DGGCallback, guard_reference, load_guidance
+        from mcitlib.methods._dgg.scheduler_checkpoint import DGGSchedulerCheckpoint
+        history_path = training_args.dgg_history_model_path
+        if history_path in ("", "none", "None"):
+            history_path = None
+        guard_reference(training_args.output_dir, data_args.data_path, history_path,
+                        training_args.dgg_probability, training_args.dgg_resume_from_checkpoint,
+                        training_args.dgg_expected_data_sha256, training_args.dgg_replay_manifest)
+        trainer.add_callback(DGGSchedulerCheckpoint(trainer, training_args.dgg_resume_from_checkpoint))
+        if history_path:
+            guidance = load_guidance(model, history_path, training_args.dgg_probability)
+            dgg_callback = DGGCallback(trainer, guidance)
+            trainer.add_callback(dgg_callback)
+    # The released four-rank Swift/DDP recipe keeps activation checkpointing
+    # enabled and selects non-reentrant recomputation. This also lets the
+    # external stage-two regularizer share parameters with ZeRO-2 backward.
+    from mcitlib.backbones.llava.olora_checkpoint import octopus_checkpoint_scope
+    with octopus_checkpoint_scope(os.environ.get("MCITLIB_METHOD"),
+                                  os.environ.get("MCITLIB_OCTOPUS_STAGE"), training_args) as observation:
+        if observation is not None:
+            print(f"[Octopus rank={local_rank}] gradient checkpointing: use_reentrant=False", flush=True)
+        try:
+            if is_dgg:
+                trainer.train(resume_from_checkpoint=training_args.dgg_resume_from_checkpoint)
+            else:
+                trainer.train()
+        finally:
+            if dgg_callback is not None:
+                dgg_callback.close()
+        if observation is not None:
+            print(f"[Octopus rank={local_rank}] non-reentrant checkpoint calls: {observation.calls}", flush=True)
     trainer.save_state()
+    if is_dgg and (training_args.local_rank == 0 or training_args.local_rank == -1):
+        evidence = dgg_callback.evidence() if dgg_callback else {"stage": "initial_task_no_history"}
+        evidence["resume_from_checkpoint"] = training_args.dgg_resume_from_checkpoint
+        with open(os.path.join(training_args.output_dir, "dgg_guidance.json"), "w", encoding="utf-8") as handle:
+            json.dump(evidence, handle, indent=2, sort_keys=True)
 
     model.config.use_cache = True
 
@@ -1106,6 +1172,10 @@ def train():
             model.config.save_pretrained(training_args.output_dir)
             model.save_pretrained(training_args.output_dir, state_dict=state_dict)
             torch.save(non_lora_state_dict, os.path.join(training_args.output_dir, 'non_lora_trainables.bin'))
+            if os.environ.get("MCITLIB_METHOD") == "octopus" and os.environ.get("MCITLIB_OCTOPUS_STAGE") == "2":
+                from mcitlib.methods._octopus.runtime import history_from_env
+                from mcitlib.methods._octopus.state import write_manifest
+                write_manifest(pathlib.Path(training_args.output_dir), history_from_env(), octopus_method.provenance)
     elif training_args.pt_enable:
         model.set_previou_transform_for_save(model_args.cur_task)
         non_lora_state_dict = get_peft_state_non_lora_maybe_zero_3(model.named_parameters())
@@ -1116,7 +1186,9 @@ def train():
         safe_save_model_for_hf_trainer(trainer=trainer,
                                        output_dir=training_args.output_dir)
 
-    remove_checkpoint_dirs(training_args.output_dir)
+    # DGG needs the Trainer/optimizer/RNG checkpoint to resume the same task.
+    if not is_dgg:
+        remove_checkpoint_dirs(training_args.output_dir)
 
 if __name__ == "__main__":
     train()

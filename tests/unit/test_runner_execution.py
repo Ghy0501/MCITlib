@@ -23,13 +23,13 @@ def test_execute_in_order_and_resume_from_markers(tmp_path: Path) -> None:
         python_command(f"from pathlib import Path; Path({str(output)!r}).open('a').write('A')"),
         python_command(f"from pathlib import Path; Path({str(output)!r}).open('a').write('B')"),
     ]
-    first = execute_commands(commands, tmp_path / "run", repo_root=tmp_path)
+    first = execute_commands(commands, tmp_path / "logs/run", repo_root=tmp_path)
     assert [item["status"] for item in first] == ["completed", "completed"]
     assert output.read_text() == "AB"
-    second = execute_commands(commands, tmp_path / "run", repo_root=tmp_path, resume=True)
+    second = execute_commands(commands, tmp_path / "logs/run", repo_root=tmp_path, resume=True)
     assert [item["status"] for item in second] == ["skipped", "skipped"]
     assert output.read_text() == "AB"
-    markers = list((tmp_path / "run/.mcitlib/steps").glob("*.json"))
+    markers = list((tmp_path / "logs/run/.mcitlib/steps").glob("*.json"))
     assert len(markers) == 2
     assert all(json.loads(path.read_text())["status"] == "completed" for path in markers)
 
@@ -40,12 +40,12 @@ def test_failure_stops_sequence_and_resume_keeps_completed_steps(tmp_path: Path)
     failing = python_command("raise RuntimeError('offline failure')")
     last = python_command(f"from pathlib import Path; Path({str(output)!r}).open('a').write('last')")
     with pytest.raises(RuntimeError, match="command 1 failed"):
-        execute_commands([first, failing, last], tmp_path / "run", repo_root=tmp_path)
+        execute_commands([first, failing, last], tmp_path / "logs/run", repo_root=tmp_path)
     assert output.read_text() == "first"
-    statuses = sorted(path.name for path in (tmp_path / "run/.mcitlib/steps").glob("*.json"))
+    statuses = sorted(path.name for path in (tmp_path / "logs/run/.mcitlib/steps").glob("*.json"))
     assert len(statuses) == 2
 
     succeeding = python_command("print('fixed')")
-    results = execute_commands([first, succeeding, last], tmp_path / "run", repo_root=tmp_path, resume=True)
+    results = execute_commands([first, succeeding, last], tmp_path / "logs/run", repo_root=tmp_path, resume=True)
     assert [item["status"] for item in results] == ["skipped", "completed", "completed"]
     assert output.read_text() == "firstlast"

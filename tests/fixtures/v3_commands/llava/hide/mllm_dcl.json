@@ -13,9 +13,9 @@
   "config_placeholders": {},
   "sequence_repairs": [],
   "path_placeholders": {
-    "/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints": "/your_ckpts_path",
-    "/home/hongbo_zhao/ghy-cl-codebase/MCITlib": "/your_path/MCITlib_v3",
-    "/mnt/cache/guohaiyang/miniconda3/envs/coin/bin/python": "/your_python_path"
+    "/opt/mcitlib-example/MCITlib/checkpoints": "/your_ckpts_path",
+    "/opt/mcitlib-example/MCITlib": "/your_path/MCITlib_v3",
+    "/opt/mcitlib-example/env/bin/python": "/your_python_path"
   },
   "runner_exit_code": 0,
   "commands": [

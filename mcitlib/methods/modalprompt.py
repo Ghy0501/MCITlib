@@ -12,6 +12,7 @@ from .base import ContinualMethod
 
 class ModalPromptMethod(ContinualMethod):
     id = "modalprompt"
+    env = "llava-modalprompt-ds126"
     aliases = ("ModalPrompt",)
     train_entry = "standard"
     deepspeed_config = "zero3_offload"

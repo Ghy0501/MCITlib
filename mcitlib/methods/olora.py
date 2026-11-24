@@ -37,6 +37,8 @@ class OLoRAMethod(ContinualMethod):
             lora_dropout=self.cfg.get("lora_dropout", 0.05),
             bias=self.cfg.get("bias", "none"),
             task_type="CAUSAL_LM",
+            task_embedding_dim=self.cfg.get("task_embedding_dim", 64),
+            expert_num=self.cfg.get("expert_num", 4),
             cur_task=self.cur_task,
         )
         with tuner_model_context("MOE_LORA_CoIN", MCITOrthogonalLoraModel):

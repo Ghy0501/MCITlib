@@ -102,7 +102,7 @@ def check_component(component: Path, upstream_root: Path | None) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", type=Path, default=Path("."), help="MCITlib repository root")
+    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1], help="MCITlib project root")
     parser.add_argument("--upstream-root", type=Path, help="directory containing upstream clones for patch checks")
     parser.add_argument("--write-manifest", action="store_true", help="regenerate manifests from the current pristine trees")
     args = parser.parse_args()

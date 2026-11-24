@@ -1,5 +1,5 @@
 {
-  "_name_or_path": "/home/hongbo_zhao/ghy-cl-codebase/Video-LLaVA-7B",
+  "_name_or_path": "/opt/mcitlib-example/Video-LLaVA-7B",
   "architectures": [
     "LlavaLlamaForCausalLM"
   ],
@@ -14,12 +14,12 @@
   "intermediate_size": 11008,
   "max_position_embeddings": 4096,
   "mm_hidden_size": 1024,
-  "mm_image_tower": "/home/hongbo_zhao/ghy-cl-codebase/LanguageBind_Image",
+  "mm_image_tower": "/opt/mcitlib-example/LanguageBind_Image",
   "mm_projector_type": "mlp2x_gelu",
   "mm_use_im_patch_token": false,
   "mm_use_im_start_end": false,
-  "mm_video_tower": "/home/hongbo_zhao/ghy-cl-codebase/LanguageBind_Video_merge",
-  "mm_text_tower": "/home/hongbo_zhao/ghy-cl-codebase/clip-vit-large-patch14-336",
+  "mm_video_tower": "/opt/mcitlib-example/LanguageBind_Video_merge",
+  "mm_text_tower": "/opt/mcitlib-example/clip-vit-large-patch14-336",
   "mm_text_select_layer": -1, 
   "mm_vision_select_feature": "patch",
   "mm_vision_select_layer": -2,

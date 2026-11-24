@@ -48,6 +48,8 @@ def build_general_commands(
     def add(argv: list[str], name: str, chunk: int | None = None) -> None:
         nonlocal order
         env = {"MCITLIB_METHOD": method.id}
+        if method.id == "same":
+            env["MCITLIB_SAME_CLIP_TOWER"] = model_config["vision_tower"]
         if method.model_override:
             env["MCITLIB_MODEL_OVERRIDE"] = method.model_override
         if chunk is not None:

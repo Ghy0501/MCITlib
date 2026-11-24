@@ -56,6 +56,8 @@ def _gaps(repo_root: Path, paths: PathResolver, method: str, benchmark: str, seq
 def _all(repo_root: Path):
     for method in METHODS:
         for benchmark in BENCHMARKS:
+            if method.supported_benchmarks is not None and benchmark.id not in method.supported_benchmarks:
+                continue
             if benchmark.id != "general":
                 yield method.id, benchmark.id, "train"
     for benchmark in BENCHMARKS:

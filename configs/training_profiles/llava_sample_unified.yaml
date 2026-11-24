@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: Apache-2.0
+# Shared main-training parameters for the LLaVA 3k/1k validation sample.
+id: llava_sample_unified
+backbone: llava
+primary_train_samples_per_task: 3000
+evaluation_samples_per_task: 1000
+global_batch_size: 64
+max_per_device_train_batch_size: 8
+base_learning_rate: '0.0002'
+# Equal 3k primary data needs one default epoch. Preserve ModalPrompt's
+# method-specific prompt-training budget; this profile does not cover full data.
+primary_default_epochs: 1
+method_primary_epoch_overrides:
+  modalprompt:
+    epochs: 10
+    reason: preserve_prompt_training_budget
+# The following are verified as recorded CLI parameters. DeepSpeed may choose
+# its own optimizer or scheduler; that configuration is audited separately.
+recorded_warmup_ratio: '0.03'
+recorded_lr_scheduler_type: cosine
+recorded_model_max_length: 2048
+recorded_mm_projector_lr: '0.00002'
+replay_memory: preserve
+auxiliary_learning_rates: preserve
+method_specific_parameters: preserve
+auxiliary_training_sequences: preserve

@@ -1,4 +1,18 @@
 # Copy to paths.yaml and adjust these three roots for your machine.
+# Relative values are resolved from the MCITlib project root, regardless of cwd.
 model_root: ./models
 data_root: ./data
 ckpt_root: ./ckpts
+# Optional: run records default to ./logs and must remain inside the project.
+# logs_root: ./logs
+# Optional: evaluation outputs default to ./results, independently of ckpt_root.
+# results_root: ./results
+# Optional: relocate individual input paths. Entries are checked after root/environment
+# overrides, with the longest matching path prefix winning. Scope-specific entries
+# apply only to that benchmark; common entries apply to all benchmarks.
+# path_mappings:
+#   ucit:
+#     - from: ${data_root}/UCIT
+#       to: /absolute/path/to/ucit/images
+#     - from: ${data_root}/UCIT/ImageNet-R
+#       to: /absolute/path/to/ucit/annotations/ImageNet-R

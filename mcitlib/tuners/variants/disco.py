@@ -10,6 +10,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 from peft.utils import PeftType
 
+from ..inference_cache import (
+    InferenceBankInvalidation,
+    clear_expert_inference_cache,
+    expert_weight,
+    observe_active_adapter,
+)
 from ..mcit_expert_lora import (
     MCITExpertBankA,
     MCITExpertBankB,
@@ -29,13 +35,23 @@ class MCITDiscoLoraConfig(MCITExpertLoraConfig):
         self.peft_type = PeftType.MOE_LORA_CoIN
 
 
-class MCITDiscoBankA(MCITExpertBankA):
+class MCITDiscoBankA(InferenceBankInvalidation, MCITExpertBankA):
     def __init__(self, in_features, out_features, expert_num, cur_task, training):
         super().__init__(in_features, out_features, expert_num)
         self.cur_task = cur_task
         self.training = training
 
     def forward(self, x):
+        if not self.training and not torch.is_grad_enabled():
+            parameters = [self.loraA[i].mlp.weight for i in range(self.expert_num)]
+
+            def build():
+                # The legacy temporary Linear is initialized in the default
+                # dtype before its concatenated expert weights are copied in.
+                return torch.cat(parameters, dim=0).to(device=x.device, dtype=torch.get_default_dtype())
+
+            return F.linear(x, expert_weight(self, parameters, x, extra=('disco-a', self.expert_num), build=build))
+        clear_expert_inference_cache()
         temp = nn.Linear(self.in_features, self.expert_num * self.r, bias=False).to(x.device)
         weight = torch.cat([self.loraA[i].mlp.weight for i in range(self.expert_num)], dim=0)
         with torch.no_grad():
@@ -43,13 +59,21 @@ class MCITDiscoBankA(MCITExpertBankA):
         return temp(x)
 
 
-class MCITDiscoBankB(MCITExpertBankB):
+class MCITDiscoBankB(InferenceBankInvalidation, MCITExpertBankB):
     def __init__(self, in_features, out_features, expert_num, cur_task, training):
         super().__init__(in_features, out_features, expert_num)
         self.cur_task = cur_task
         self.training = training
 
     def forward(self, x):
+        if not self.training and not torch.is_grad_enabled():
+            parameters = [self.loraB[i].mlp.weight for i in range(self.expert_num)]
+
+            def build():
+                return torch.cat(parameters, dim=1).to(device=x.device, dtype=torch.get_default_dtype())
+
+            return F.linear(x, expert_weight(self, parameters, x, extra=('disco-b', self.expert_num), build=build))
+        clear_expert_inference_cache()
         temp = nn.Linear(self.expert_num * self.r, self.out_features, bias=False).to(x.device)
         weight = torch.cat([self.loraB[i].mlp.weight for i in range(self.expert_num)], dim=1)
         with torch.no_grad():
@@ -110,6 +134,10 @@ class MCITDiscoLoraLinear(MCITExpertLoraLinear, MCITDiscoLoraLayer):
         self.active_adapter = adapter_name
 
     def forward(self, x: torch.Tensor, **kwargs):
+        if self.training or torch.is_grad_enabled():
+            clear_expert_inference_cache()
+        else:
+            observe_active_adapter(self)
         previous_dtype = x.dtype
         if self.active_adapter not in self.lora_A.keys():
             return F.linear(x, transpose(self.weight, self.fan_in_fan_out), bias=self.bias)

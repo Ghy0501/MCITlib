@@ -1,7 +1,7 @@
 {
   "gpu_num": 2,
-  "previous_model": "/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints/MLLM-ACL/LLaVA/ModalPrompt/Task1_llava",
-  "output_dir": "/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints/MLLM-ACL/LLaVA/ModalPrompt/Task2_llava",
+  "previous_model": "/opt/mcitlib-example/MCITlib/checkpoints/MLLM-ACL/LLaVA/ModalPrompt/Task1_llava",
+  "output_dir": "/opt/mcitlib-example/MCITlib/checkpoints/MLLM-ACL/LLaVA/ModalPrompt/Task2_llava",
   "prefix_len": 20,
   "num_tasks": 4,
   "cur_task": 2,

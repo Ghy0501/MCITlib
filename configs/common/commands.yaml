@@ -1,0 +1,326 @@
+fragments:
+  options_num_train_epochs_to_report_to: [--num_train_epochs, '@{task.train_config.epoch}', --per_device_train_batch_size, '@{task.train_config.batch_size}',
+    --per_device_eval_batch_size, '16', --gradient_accumulation_steps, '@{task.train_config.grad_acc}', --evaluation_strategy, 'no', --save_strategy,
+    steps, --save_steps, '50000', --learning_rate, '@{task.train_config.lr}', --weight_decay, '0.', --warmup_ratio, '0.03', --lr_scheduler_type,
+    cosine, --logging_steps, '1', --tf32, 'True', --model_max_length, '2048', --gradient_checkpointing, 'True', --dataloader_num_workers, '4',
+    --lazy_preprocess, 'True', --report_to, none]
+  options_version_to_output_dir: [--version, v1, --data_path, '@{task.data_config.train_path}', --image_folder, '@{task.data_config.train_folder}',
+    --vision_tower, '@{task.model_config.vision_tower}', --mm_projector_type, mlp2x_gelu, --mm_vision_select_layer, '-2', --mm_use_im_start_end,
+    'False', --mm_use_im_patch_token, 'False', --image_aspect_ratio, pad, --group_by_modality_length, 'True', --bf16, 'True', --output_dir, '@{task.train_config.output_dir}']
+  options_num_chunks_to_conv_mode: [--num-chunks, '2', --chunk-idx, '0', --temperature, '0', --conv-mode, vicuna_v1]
+  options_deepspeed_to_expert_num: [--deepspeed, ./scripts/zero2.json, --lora_enable, 'True', --lora_r, '@{task.train_config.rank}', --lora_alpha,
+    '192', --mm_projector_lr, 2e-5, --expert_num, '6']
+  options_model_path_to_image_folder: [--model-path, '@{task.eval_config.model_path}', --model-base, '@{task.model_config.model_name}', --question-file,
+    '@{task.data_config.test_path}', --image-folder, '@{task.data_config.test_folder}']
+  options_num_chunks_to_conv_mode_2: [--num-chunks, '2', --chunk-idx, '1', --temperature, '0', --conv-mode, vicuna_v1]
+  options_answers_file_to_conv_mode: [--answers-file, '@{task.eval_config.result_path}/Math/@{task.eval_config.stage}/2_0.jsonl', --num-chunks,
+    '2', --chunk-idx, '0', --output_xlsx, '@{task.eval_config.result_path}/Math/@{task.eval_config.stage}/result.xlsx', --temperature, '0', --conv-mode,
+    vicuna_v1]
+  options_mm_use_im_start_end_to_output_dir: [--mm_use_im_start_end, 'False', --mm_use_im_patch_token, 'False', --image_aspect_ratio, pad, --group_by_modality_length,
+    'True', --bf16, 'True', --output_dir, '@{task.train_config.output_dir}']
+  options_model_path_to_image_folder_2: [--model-path, '@{task.eval_config.model_path}', --model-base, '@{task.model_config.model_name}', --question-file,
+    '@{datasets.task_2.data_config.test_path}', --image-folder, '@{datasets.task_2.data_config.test_folder}']
+  options_version_to_text_tower: [--version, v1, --data_path, '@{task.data_config.train_path}', --image_folder, '@{task.data_config.train_folder}',
+    --vision_tower, '@{task.model_config.vision_tower}', --text_tower, '@{task.model_config.vision_tower}']
+  options_deepspeed_to_lora_r: [--deepspeed, ./scripts/zero2.json, --lora_enable, 'True', --lora_r, '@{task.train_config.rank}']
+  options_model_path_to_image_folder_3: [--model-path, '@{task.eval_config.model_path}', --model-base, '@{task.model_config.model_name}', --question-file,
+    '@{datasets.task_1.data_config.test_path}', --image-folder, '@{datasets.task_1.data_config.test_folder}']
+templates:
+  train_train_mem_moe_1:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem_MOE.py, {use: options_deepspeed_to_expert_num},
+      --model_name_or_path, '@{task.model_config.model_name}', --pretrain_mm_mlp_adapter, '@{task.model_config.mm_projector}', {use: options_version_to_output_dir},
+      {use: options_num_train_epochs_to_report_to}, --task, '@{task.train_config.task}']
+  eval_model_others_1:
+    argv: [python, -m, llava.eval.CoIN.model_others, {use: options_model_path_to_image_folder}, --answers-file, '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}/2_1.jsonl',
+      {use: options_num_chunks_to_conv_mode_2}]
+  eval_eval_deepseek_r1_1:
+    argv: [python, -m, llava.eval.CoIN.eval_deepseek_r1, --annotation-file, '@{datasets.task_1.data_config.test_path}', --result-file, '@{task.eval_config.result_path}/@{datasets.task_1.task_name}/@{task.eval_config.stage}/merge.jsonl',
+      --output-dir, '@{task.eval_config.result_path}/@{datasets.task_1.task_name}/@{task.eval_config.stage}']
+  train_train_mem_moe_2:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem_MOE.py, {use: options_deepspeed_to_expert_num},
+      --model_name_or_path, '@{task.model_config.model_name}', --previous_task_model_path, '@{task.train_config.previous_model}', {use: options_version_to_output_dir},
+      {use: options_num_train_epochs_to_report_to}, --task, '@{task.train_config.task}']
+  eval_eval_caption_1:
+    argv: [python, -m, llava.eval.CoIN.eval_caption, --annotation-file, '@{datasets.task_3.data_config.anno_path}', --result-file, '@{task.eval_config.result_path}/@{datasets.task_3.task_name}/@{task.eval_config.stage}/merge.jsonl',
+      --output-dir, '@{task.eval_config.result_path}/@{datasets.task_3.task_name}/@{task.eval_config.stage}']
+  eval_model_ai2d_1:
+    argv: [python, -m, llava.eval.CoIN.model_ai2d, {use: options_model_path_to_image_folder}, --answers-file, '@{task.eval_config.result_path}/RS/@{task.eval_config.stage}/2_0.jsonl',
+      {use: options_num_chunks_to_conv_mode}]
+  eval_eval_ai2d_1:
+    argv: [python, -m, llava.eval.CoIN.eval_ai2d, --annotation-file, '@{datasets.task_1.data_config.test_path}', --result-file, '@{task.eval_config.result_path}/RS/@{task.eval_config.stage}/merge.jsonl',
+      --output-dir, '@{task.eval_config.result_path}/RS/@{task.eval_config.stage}']
+  eval_model_pvqa_1:
+    argv: [python, -m, llava.eval.CoIN.model_pvqa, {use: options_model_path_to_image_folder_2}, --answers-file, '@{task.eval_config.result_path}/Med/@{task.eval_config.stage}/2_1.jsonl',
+      {use: options_num_chunks_to_conv_mode_2}]
+  eval_eval_pvqa_1:
+    argv: [python, -m, llava.eval.CoIN.eval_pvqa, --annotation-file, '@{datasets.task_2.data_config.test_path}', --result-file, '@{task.eval_config.result_path}/Med/@{task.eval_config.stage}/merge.jsonl',
+      --output-dir, '@{task.eval_config.result_path}/Med/@{task.eval_config.stage}']
+  eval_eval_sci_1:
+    argv: [python, -m, llava.eval.CoIN.eval_sci, --annotation-file, '@{datasets.task_4.data_config.test_path}', --result-file, '@{task.eval_config.result_path}/Sci/@{task.eval_config.stage}/merge.jsonl',
+      --output-dir, '@{task.eval_config.result_path}/Sci/@{task.eval_config.stage}']
+  eval_model_fin_1:
+    argv: [python, -m, llava.eval.CoIN.model_fin, {use: options_model_path_to_image_folder}, --answers-file, '@{task.eval_config.result_path}/Fin/@{task.eval_config.stage}/2_0.jsonl',
+      {use: options_num_chunks_to_conv_mode}]
+  eval_eval_finvis_1:
+    argv: [python, -m, llava.eval.CoIN.eval_finvis, --annotation-file, '@{task.data_config.test_path}', --result-file, '@{task.eval_config.result_path}/Fin/@{task.eval_config.stage}/merge.jsonl',
+      --output-dir, '@{task.eval_config.result_path}/Fin/@{task.eval_config.stage}']
+  eval_model_ocr_1:
+    argv: [python, -m, llava.eval.CoIN.model_ocr, {use: options_model_path_to_image_folder_3}, --answers-file, '@{task.eval_config.result_path}/OCR/@{task.eval_config.stage}/2_0.jsonl',
+      {use: options_num_chunks_to_conv_mode}]
+  eval_eval_ocr_1:
+    argv: [python, -m, llava.eval.CoIN.eval_ocr, --annotation-file, '@{datasets.task_1.data_config.test_path}', --result-file, '@{task.eval_config.result_path}/OCR/@{task.eval_config.stage}/merge.jsonl',
+      --output-dir, '@{task.eval_config.result_path}/OCR/@{task.eval_config.stage}']
+  eval_model_math_1:
+    argv: [python, -m, llava.eval.CoIN.model_math, {use: options_model_path_to_image_folder_2}, {use: options_answers_file_to_conv_mode}]
+  eval_eval_math_1:
+    argv: [python, -m, llava.eval.CoIN.eval_math, --result-file, '@{task.eval_config.result_path}/Math/@{task.eval_config.stage}/result.xlsx']
+  eval_model_sat_1:
+    argv: [python, -m, llava.eval.CoIN.model_sat, {use: options_model_path_to_image_folder}, --answers-file, '@{task.eval_config.result_path}/VP/@{task.eval_config.stage}/2_1.jsonl',
+      {use: options_num_chunks_to_conv_mode_2}]
+  eval_eval_sat_1:
+    argv: [python, -m, llava.eval.CoIN.eval_sat, --annotation-file, '@{task.data_config.test_path}', --result-file, '@{task.eval_config.result_path}/VP/@{task.eval_config.stage}/merge.jsonl',
+      --output-dir, '@{task.eval_config.result_path}/VP/@{task.eval_config.stage}']
+  eval_convert_result_to_submission_1:
+    argv: [python, -m, llava.eval.CoIN.convert_result_to_submission, --result-file, '@{task.eval_config.result_path}/APP/@{task.eval_config.stage}/merge.jsonl',
+      --output_file, '@{task.eval_config.result_path}/APP/@{task.eval_config.stage}/our_result_for_submission.tsv']
+  train_train_mem_moe_3:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem_MOE.py, {use: options_deepspeed_to_expert_num},
+      --model_name_or_path, '@{task.model_config.model_name}', --pretrain_mm_mlp_adapter, '@{task.model_config.mm_projector}', {use: options_version_to_text_tower},
+      --mm_projector_type, mlp2x_gelu, --mm_vision_select_layer, '-2', {use: options_mm_use_im_start_end_to_output_dir}, --cur_task, '0', {use: options_num_train_epochs_to_report_to}]
+  eval_model_others_2:
+    argv: [python, -m, llava.eval.CoIN.model_others, {use: options_model_path_to_image_folder}, --text-tower, '@{task.model_config.vision_tower}',
+      --num-task, '6', --answers-file, '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}/2_0.jsonl', {use: options_num_chunks_to_conv_mode}]
+  train_train_mem_moe_4:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem_MOE.py, {use: options_deepspeed_to_expert_num},
+      --model_name_or_path, '@{task.model_config.model_name}', --previous_task_model_path, '@{task.train_config.previous_model}', {use: options_version_to_text_tower},
+      --mm_projector_type, mlp2x_gelu, --mm_vision_select_layer, '-2', {use: options_mm_use_im_start_end_to_output_dir}, --cur_task, '1', {use: options_num_train_epochs_to_report_to}]
+  eval_model_ai2d_2:
+    argv: [python, -m, llava.eval.CoIN.model_ai2d, {use: options_model_path_to_image_folder_3}, --text-tower, '@{task.model_config.vision_tower}',
+      --num-task, '5', --answers-file, '@{task.eval_config.result_path}/RS/@{task.eval_config.stage}/2_0.jsonl', {use: options_num_chunks_to_conv_mode}]
+  eval_model_pvqa_2:
+    argv: [python, -m, llava.eval.CoIN.model_pvqa, {use: options_model_path_to_image_folder_2}, --text-tower, '@{task.model_config.vision_tower}',
+      --num-task, '5', --answers-file, '@{task.eval_config.result_path}/Med/@{task.eval_config.stage}/2_0.jsonl', {use: options_num_chunks_to_conv_mode}]
+  eval_model_fin_2:
+    argv: [python, -m, llava.eval.CoIN.model_fin, {use: options_model_path_to_image_folder}, --text-tower, '@{task.model_config.vision_tower}',
+      --num-task, '5', --answers-file, '@{task.eval_config.result_path}/Fin/@{task.eval_config.stage}/2_1.jsonl', {use: options_num_chunks_to_conv_mode_2}]
+  extra_extract_weights_1:
+    argv: [python, -m, llava.train.extract_weights, --model-config, '${repo_root}/configs/model_configs/llava.json', --output-dir, '${ckpt_root}/MCITlib/@{benchmark.v3_name}/LLaVA/@{method.v3_dir}/Task0_llava_lora_gradients',
+      --energy-threshold, '0.6']
+  train_train_mem_1:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem.py, {use: options_deepspeed_to_lora_r}, --lora_alpha,
+      '128', --mm_projector_lr, 2e-5, --freeze_lora_A, 'True', --init_lora_from_gradients, '@{task.train_config.output_dir}_gradients/gradients_merged.pt',
+      --model_name_or_path, '@{task.model_config.model_name}', --pretrain_mm_mlp_adapter, '@{task.model_config.mm_projector}', {use: options_version_to_output_dir},
+      {use: options_num_train_epochs_to_report_to}]
+  eval_model_others_3:
+    argv: [python, -m, llava.eval.CoIN.model_others, --model-path, '@{task.eval_config.model_path}', --question-file, '@{task.data_config.test_path}',
+      --image-folder, '@{task.data_config.test_folder}', --answers-file, '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}/2_1.jsonl',
+      {use: options_num_chunks_to_conv_mode_2}]
+  extra_extract_gradients_1:
+    argv: [python, -m, llava.train.extract_gradients, --data-config, '${repo_root}/configs/@{task.source.data_config}', --model-config, '${repo_root}/configs/@{task.source.model_config}',
+      --train-config, '${repo_root}/configs/train_configs/@{method.v3_dir}/LLaVA/@{benchmark.v3_name}/train_pre/task1.json', --output-dir, '@{task.train_config.output_dir}_gradients',
+      --data-ratio, '0.2', --num-chunks, '2', --chunk-idx, '0']
+  extra_extract_gradients_2:
+    argv: [python, -m, llava.train.extract_gradients, --data-config, '${repo_root}/configs/@{task.source.data_config}', --model-config, '${repo_root}/configs/@{task.source.model_config}',
+      --train-config, '${repo_root}/configs/train_configs/@{method.v3_dir}/LLaVA/@{benchmark.v3_name}/train_pre/task1.json', --output-dir, '@{task.train_config.output_dir}_gradients',
+      --num-chunks, '2', --merge-only, --svd-mode, fixed_rank]
+  extra_merge_lora_weights_1:
+    argv: [python, scripts/merge_lora_weights.py, --model-path, '@{task.train_config.output_dir}', --model-base, '@{task.train_config.previous_model}',
+      --save-model-path, '@{task.eval_config.model_path}']
+  train_train_mem_2:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem.py, {use: options_deepspeed_to_lora_r}, --lora_alpha,
+      '128', --mm_projector_lr, 2e-5, --model_name_or_path, '@{task.train_config.previous_model}', --freeze_lora_A, 'True', --init_lora_from_gradients,
+      '@{task.train_config.output_dir}_gradients/gradients_merged.pt', {use: options_version_to_output_dir}, {use: options_num_train_epochs_to_report_to}]
+  eval_model_ai2d_3:
+    argv: [python, -m, llava.eval.CoIN.model_ai2d, --model-path, '@{task.eval_config.model_path}', --question-file, '@{datasets.task_1.data_config.test_path}',
+      --image-folder, '@{datasets.task_1.data_config.test_folder}', --answers-file, '@{task.eval_config.result_path}/RS/@{task.eval_config.stage}/2_0.jsonl',
+      {use: options_num_chunks_to_conv_mode}]
+  eval_model_pvqa_3:
+    argv: [python, -m, llava.eval.CoIN.model_pvqa, --model-path, '@{task.eval_config.model_path}', --question-file, '@{datasets.task_2.data_config.test_path}',
+      --image-folder, '@{datasets.task_2.data_config.test_folder}', --answers-file, '@{task.eval_config.result_path}/Med/@{task.eval_config.stage}/2_0.jsonl',
+      {use: options_num_chunks_to_conv_mode}]
+  eval_model_fin_3:
+    argv: [python, -m, llava.eval.CoIN.model_fin, --model-path, '@{task.eval_config.model_path}', --question-file, '@{task.data_config.test_path}',
+      --image-folder, '@{task.data_config.test_folder}', --answers-file, '@{task.eval_config.result_path}/Fin/@{task.eval_config.stage}/2_0.jsonl',
+      {use: options_num_chunks_to_conv_mode}]
+  eval_model_math_2:
+    argv: [python, -m, llava.eval.CoIN.model_math, --model-path, '@{task.eval_config.model_path}', --question-file, '@{datasets.task_2.data_config.test_path}',
+      --image-folder, '@{datasets.task_2.data_config.test_folder}', {use: options_answers_file_to_conv_mode}]
+  train_train_mem_3:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem.py, {use: options_deepspeed_to_lora_r}, --lora_alpha,
+      '64', --mm_projector_lr, 2e-5, --model_name_or_path, '@{task.model_config.model_name}', --pretrain_mm_mlp_adapter, '@{task.model_config.mm_projector}',
+      {use: options_version_to_output_dir}, {use: options_num_train_epochs_to_report_to}]
+  train_train_mem_4:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem.py, {use: options_deepspeed_to_lora_r}, --lora_alpha,
+      '64', --mm_projector_lr, 2e-5, --model_name_or_path, '@{task.model_config.model_name}', --previous_task_model_path, '@{task.train_config.previous_model}',
+      {use: options_version_to_output_dir}, {use: options_num_train_epochs_to_report_to}]
+  train_train_mem_5:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem.py, --deepspeed, ./scripts/zero3_offload.json,
+      --lora_enable, 'False', --mm_projector_lr, 2e-5, --pt_enable, 'True', --model_name_or_path, '@{task.model_config.model_name}', --pretrain_mm_mlp_adapter,
+      '@{task.model_config.mm_projector}', {use: options_version_to_text_tower}, --mm_projector_type, mlp2x_gelu, --mm_vision_select_layer, '-2',
+      --mm_text_select_layer, '-1', --prefix_len, '20', --cur_task, '1', --num_tasks, '6', {use: options_mm_use_im_start_end_to_output_dir}, {
+        use: options_num_train_epochs_to_report_to}]
+  eval_model_others_4:
+    argv: [python, -m, 'llava.eval.@{method.v3_dir}.model_others', {use: options_model_path_to_image_folder}, --text-tower, '@{task.model_config.vision_tower}',
+      --prefix-len, '10', --cur-task, '6', --num-tasks, '6', --answers-file, '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}/2_1.jsonl',
+      {use: options_num_chunks_to_conv_mode_2}]
+  eval_eval_deepseek_r1_2:
+    argv: [python, -m, 'llava.eval.@{method.v3_dir}.eval_deepseek_r1', --annotation-file, '@{datasets.task_1.data_config.test_path}', --result-file,
+      '@{task.eval_config.result_path}/@{datasets.task_1.task_name}/@{task.eval_config.stage}/merge.jsonl', --output-dir, '@{task.eval_config.result_path}/@{datasets.task_1.task_name}/@{task.eval_config.stage}']
+  train_train_mem_6:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem.py, --deepspeed, ./scripts/zero3_offload.json,
+      --lora_enable, 'False', --mm_projector_lr, 2e-5, --pt_enable, 'True', --model_name_or_path, '@{task.model_config.model_name}', --pretrain_mm_mlp_adapter,
+      '@{task.model_config.mm_projector}', {use: options_version_to_text_tower}, --pretrain_mm_mlp_adapter, '@{task.model_config.mm_projector}',
+      --mm_projector_type, mlp2x_gelu, --mm_vision_select_layer, '-2', --mm_text_select_layer, '-1', --prefix_len, '20', --cur_task, '2', --num_tasks,
+      '6', {use: options_mm_use_im_start_end_to_output_dir}, {use: options_num_train_epochs_to_report_to}]
+  eval_eval_caption_2:
+    argv: [python, -m, 'llava.eval.@{method.v3_dir}.eval_caption', --annotation-file, '@{datasets.task_3.data_config.anno_path}', --result-file,
+      '@{task.eval_config.result_path}/@{datasets.task_3.task_name}/@{task.eval_config.stage}/merge.jsonl', --output-dir, '@{task.eval_config.result_path}/@{datasets.task_3.task_name}/@{task.eval_config.stage}']
+  eval_model_ai2d_4:
+    argv: [python, -m, 'llava.eval.@{method.v3_dir}.model_ai2d', {use: options_model_path_to_image_folder}, --text-tower, '@{task.model_config.vision_tower}',
+      --prefix-len, '20', --cur-task, '4', --num-tasks, '5', --answers-file, '@{task.eval_config.result_path}/RS/@{task.eval_config.stage}/2_0.jsonl',
+      {use: options_num_chunks_to_conv_mode}]
+  eval_eval_ai2d_2:
+    argv: [python, -m, 'llava.eval.@{method.v3_dir}.eval_ai2d', --annotation-file, '@{datasets.task_1.data_config.test_path}', --result-file,
+      '@{task.eval_config.result_path}/RS/@{task.eval_config.stage}/merge.jsonl', --output-dir, '@{task.eval_config.result_path}/RS/@{task.eval_config.stage}']
+  eval_model_pvqa_4:
+    argv: [python, -m, 'llava.eval.@{method.v3_dir}.model_pvqa', {use: options_model_path_to_image_folder_2}, --text-tower, '@{task.model_config.vision_tower}',
+      --prefix-len, '20', --cur-task, '2', --num-tasks, '5', --answers-file, '@{task.eval_config.result_path}/Med/@{task.eval_config.stage}/2_0.jsonl',
+      {use: options_num_chunks_to_conv_mode}]
+  eval_eval_pvqa_2:
+    argv: [python, -m, 'llava.eval.@{method.v3_dir}.eval_pvqa', --annotation-file, '@{datasets.task_2.data_config.test_path}', --result-file,
+      '@{task.eval_config.result_path}/Med/@{task.eval_config.stage}/merge.jsonl', --output-dir, '@{task.eval_config.result_path}/Med/@{task.eval_config.stage}']
+  eval_eval_sci_2:
+    argv: [python, -m, 'llava.eval.@{method.v3_dir}.eval_sci', --annotation-file, '@{task.data_config.test_path}', --result-file, '@{task.eval_config.result_path}/Sci/@{task.eval_config.stage}/merge.jsonl',
+      --output-dir, '@{task.eval_config.result_path}/Sci/@{task.eval_config.stage}']
+  eval_model_fin_4:
+    argv: [python, -m, 'llava.eval.@{method.v3_dir}.model_fin', {use: options_model_path_to_image_folder}, --text-tower, '@{task.model_config.vision_tower}',
+      --prefix-len, '20', --cur-task, '5', --num-tasks, '5', --answers-file, '@{task.eval_config.result_path}/Fin/@{task.eval_config.stage}/2_0.jsonl',
+      {use: options_num_chunks_to_conv_mode}]
+  eval_eval_finvis_2:
+    argv: [python, -m, 'llava.eval.@{method.v3_dir}.eval_finvis', --annotation-file, '@{task.data_config.test_path}', --result-file, '@{task.eval_config.result_path}/Fin/@{task.eval_config.stage}/merge.jsonl',
+      --output-dir, '@{task.eval_config.result_path}/Fin/@{task.eval_config.stage}']
+  eval_model_ocr_2:
+    argv: [python, -m, 'llava.eval.@{method.v3_dir}.model_ocr', {use: options_model_path_to_image_folder_3}, --text-tower, '@{task.model_config.vision_tower}',
+      --prefix-len, '20', --cur-task, '1', --num-tasks, '4', --answers-file, '@{task.eval_config.result_path}/OCR/@{task.eval_config.stage}/2_0.jsonl',
+      {use: options_num_chunks_to_conv_mode}]
+  eval_eval_ocr_2:
+    argv: [python, -m, 'llava.eval.@{method.v3_dir}.eval_ocr', --annotation-file, '@{datasets.task_1.data_config.test_path}', --result-file, '@{task.eval_config.result_path}/OCR/@{task.eval_config.stage}/merge.jsonl',
+      --output-dir, '@{task.eval_config.result_path}/OCR/@{task.eval_config.stage}']
+  eval_model_math_3:
+    argv: [python, -m, 'llava.eval.@{method.v3_dir}.model_math', {use: options_model_path_to_image_folder_2}, --text-tower, '@{task.model_config.vision_tower}',
+      --prefix-len, '20', --cur-task, '2', --num-tasks, '4', {use: options_answers_file_to_conv_mode}]
+  eval_eval_math_2:
+    argv: [python, -m, 'llava.eval.@{method.v3_dir}.eval_math', --result-file, '@{task.eval_config.result_path}/Math/@{task.eval_config.stage}/result.xlsx']
+  eval_model_sat_2:
+    argv: [python, -m, 'llava.eval.@{method.v3_dir}.model_sat', {use: options_model_path_to_image_folder}, --text-tower, '@{task.model_config.vision_tower}',
+      --prefix-len, '20', --cur-task, '3', --num-tasks, '4', --answers-file, '@{task.eval_config.result_path}/VP/@{task.eval_config.stage}/2_1.jsonl',
+      {use: options_num_chunks_to_conv_mode_2}]
+  eval_eval_sat_2:
+    argv: [python, -m, 'llava.eval.@{method.v3_dir}.eval_sat', --annotation-file, '@{task.data_config.test_path}', --result-file, '@{task.eval_config.result_path}/VP/@{task.eval_config.stage}/merge.jsonl',
+      --output-dir, '@{task.eval_config.result_path}/VP/@{task.eval_config.stage}']
+  eval_convert_result_to_submission_2:
+    argv: [python, -m, 'llava.eval.@{method.v3_dir}.convert_result_to_submission', --result-file, '@{task.eval_config.result_path}/APP/@{task.eval_config.stage}/merge.jsonl',
+      --output_file, '@{task.eval_config.result_path}/APP/@{task.eval_config.stage}/our_result_for_submission.tsv']
+  train_train_mem_moe_5:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem_MOE.py, {use: options_deepspeed_to_lora_r}, --lora_alpha,
+      '36', --mm_projector_lr, 2e-5, --expert_num, '6', --model_name_or_path, '@{task.model_config.model_name}', --pretrain_mm_mlp_adapter, '@{task.model_config.mm_projector}',
+      {use: options_version_to_output_dir}, {use: options_num_train_epochs_to_report_to}]
+  train_train_mem_moe_6:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem_MOE.py, {use: options_deepspeed_to_lora_r}, --lora_alpha,
+      '36', --mm_projector_lr, 2e-5, --expert_num, '6', --model_name_or_path, '@{task.model_config.model_name}', --previous_task_model_path, '@{task.train_config.previous_model}',
+      {use: options_version_to_output_dir}, {use: options_num_train_epochs_to_report_to}]
+  other_ucit_extract_router_result_1:
+    argv: [python, scripts/UCIT_extract_router_result.py]
+  other_dcl_extract_router_result_1:
+    argv: [python, scripts/DCL_extract_router_result.py]
+  other_acl_extract_router_result_1:
+    argv: [python, scripts/ACL_extract_router_result.py]
+  eval_model_dcl_router_1:
+    argv: [python, -m, llava.eval.CoIN.model_dcl_router, {use: options_model_path_to_image_folder}, --answers-file, '@{task.eval_config.result_path}/RS/@{task.eval_config.stage}/2_1.jsonl',
+      {use: options_num_chunks_to_conv_mode_2}]
+  train_train_mem_moe_7:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem_MOE.py, {use: options_deepspeed_to_expert_num},
+      --model_name_or_path, '@{task.model_config.model_name}', --pretrain_mm_mlp_adapter, '@{task.model_config.mm_projector}', {use: options_version_to_output_dir},
+      --cur_task, '0', {use: options_num_train_epochs_to_report_to}]
+  train_train_mem_moe_8:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem_MOE.py, {use: options_deepspeed_to_expert_num},
+      --model_name_or_path, '@{task.model_config.model_name}', --previous_task_model_path, '@{task.train_config.previous_model}', {use: options_version_to_output_dir},
+      --cur_task, '1', {use: options_num_train_epochs_to_report_to}]
+  train_train_mem_same_1:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem_MOE.py, {use: options_deepspeed_to_expert_num},
+      --model_name_or_path, '@{task.model_config.model_name}', --pretrain_mm_mlp_adapter, '@{task.model_config.mm_projector}', {use: options_version_to_output_dir},
+      --cur_task, '0', --freeze_mm_mlp_adapter, 'True', --text_tower, '@{task.model_config.vision_tower}', {use: options_num_train_epochs_to_report_to}]
+  train_train_mem_same_2:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem_MOE.py, {use: options_deepspeed_to_expert_num},
+      --model_name_or_path, '@{task.model_config.model_name}', --previous_task_model_path, '@{task.train_config.previous_model}', {use: options_version_to_output_dir},
+      --cur_task, '1', --freeze_mm_mlp_adapter, 'True', --text_tower, '@{task.model_config.vision_tower}', {use: options_num_train_epochs_to_report_to}]
+  train_train_mem_7:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem.py, --lora_enable, 'True', --lora_r, '@{task.train_config.rank}',
+      --lora_alpha, '64', --mm_projector_lr, 2e-5, --deepspeed, ./scripts/zero2.json, --model_name_or_path, '@{task.model_config.model_name}',
+      --pretrain_mm_mlp_adapter, '@{task.model_config.mm_projector}', {use: options_version_to_output_dir}, {use: options_num_train_epochs_to_report_to}]
+  extra_key_elements_identification_1:
+    argv: [python, key_elements_identification.py, '0', '${ckpt_root}/MCITlib/UCIT/LLaVA/@{method.v3_dir}', llava]
+  train_train_mem_8:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem.py, --lora_enable, 'True', --lora_r, '@{task.train_config.rank}',
+      --lora_alpha, '64', --mm_projector_lr, 2e-5, --regularization_info_path, '@{task.train_config.key_path}/Task1_llava_lora_topP.pth', --deepspeed,
+      ./scripts/zero2.json, --model_name_or_path, '@{task.train_config.previous_model}', {use: options_version_to_output_dir}, {use: options_num_train_epochs_to_report_to}]
+  extra_key_elements_identification_2:
+    argv: [python, key_elements_identification.py, '1', '@{task.train_config.key_path}', llava]
+  extra_key_elements_identification_3:
+    argv: [python, key_elements_identification.py, '2', '@{task.train_config.key_path}', llava]
+  extra_key_elements_identification_4:
+    argv: [python, key_elements_identification.py, '3', '@{task.train_config.key_path}', llava]
+  extra_key_elements_identification_5:
+    argv: [python, key_elements_identification.py, '4', '@{task.train_config.key_path}', llava]
+  extra_key_elements_identification_6:
+    argv: [python, key_elements_identification.py, '0', '${ckpt_root}/MCITlib/@{benchmark.v3_name}/LLaVA/@{method.v3_dir}', llava]
+  train_train_mem_moe_9:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem_MOE.py, {use: options_deepspeed_to_expert_num},
+      --ins_type, '0', --ins_emb, '@{task.train_config.ins_emb}', --model_name_or_path, '@{task.model_config.model_name}', --pretrain_mm_mlp_adapter,
+      '@{task.model_config.mm_projector}', {use: options_version_to_output_dir}, {use: options_num_train_epochs_to_report_to}]
+  eval_model_others_5:
+    argv: [python, -m, llava.eval.CoIN.model_others, --model-path, '@{task.eval_config.model_path}', --model-base, '@{task.model_config.model_name}',
+      --ins-type, '0', --question-file, '@{task.data_config.test_path}', --image-folder, '@{task.data_config.test_folder}', --answers-file, '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}/2_1.jsonl',
+      {use: options_num_chunks_to_conv_mode_2}]
+  train_train_mem_moe_10:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem_MOE.py, {use: options_deepspeed_to_expert_num},
+      --ins_type, '1', --ins_emb, '@{task.train_config.ins_emb}', --model_name_or_path, '@{task.model_config.model_name}', --previous_task_model_path,
+      '@{task.train_config.previous_model}', {use: options_version_to_output_dir}, {use: options_num_train_epochs_to_report_to}]
+  eval_model_ai2d_5:
+    argv: [python, -m, llava.eval.CoIN.model_ai2d, --model-path, '@{task.eval_config.model_path}', --model-base, '@{task.model_config.model_name}',
+      --ins-type, '0', --question-file, '@{task.data_config.test_path}', --image-folder, '@{task.data_config.test_folder}', --answers-file, '@{task.eval_config.result_path}/RS/@{task.eval_config.stage}/2_0.jsonl',
+      {use: options_num_chunks_to_conv_mode}]
+  eval_model_pvqa_5:
+    argv: [python, -m, llava.eval.CoIN.model_pvqa, --model-path, '@{task.eval_config.model_path}', --model-base, '@{task.model_config.model_name}',
+      --ins-type, '1', --question-file, '@{datasets.task_2.data_config.test_path}', --image-folder, '@{datasets.task_2.data_config.test_folder}',
+      --answers-file, '@{task.eval_config.result_path}/Med/@{task.eval_config.stage}/2_0.jsonl', {use: options_num_chunks_to_conv_mode}]
+  eval_model_fin_5:
+    argv: [python, -m, llava.eval.CoIN.model_fin, --model-path, '@{task.eval_config.model_path}', --model-base, '@{task.model_config.model_name}',
+      --ins-type, '4', --question-file, '@{task.data_config.test_path}', --image-folder, '@{task.data_config.test_folder}', --answers-file, '@{task.eval_config.result_path}/Fin/@{task.eval_config.stage}/2_0.jsonl',
+      {use: options_num_chunks_to_conv_mode}]
+  eval_model_ocr_3:
+    argv: [python, -m, llava.eval.CoIN.model_ocr, --model-path, '@{task.eval_config.model_path}', --model-base, '@{task.model_config.model_name}',
+      --ins-type, '0', --question-file, '@{datasets.task_1.data_config.test_path}', --image-folder, '@{datasets.task_1.data_config.test_folder}',
+      --answers-file, '@{task.eval_config.result_path}/OCR/@{task.eval_config.stage}/2_1.jsonl', {use: options_num_chunks_to_conv_mode_2}]
+  eval_model_math_4:
+    argv: [python, -m, llava.eval.CoIN.model_math, --model-path, '@{task.eval_config.model_path}', --model-base, '@{task.model_config.model_name}',
+      --ins-type, '1', --question-file, '@{datasets.task_2.data_config.test_path}', --image-folder, '@{datasets.task_2.data_config.test_folder}',
+      {use: options_answers_file_to_conv_mode}]
+  eval_model_sat_3:
+    argv: [python, -m, llava.eval.CoIN.model_sat, --model-path, '@{task.eval_config.model_path}', --model-base, '@{task.model_config.model_name}',
+      --ins-type, '2', --question-file, '@{task.data_config.test_path}', --image-folder, '@{task.data_config.test_folder}', --answers-file, '@{task.eval_config.result_path}/VP/@{task.eval_config.stage}/2_1.jsonl',
+      {use: options_num_chunks_to_conv_mode_2}]
+  train_dgg:
+    argv: [deepspeed, --include, 'localhost:0', --master_port, '9001', llava/train/train_mem.py,
+      {use: options_deepspeed_to_lora_r}, --lora_alpha, '96', --mm_projector_lr, '2e-5',
+      --model_name_or_path, '@{task.model_config.model_name}', --pretrain_mm_mlp_adapter, '@{task.model_config.mm_projector}',
+      {use: options_version_to_output_dir}, {use: options_num_train_epochs_to_report_to},
+      --dgg_history_model_path, '@{task.train_config.dgg_history}', --dgg_probability, '@{task.train_config.dgg_probability}']
+  train_octopus_stage1_first:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem.py, {use: options_deepspeed_to_lora_r}, --lora_alpha,
+      '64', --mm_projector_lr, 2e-5, --model_name_or_path, '@{task.model_config.model_name}', --pretrain_mm_mlp_adapter, '@{task.model_config.mm_projector}',
+      {use: options_version_to_output_dir}, {use: options_num_train_epochs_to_report_to}, --freeze_mm_mlp_adapter, 'True']
+  train_octopus_stage1_next:
+    argv: [deepspeed, --include, 'localhost:0,1', --master_port, '9001', llava/train/train_mem.py, {use: options_deepspeed_to_lora_r}, --lora_alpha,
+      '64', --mm_projector_lr, 2e-5, --model_name_or_path, '@{task.model_config.model_name}', --previous_task_model_path, '@{task.train_config.previous_model}',
+      {use: options_version_to_output_dir}, {use: options_num_train_epochs_to_report_to}, --freeze_mm_mlp_adapter, 'True']

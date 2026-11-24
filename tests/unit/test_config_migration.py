@@ -4,20 +4,17 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
 import pytest
 import yaml
 
-from mcitlib.config.loader import load_layered_config
+from mcitlib.config.loader import load_layered_config, read_yaml
 from mcitlib.registry import BENCHMARKS, METHODS
 
 PREFIXES = (
-    ("/home/hongbo_zhao/ghy-cl-codebase/clip-vit-large-patch14-336", "${model_root}/clip-vit-large-patch14-336"),
-    ("/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints", "${ckpt_root}"),
-    ("/home/hongbo_zhao/ghy-cl-codebase/MCITlib", "${repo_root}"),
-    ("/mnt/cache/guohaiyang/miniconda3/envs/coin/bin/python", "${python_root}"),
     ("/your_model_path", "${model_root}"),
     ("/your_data_path", "${data_root}"),
     ("/your_ckpts_path", "${ckpt_root}"),
@@ -25,12 +22,25 @@ PREFIXES = (
     ("__V3_ROOT__", "${repo_root}"),
 )
 
+LEGACY_PREFIXES = (
+    (r"^/home/[^/]+/ghy-cl-codebase/clip-vit-large-patch14-336(?=/|$)", "${model_root}/clip-vit-large-patch14-336"),
+    (r"^/home/[^/]+/ghy-cl-codebase/MCITlib/checkpoints(?=/|$)", "${ckpt_root}"),
+    (r"^/home/[^/]+/ghy-cl-codebase/MCITlib(?=/|$)", "${repo_root}"),
+    (r"^/mnt/cache/[^/]+/miniconda3/envs/coin/bin/python(?=/|$)", "${python_root}"),
+)
+
+LEGACY_METHODS = [item for item in METHODS if item.id not in {'dgg', 'octopus', 'pclr', 'same', 'sigma'}]
+
 
 def normalise(value: Any) -> Any:
     if isinstance(value, str):
         asset_prefix = "/your_ckpts_path/MCITlib_v3/LLaVA/SMoLoRA/ins_emb_multi_"
         if value.startswith(asset_prefix):
             return "${repo_root}/assets/smolora/ins_emb_multi_" + value[len(asset_prefix):]
+        for pattern, target in LEGACY_PREFIXES:
+            match = re.match(pattern, value)
+            if match:
+                return target + value[match.end():]
         for source, target in PREFIXES:
             if value == source:
                 return target
@@ -80,10 +90,12 @@ def assert_task_matches(v3_root: Path, payload: dict[str, Any], actual: dict[str
             assert [item["argv"] for item in actual_commands] == expected_commands
 
 
-@pytest.mark.parametrize("method", METHODS, ids=lambda item: item.id)
+@pytest.mark.parametrize("method", LEGACY_METHODS, ids=lambda item: item.id)
 @pytest.mark.parametrize("benchmark", BENCHMARKS, ids=lambda item: item.id)
 def test_t0_all_36_sequences(repo_root: Path, v3_root: Path, method: Any, benchmark: Any) -> None:
-    payload = json.loads((repo_root / "tests/fixtures/v3_commands/llava" / method.id / f"{benchmark.id}.json").read_text())
+    fixture = repo_root / "tests/fixtures/v3_commands/llava" / method.id / f"{benchmark.id}.json"
+    assert fixture.is_file(), f"missing legacy fixture: {fixture}"
+    payload = json.loads(fixture.read_text())
     merged = load_layered_config(repo_root / "configs", "llava", benchmark.id, method.id)
     tasks = merged["overrides"]["llava"][benchmark.id]
     assert set(tasks) - {"pre_commands"} == {f"task_{i}" for i in range(1, len(benchmark.tasks) + 1)}
@@ -99,7 +111,7 @@ def test_t0_all_36_sequences(repo_root: Path, v3_root: Path, method: Any, benchm
 
 
 def test_t0_mr_lora_router_sequences(repo_root: Path, v3_root: Path) -> None:
-    values = yaml.safe_load((repo_root / "configs/methods/mrlora.yaml").read_text())
+    values = read_yaml(repo_root / "configs/methods/mrlora.yaml")
     for benchmark in BENCHMARKS:
         payload = json.loads((repo_root / "tests/fixtures/v3_commands/llava/mrlora" / f"{benchmark.id}_router.json").read_text())
         actual_benchmark = values["router"]["benchmarks"][benchmark.id]
@@ -133,4 +145,7 @@ def test_generated_values_do_not_contain_machine_specific_paths(repo_root: Path)
                 check(item)
 
     for path in (repo_root / "configs/methods").glob("*.yaml"):
+        check(yaml.safe_load(path.read_text()))
+        check(read_yaml(path))
+    for path in (repo_root / "configs/common").glob("*.yaml"):
         check(yaml.safe_load(path.read_text()))

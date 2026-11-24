@@ -22,12 +22,17 @@ def test_compare_logs_relative_tolerance(tmp_path: Path) -> None:
 
 
 def test_regression_combo_is_dry_run_by_default(repo_root: Path, tmp_path: Path) -> None:
-    result = run_combo(repo_root, repo_root.parent / "MCITlib_v3_ref", "lora_ft", "ucit", 1, tmp_path, False, 20)
+    result = run_combo(repo_root, tmp_path / "v3-reference", "lora_ft", "ucit", 1, tmp_path, False, 20)
     assert result["status"] == "dry-run"
     assert not (tmp_path / "v3.log").exists()
 
 
-@pytest.mark.parametrize("method", METHODS, ids=lambda item: item.id)
+_NATIVE_METHODS = frozenset({"pclr", "same", "sigma", "dgg", "octopus"})
+_V3_METHODS = [method for method in METHODS if method.id not in _NATIVE_METHODS]
+assert len(_V3_METHODS) == 12
+
+
+@pytest.mark.parametrize("method", _V3_METHODS, ids=lambda item: item.id)
 def test_regression_uses_registered_model_override(repo_root: Path, tmp_path: Path, method) -> None:
     from unittest.mock import patch
 
@@ -41,12 +46,18 @@ def test_regression_uses_registered_model_override(repo_root: Path, tmp_path: Pa
 
     with patch("tools.regression.compare.run_process", side_effect=fake_process):
         result = run_combo(
-            repo_root, repo_root.parent / "MCITlib_v3_ref", method.id, "ucit", 1,
+            repo_root, tmp_path / "v3-reference", method.id, "ucit", 1,
             tmp_path, True, 1,
         )
     assert result["passed"]
     assert len(environments) == 2
     assert environments[1].get("MCITLIB_MODEL_OVERRIDE") == method.model_override
+
+
+@pytest.mark.parametrize("method", sorted(_NATIVE_METHODS))
+def test_native_method_reports_missing_v3_reference(repo_root: Path, tmp_path: Path, method) -> None:
+    with pytest.raises(ValueError, match="no V3 comparison fixture"):
+        run_combo(repo_root, tmp_path / "v3-reference", method, "ucit", 1, tmp_path, True, 1)
 
 
 def test_task2_uses_cached_shared_previous_and_isolated_outputs(repo_root: Path, tmp_path: Path) -> None:
@@ -67,8 +78,8 @@ def test_task2_uses_cached_shared_previous_and_isolated_outputs(repo_root: Path,
         return ProcessOutcome(0)
 
     with patch("tools.regression.compare.run_process", side_effect=fake_process):
-        first = run_combo(repo_root, repo_root.parent / "MCITlib_v3_ref", "lora_ft", "ucit", 2, tmp_path, True, 2)
-        second = run_combo(repo_root, repo_root.parent / "MCITlib_v3_ref", "lora_ft", "ucit", 2, tmp_path, True, 2)
+        first = run_combo(repo_root, tmp_path / "v3-reference", "lora_ft", "ucit", 2, tmp_path, True, 2)
+        second = run_combo(repo_root, tmp_path / "v3-reference", "lora_ft", "ucit", 2, tmp_path, True, 2)
     assert first["passed"] and second["passed"]
     assert len(calls) == 5  # one cached full task1 preparation + two short runs per invocation
     short_calls = [argv for argv, limit in calls if limit == 2]
@@ -100,7 +111,9 @@ sys.exit(1 if count == 3 else 0)
 """, encoding="utf-8")
     fake.chmod(0o755)
     monkeypatch.setenv("PATH", str(binary) + os.pathsep + os.environ["PATH"])
-    result = run_combo(repo_root, repo_root.parent / "MCITlib_v3_ref", "lora_ft", "ucit", 1, tmp_path, True, 20)
+    v3_reference = tmp_path / "v3-reference"
+    (v3_reference / "LLaVA/LoRA-FT").mkdir(parents=True)
+    result = run_combo(repo_root, v3_reference, "lora_ft", "ucit", 1, tmp_path, True, 20)
     assert not result["passed"]
     assert result["v3_count"] == 20 and result["v4_count"] == 3
     assert result["v4_exit"] == 1
@@ -129,7 +142,7 @@ def test_sefe_task2_prepares_merge_and_key_elements_once(repo_root: Path, tmp_pa
         return ProcessOutcome(0)
 
     with patch("tools.regression.compare.run_process", side_effect=fake_process):
-        result = run_combo(repo_root, repo_root.parent / "MCITlib_v3_ref", "sefe", "ucit", 2, tmp_path, True, 2)
+        result = run_combo(repo_root, tmp_path / "v3-reference", "sefe", "ucit", 2, tmp_path, True, 2)
     assert result["passed"]
     preparation = [argv for argv, limit in calls if limit is None]
     assert len(preparation) == 3

@@ -29,10 +29,10 @@ from mcitlib.registry import BENCHMARKS, METHODS, get_benchmark, get_method
 ROOT_PLACEHOLDER = "__V3_ROOT__"
 V3_PLACEHOLDER = "/your_path/MCITlib_v3"
 HARD_CODED_PATH_PLACEHOLDERS = {
-    "/home/hongbo_zhao/ghy-cl-codebase/clip-vit-large-patch14-336": "/your_model_path/clip-vit-large-patch14-336",
-    "/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints": "/your_ckpts_path",
-    "/home/hongbo_zhao/ghy-cl-codebase/MCITlib": "/your_path/MCITlib_v3",
-    "/mnt/cache/guohaiyang/miniconda3/envs/coin/bin/python": "/your_python_path",
+    "/opt/mcitlib-example/clip-vit-large-patch14-336": "/your_model_path/clip-vit-large-patch14-336",
+    "/opt/mcitlib-example/MCITlib/checkpoints": "/your_ckpts_path",
+    "/opt/mcitlib-example/MCITlib": "/your_path/MCITlib_v3",
+    "/opt/mcitlib-example/env/bin/python": "/your_python_path",
 }
 
 SHIM = r'''#!/usr/bin/env python3
@@ -412,9 +412,10 @@ def run_sequence(
 
 
 def main() -> int:
+    project = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--v3-root", type=Path, default=os.environ.get("MCITLIB_V3_ROOT", "../MCITlib_v3_ref"))
-    parser.add_argument("--out", type=Path, default=Path("tests/fixtures/v3_commands/llava"))
+    parser.add_argument("--v3-root", type=Path, default=os.environ.get("MCITLIB_V3_ROOT", project.parent / "MCITlib_v3_ref"))
+    parser.add_argument("--out", type=Path, default=project / "tests/fixtures/v3_commands/llava")
     parser.add_argument("--methods", help="comma-separated method IDs or v3 directory names; default all 12")
     parser.add_argument("--benchmarks", help="comma-separated benchmark IDs; default ucit,mllm_dcl,mllm_acl")
     parser.add_argument("--router", action="store_true", help="also dump the three MR-LoRA router sequences")

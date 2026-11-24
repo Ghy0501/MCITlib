@@ -1,0 +1,77 @@
+{
+  "files": {
+    "InternVL/KeepLoRA/scripts/MCITlib/Train/Task1.sh.txt": {
+      "bytes": 2532,
+      "sha256": "dd41a4bdffc27c7190d0b21a2d384ec199cac654ed7735f30d836ce37287632e",
+      "source_relative_path": "InternVL/KeepLoRA/scripts/MCITlib/Train/Task1.sh"
+    },
+    "InternVL/KeepLoRA/scripts/MCITlib/Train/Taskn.sh.txt": {
+      "bytes": 2481,
+      "sha256": "9615624b47d5c9636c93bb6b7b8322de9d48ef5a1f97d84355e046525f317900",
+      "source_relative_path": "InternVL/KeepLoRA/scripts/MCITlib/Train/Taskn.sh"
+    },
+    "InternVL/RegLoRA/scripts/MCITlib/Train/Task1.sh.txt": {
+      "bytes": 2412,
+      "sha256": "822a4cb23f93880b80c8fc3d01dff50f819d439cebeecd394ba566674ec185ef",
+      "source_relative_path": "InternVL/RegLoRA/scripts/MCITlib/Train/Task1.sh"
+    },
+    "InternVL/RegLoRA/scripts/MCITlib/Train/Taskn.sh.txt": {
+      "bytes": 2690,
+      "sha256": "f99bf52e37830e55a930c7129fbe7e59495486b79621247a0dce9d62c9127682",
+      "source_relative_path": "InternVL/RegLoRA/scripts/MCITlib/Train/Taskn.sh"
+    },
+    "Video-LLaVA/KeepLoRA/scripts/MCITlib/Train/Task1.sh.txt": {
+      "bytes": 2374,
+      "sha256": "c82fb4badc4fa1721f5ae551c82ee712e39e776529e0bff447f27e334b111c0c",
+      "source_relative_path": "Video-LLaVA/KeepLoRA/scripts/MCITlib/Train/Task1.sh"
+    },
+    "Video-LLaVA/KeepLoRA/scripts/MCITlib/Train/Taskn.sh.txt": {
+      "bytes": 2426,
+      "sha256": "0279a74b473243847d32dfaec9c5c9c96f43a4cc7419fb9fefcd37773f27e08e",
+      "source_relative_path": "Video-LLaVA/KeepLoRA/scripts/MCITlib/Train/Taskn.sh"
+    },
+    "Video-LLaVA/MR-LoRA/scripts/extract_router_result.py.txt": {
+      "bytes": 6354,
+      "sha256": "ad4f2a1c805034bbb4324d6fc95a85ed3db08a92c453043f130b5e0ecb17f48c",
+      "source_relative_path": "Video-LLaVA/MR-LoRA/scripts/extract_router_result.py"
+    },
+    "Video-LLaVA/MR-LoRA/videollava/eval/video/run_inference_video_qa_router.py.txt": {
+      "bytes": 10145,
+      "sha256": "9a70c6b881837c0c3bf2570c80484448e24b60dfcb2432c9314eddc6ba571f09",
+      "source_relative_path": "Video-LLaVA/MR-LoRA/videollava/eval/video/run_inference_video_qa_router.py"
+    },
+    "Video-LLaVA/RegLoRA/scripts/MCITlib/Train/Task1.sh.txt": {
+      "bytes": 2279,
+      "sha256": "8b04eab4ec7219c729861b2496376071adbfbde84c366ed19edbc6d11e9bed05",
+      "source_relative_path": "Video-LLaVA/RegLoRA/scripts/MCITlib/Train/Task1.sh"
+    },
+    "Video-LLaVA/RegLoRA/scripts/MCITlib/Train/Taskn.sh.txt": {
+      "bytes": 2656,
+      "sha256": "cf0ce42983dbd3a0f3e46bb7f6a368621aa6c010bdae9a53752ed994b3ea61ff",
+      "source_relative_path": "Video-LLaVA/RegLoRA/scripts/MCITlib/Train/Taskn.sh"
+    },
+    "VideoLLaMA2/MR-LoRA/scripts/extract_router_result.py.txt": {
+      "bytes": 6354,
+      "sha256": "c46d78d44b2292439821649ff4f9fb17b747830c0957e64509bbc89eb3f950ae",
+      "source_relative_path": "VideoLLaMA2/MR-LoRA/scripts/extract_router_result.py"
+    },
+    "VideoLLaMA2/MR-LoRA/videollama2/eval/inference_video_qa_router.py.txt": {
+      "bytes": 8460,
+      "sha256": "455837ff9d3eee2ceff961db19b44a88ef203e53c70db51166912941a876ecdd",
+      "source_relative_path": "VideoLLaMA2/MR-LoRA/videollama2/eval/inference_video_qa_router.py"
+    },
+    "VideoLLaMA2/RegLoRA/scripts/MCITlib/Train/Task1.sh.txt": {
+      "bytes": 2189,
+      "sha256": "fe979dea0f9445f0ef7ef8b165c44d4143748fa18bf4e13d4bbe96a561563f16",
+      "source_relative_path": "VideoLLaMA2/RegLoRA/scripts/MCITlib/Train/Task1.sh"
+    },
+    "VideoLLaMA2/RegLoRA/scripts/MCITlib/Train/Taskn.sh.txt": {
+      "bytes": 2368,
+      "sha256": "df86f1a7e8f50bba8c078d7b24d10f1958f1075558d00e5c283d101a301bbdd1",
+      "source_relative_path": "VideoLLaMA2/RegLoRA/scripts/MCITlib/Train/Taskn.sh"
+    }
+  },
+  "original_path_base": "MCITlib_v4 sibling-backbone root",
+  "purpose": "Immutable source evidence for offline protocol inspection; never executed by this package.",
+  "schema_version": 1
+}

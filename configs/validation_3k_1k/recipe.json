@@ -1,0 +1,21 @@
+{
+  "version": "validation-3k1k-v1",
+  "seed": 20261106,
+  "train_count": 3000,
+  "test_count": 1000,
+  "decode_samples_per_split": 8,
+  "ucit_test_aliases": ["test_3000.json"],
+  "tasks": [
+    {"benchmark": "ucit", "name": "ImageNet-R", "logical_dir": "${data_root}/UCIT/ImageNet-R", "image_root": "${data_root}/UCIT", "stratifier": "imagenet_class"},
+    {"benchmark": "ucit", "name": "ArxivQA", "logical_dir": "${data_root}/UCIT/ArxivQA", "image_root": "${data_root}/UCIT", "stratifier": "answer_kind", "train_aliases": ["train_4w.json"]},
+    {"benchmark": "ucit", "name": "VizWiz", "logical_dir": "${data_root}/UCIT/VizWiz-caption", "image_root": "${data_root}/UCIT", "stratifier": "caption_length", "caption_reference": "val_coco_type_3000.json"},
+    {"benchmark": "ucit", "name": "IconQA", "logical_dir": "${data_root}/UCIT/IconQA", "image_root": "${data_root}/UCIT", "stratifier": "iconqa_kind"},
+    {"benchmark": "ucit", "name": "CLEVR-Math", "logical_dir": "${data_root}/UCIT/CLEVR-Math", "image_root": "${data_root}/UCIT", "stratifier": "answer_kind", "train_aliases": ["train_4w.json"]},
+    {"benchmark": "ucit", "name": "Flickr30k", "logical_dir": "${data_root}/UCIT/Flickr30k-cap", "image_root": "${data_root}/UCIT", "stratifier": "caption_length", "caption_reference": "val_coco_type_3000.json", "train_aliases": ["train_brief_4w.json"]},
+    {"benchmark": "mllm_dcl", "name": "RS", "logical_dir": "${data_root}/MLLM-CL/RS", "image_root": "${data_root}/MLLM-CL/RS", "stratifier": "answer_kind"},
+    {"benchmark": "mllm_dcl", "name": "Med", "logical_dir": "${data_root}/MLLM-CL/Med", "image_root": "${data_root}/MLLM-CL/Med", "stratifier": "answer_kind"},
+    {"benchmark": "mllm_dcl", "name": "AD", "logical_dir": "${data_root}/MLLM-CL/AD", "image_root": "${data_root}/MLLM-CL/AD", "stratifier": "answer_kind"},
+    {"benchmark": "mllm_dcl", "name": "Sci", "logical_dir": "${data_root}/MLLM-CL/Sci", "image_root": "${data_root}/MLLM-CL/Sci", "stratifier": "sci_source"},
+    {"benchmark": "mllm_dcl", "name": "Fin", "logical_dir": "${data_root}/MLLM-CL/Fin", "image_root": "${data_root}/MLLM-CL/Fin", "stratifier": "answer_kind"}
+  ]
+}

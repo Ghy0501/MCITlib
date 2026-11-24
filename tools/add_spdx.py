@@ -45,7 +45,7 @@ def add_header(text: str) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", type=Path, default=Path("."), help="MCITlib repository root")
+    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1], help="MCITlib project root")
     parser.add_argument("--check", action="store_true", help="only report files missing the header")
     args = parser.parse_args()
     missing = [p for p in owned_files(args.root.resolve()) if not has_header(p.read_text(encoding="utf-8"))]

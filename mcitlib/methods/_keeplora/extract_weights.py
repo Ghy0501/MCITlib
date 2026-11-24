@@ -14,6 +14,7 @@ import_llava()  # first llava import must happen inside the transformers-4.37 co
 from llava.mm_utils import get_model_name_from_path  # noqa: E402
 from llava.utils import disable_torch_init  # noqa: E402
 
+from .config_paths import resolve_fields  # noqa: E402
 from .llava_overrides.builder import load_pretrained_model  # noqa: E402
 
 
@@ -29,7 +30,7 @@ def extract_weights(model_config_path, output_dir, energy_threshold, target_modu
         target_modules: Comma-separated list of target module names
     """
     with open(model_config_path, 'r') as f:
-        model_config = json.load(f)
+        model_config = resolve_fields(json.load(f), ("model_name",))
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 

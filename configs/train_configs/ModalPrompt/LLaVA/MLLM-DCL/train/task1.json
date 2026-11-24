@@ -1,6 +1,6 @@
 {
   "gpu_num": 2,
-  "output_dir": "/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints/MLLM-DCL/LLaVA/ModalPrompt/Task1_llava",
+  "output_dir": "/opt/mcitlib-example/MCITlib/checkpoints/MLLM-DCL/LLaVA/ModalPrompt/Task1_llava",
   "prefix_len": 20,
   "num_tasks": 5,
   "cur_task": 1,

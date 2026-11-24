@@ -1,0 +1,10 @@
+# Sample-only main-training budget. Full-data task configurations remain unchanged.
+id: internvl_sample_unified
+backbone: internvl
+world_size: 4
+global_batch_size: 64
+microbatch: 1
+learning_rate: '0.0002'
+main_epochs: 1
+modalprompt_epochs: 1
+router_policy: preserve

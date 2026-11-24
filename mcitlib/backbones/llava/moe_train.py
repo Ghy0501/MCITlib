@@ -22,6 +22,7 @@ from dataclasses import dataclass, field
 import json, deepspeed
 import logging
 import pathlib, random
+from pathlib import Path
 from types import SimpleNamespace
 from typing import Dict, Optional, Sequence, List
 
@@ -30,6 +31,8 @@ import sys
 import transformers
 from mcitlib.backbones.llava.cleanup import remove_checkpoint_dirs
 from mcitlib.backbones.llava.model_config import TEXT_MODEL_OVERRIDES, inject_text_tower_config, normalize_generation_config
+from mcitlib.backbones.llava.olora_checkpoint import olora_checkpoint_scope
+from mcitlib.backbones.llava.train_context import training_task_id
 
 from mcitlib.backbones.llava.trainer import LLaVATrainer
 from llava.constants import IGNORE_INDEX, IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN
@@ -40,7 +43,7 @@ from llava.model import *
 from llava.mm_utils import tokenizer_image_token
 
 from peft import PeftModel, TaskType, get_peft_model
-from peft.utils import WEIGHTS_NAME, set_peft_model_state_dict
+from peft.utils import WEIGHTS_NAME
 from mcitlib.tuners.mcit_expert_lora import MCITExpertLoraConfig
 
 from PIL import Image, ImageFile
@@ -125,6 +128,8 @@ class TrainingArguments(transformers.TrainingArguments):
     lora_bias: str = "none"
     mm_projector_lr: Optional[float] = None
     group_by_modality_length: bool = field(default=False)
+    # The shared trainer also supports SAT datasets; the MoE dataset does not.
+    is_SAT: bool = field(default=False, init=False)
 
 
 def maybe_zero_3(param, ignore_status=False, name=None):
@@ -173,6 +178,12 @@ def get_peft_state_non_lora_maybe_zero_3(named_params, require_grad_only=True):
         to_return = {k: t for k, t in to_return.items() if t.requires_grad}
     to_return = {k: maybe_zero_3(v, ignore_status=True).cpu() for k, v in to_return.items()}
     return to_return
+
+
+def prepare_method_for_save(model, model_override):
+    """Expose the v3 DISCO/HiDe statistics to the normal non-LoRA save."""
+    if model_override in {"disco", "hide"}:
+        model.set_boundary_for_save()
 
 
 def get_mm_adapter_state_maybe_zero_3(named_params, keys_to_match):
@@ -781,6 +792,9 @@ def make_supervised_data_module(tokenizer: transformers.PreTrainedTokenizer,
                 data_collator=data_collator)
 
 def load_model_from_previous_task(model, previous_task_model_path):
+    # Resolve after the method registry installs PEFT's LoRA-like support.
+    from peft.utils import set_peft_model_state_dict
+
     token_num, tokem_dim = model.lm_head.out_features, model.lm_head.in_features
     # if model.lm_head.weight.shape[0] != token_num:
     #     model.lm_head.weight = torch.nn.Parameter(torch.empty(token_num, tokem_dim, device=model.device, dtype=model.dtype))
@@ -888,10 +902,11 @@ def train():
             model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
 
     mcit_method = None
+    same_prior_state = None
     if training_args.lora_enable:
         from mcitlib.methods import create_method
         method_id = os.environ.get("MCITLIB_METHOD", "moelora")
-        task_id = int(model_args.task) if method_id == "clmoe" and model_args.task else int(model_args.cur_task)
+        task_id = training_task_id(method_id, model_args.cur_task, model_args.task)
         ctx = SimpleNamespace(task_id=task_id, output_dir=Path(training_args.output_dir))
         cfg = {
             "r": training_args.lora_r,
@@ -908,7 +923,8 @@ def train():
         }
         if method_id == "smolora":
             from mcitlib.config.loader import read_yaml
-            assets = read_yaml(Path.cwd() / "configs/methods/smolora.yaml")["assets"]["instruction_embeddings"]
+            from mcitlib.paths import repo_root
+            assets = read_yaml(repo_root() / "configs/methods/smolora.yaml")["assets"]["instruction_embeddings"]
             cfg["ins_emb_sha256"] = next(
                 item["sha256"] for item in assets if Path(item["path"]).name == Path(model_args.ins_emb).name
             )
@@ -919,6 +935,12 @@ def train():
                 model.to(torch.bfloat16)
             if training_args.fp16:
                 model.to(torch.float16)
+        if method_id == 'same':
+            from mcitlib.methods._same.prior import PriorState
+
+            # PRISM creates all image anchors and then all text anchors before
+            # injecting SAME experts. Keep that ordering in this entry point.
+            same_prior_state = PriorState(model_args.expert_num, device=training_args.device)
         rank0_print("Adding LoRA adapters...")
         model = mcit_method.build_trainable(model, None)
 
@@ -1023,8 +1045,32 @@ def train():
         model.get_base_model().cur_task = model_args.cur_task
 
     if model_args.previous_task_model_path is not None:
+        if same_prior_state is not None:
+            with (Path(model_args.previous_task_model_path) / 'adapter_config.json').open(encoding='utf8') as handle:
+                previous_config = json.load(handle)
+            if int(previous_config['cur_task']) != model_args.cur_task - 1:
+                raise ValueError('SAME previous adapter task does not precede the current task')
+            same_prior_state.load(model_args.previous_task_model_path)
+            same_prior_state.require_observed_through(int(previous_config['cur_task']))
         # load model from previous task
         load_model_from_previous_task(model, model_args.previous_task_model_path)
+        if mcit_method is not None:
+            mcit_method.load_previous(model, Path(model_args.previous_task_model_path))
+
+    if same_prior_state is not None:
+        from mcitlib.methods._same.prior import load_clip_runtime
+
+        if model_args.previous_task_model_path is None and model_args.cur_task != 0:
+            raise ValueError('SAME continuation requires a previous checkpoint with prior state')
+        same_runtime = load_clip_runtime(
+            same_prior_state, tokenizer, model_args.text_tower or model_args.vision_tower,
+            device=training_args.device,
+            dtype=torch.bfloat16 if training_args.bf16 else torch.float16,
+            task_id=model_args.cur_task,
+        )
+        # PEFT's expert model aliases the underlying .forward, bypassing its
+        # __call__ hook; the outer PEFT wrapper is the actual Trainer entry.
+        same_runtime.install_training_hook(model)
 
     data_module = make_supervised_data_module(tokenizer=tokenizer,
                                               data_args=data_args)
@@ -1037,12 +1083,20 @@ def train():
     # if list(pathlib.Path(training_args.output_dir).glob("checkpoint-*")):
     #     trainer.train(resume_from_checkpoint=True)
     # else:
-    trainer.train()
+    with olora_checkpoint_scope(mcit_method, training_args) as checkpoint_observation:
+        if checkpoint_observation is not None:
+            print(f"[OLoRA rank={local_rank}] gradient checkpointing: use_reentrant=False", flush=True)
+        trainer.train()
+        if checkpoint_observation is not None:
+            print(f"[OLoRA rank={local_rank}] non-reentrant checkpoint calls: {checkpoint_observation.calls}", flush=True)
     trainer.save_state()
 
     model.config.use_cache = True
 
     if training_args.lora_enable:
+        prepare_method_for_save(model, model_override)
+        if hasattr(mcit_method, "finish_task"):
+            mcit_method.finish_task(model)
         state_dict = get_peft_state_maybe_zero_3(
             model.named_parameters(), training_args.lora_bias
         )
@@ -1050,9 +1104,13 @@ def train():
             model.named_parameters()
         )
         if training_args.local_rank == 0 or training_args.local_rank == -1:
+            if same_prior_state is not None:
+                same_prior_state.complete_task(model_args.cur_task)
             model.config.save_pretrained(training_args.output_dir)
             model.save_pretrained(training_args.output_dir, state_dict=state_dict)
             torch.save(non_lora_state_dict, os.path.join(training_args.output_dir, 'non_lora_trainables.bin'))
+            if same_prior_state is not None:
+                same_prior_state.save(training_args.output_dir)
     else:
         safe_save_model_for_hf_trainer(trainer=trainer,
                                        output_dir=training_args.output_dir)

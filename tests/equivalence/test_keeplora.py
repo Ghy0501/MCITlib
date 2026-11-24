@@ -21,7 +21,10 @@ pytestmark = pytest.mark.env("llava-t437")
 if transformers.__version__ != "4.37.2":
     pytest.skip("KeepLoRA tests require transformers 4.37.2", allow_module_level=True)
 
-from mcitlib.backbones.llava.overrides import allow_t437_llava_registration, install_model_override  # noqa: E402
+from mcitlib.backbones.llava.overrides import (  # noqa: E402
+    allow_t437_llava_registration,
+    install_model_override,
+)
 from mcitlib.methods.keeplora import KeepLoRAMethod  # noqa: E402
 
 

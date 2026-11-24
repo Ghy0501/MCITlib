@@ -21,6 +21,8 @@ from mcitlib.runner import build_sequence_commands
 def test_all_training_argv_parse(
     repo_root: Path, method, benchmark, monkeypatch
 ) -> None:
+    if method.supported_benchmarks is not None and benchmark.id not in method.supported_benchmarks:
+        pytest.skip("method does not support this benchmark")
     if importlib.util.find_spec("deepspeed") is None:  # never shadow a real install
         deepspeed_stub = ModuleType("deepspeed")
         deepspeed_stub.__spec__ = ModuleSpec("deepspeed", loader=None)

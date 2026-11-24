@@ -10,6 +10,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 from peft.utils import PeftType
 
+from ..inference_cache import (
+    InferenceBankInvalidation,
+    clear_expert_inference_cache,
+    expert_weight,
+    observe_active_adapter,
+)
 from ..mcit_expert_lora import (
     MCITExpertBankA,
     MCITExpertBankB,
@@ -29,16 +35,29 @@ class MCITHiDeLoraConfig(MCITExpertLoraConfig):
         self.peft_type = PeftType.MOE_LORA_HiDe
 
 
-class MCITHiDeBankA(MCITExpertBankA):
+class MCITHiDeBankA(InferenceBankInvalidation, MCITExpertBankA):
     def __init__(self, in_features, out_features, expert_num, cur_task, training, layer, weight):
         super().__init__(in_features, out_features, expert_num)
         self.cur_task, self.training, self.layer, self.expert_weight = cur_task, training, layer, weight
 
     def forward(self, x):
         if self.training:
+            clear_expert_inference_cache()
             assert 0 <= self.cur_task < self.expert_num
             return self.loraA[self.cur_task](x)
         if int(self.layer) != 31:
+            if not torch.is_grad_enabled():
+                parameters = [self.loraA[i].weight for i in range(self.cur_task + 1)]
+
+                def build():
+                    fused = torch.zeros((self.r, self.in_features), device=x.device)
+                    for weight in parameters:
+                        fused += weight
+                    return fused
+
+                return F.linear(x, expert_weight(self, parameters, x,
+                                extra=('hide-a', self.cur_task, self.expert_num, self.layer), build=build))
+            clear_expert_inference_cache()
             temp = nn.Linear(self.in_features, self.r, bias=False).to(x.device)
             fused = torch.zeros((self.r, self.in_features), device=x.device)
             for i in range(self.cur_task + 1):
@@ -49,16 +68,29 @@ class MCITHiDeBankA(MCITExpertBankA):
         return [self.loraA[i](x) for i in range(self.expert_num)]
 
 
-class MCITHiDeBankB(MCITExpertBankB):
+class MCITHiDeBankB(InferenceBankInvalidation, MCITExpertBankB):
     def __init__(self, in_features, out_features, expert_num, cur_task, training, layer, weight):
         super().__init__(in_features, out_features, expert_num)
         self.cur_task, self.training, self.layer, self.expert_weight = cur_task, training, layer, weight
 
     def forward(self, x):
         if self.training:
+            clear_expert_inference_cache()
             assert 0 <= self.cur_task < self.expert_num
             return self.loraB[self.cur_task](x)
         if int(self.layer) != 31:
+            if not torch.is_grad_enabled():
+                parameters = [self.loraB[i].weight for i in range(self.cur_task + 1)]
+
+                def build():
+                    fused = torch.zeros((self.out_features, self.r), device=x.device)
+                    for weight in parameters:
+                        fused += weight
+                    return fused
+
+                return F.linear(x, expert_weight(self, parameters, x,
+                                extra=('hide-b', self.cur_task, self.expert_num, self.layer), build=build))
+            clear_expert_inference_cache()
             temp = nn.Linear(self.r, self.out_features, bias=False).to(x.device)
             fused = torch.zeros((self.out_features, self.r), device=x.device)
             for i in range(self.cur_task + 1):
@@ -100,6 +132,10 @@ class MCITHiDeLoraLinear(MCITExpertLoraLinear, MCITHiDeLoraLayer):
         self.layer, self.expert_weight = layer, self.expert_weight
 
     def forward(self, x: torch.Tensor, **kwargs):
+        if self.training or torch.is_grad_enabled():
+            clear_expert_inference_cache()
+        else:
+            observe_active_adapter(self)
         previous_dtype = x.dtype
         if self.active_adapter not in self.lora_A.keys():
             return F.linear(x, transpose(self.weight, self.fan_in_fan_out), bias=self.bias)

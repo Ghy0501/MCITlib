@@ -25,6 +25,8 @@ LAUNCHER_FLAGS_WITH_VALUE = {"--include", "--exclude", "--master_port", "--maste
 def _training_commands(repo_root: Path):
     for method in METHODS:
         for benchmark in BENCHMARKS:
+            if method.supported_benchmarks is not None and benchmark.id not in method.supported_benchmarks:
+                continue
             for command in build_sequence_commands(repo_root / "configs", "llava", method.id, benchmark.id):
                 if command.kind == "train":
                     yield method, benchmark, command

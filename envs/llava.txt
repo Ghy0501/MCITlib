@@ -1,4 +1,4 @@
-# LLaVA environment for the ten methods using transformers 4.31.0.
+# LLaVA environment for the nine standard methods using transformers 4.31.0.
 torch==2.0.1
 torchvision==0.15.2
 transformers==4.31.0

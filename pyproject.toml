@@ -13,18 +13,27 @@ authors = [{name = "MCITlib authors"}]
 dependencies = ["PyYAML>=6.0"]
 
 [project.optional-dependencies]
-dev = ["pytest>=7.4", "ruff>=0.6"]
+# Torch 2.0's extension loader still imports pkg_resources, removed by newer releases.
+dev = ["pytest>=7.4", "ruff>=0.6", "build>=1", "setuptools>=68,<81", "wheel>=0.41"]
 
 [project.scripts]
 mcitlib = "mcitlib.cli:main"
 
+[tool.setuptools]
+# Make the project root an editable import path. This also prevents the
+# outer project directory from shadowing its same-named package as a namespace.
+package-dir = {"" = "."}
+
 [tool.setuptools.packages.find]
-include = ["mcitlib*"]
+include = ["mcitlib", "mcitlib.*"]
+
+[tool.setuptools.package-data]
+"mcitlib.backbones.internvl.intern_vit" = ["LICENSE"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = [
-  "env: required runtime environment (llava or llava-t437)",
+  "env: required runtime environment (llava, llava-t437, or llava-modalprompt-ds126)",
   "entrypoints: starts real subprocesses for every generated entry point (needs the full environment)",
 ]
 
@@ -44,6 +53,7 @@ ignore = ["E501"]
 "mcitlib/backbones/llava/standard_train.py" = ["E", "F", "I"]
 "mcitlib/backbones/llava/moe_train.py" = ["E", "F", "I"]
 "mcitlib/backbones/llava/trainer.py" = ["E", "F", "I"]
+"mcitlib/backbones/internvl/intern_vit/*.py" = ["E", "F", "I"]
 "mcitlib/tuners/mcit_expert_lora.py" = ["E", "F", "I"]
 "mcitlib/tuners/mcit_separable_expert_lora.py" = ["E", "F", "I"]
 "mcitlib/methods/_hide/llava_overrides/**/*.py" = ["E", "F", "I"]

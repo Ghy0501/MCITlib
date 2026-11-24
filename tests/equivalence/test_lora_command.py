@@ -14,8 +14,9 @@ from mcitlib.backbones.llava.adapter import LlavaAdapter
 from mcitlib.backbones.llava.args import LAUNCHER_ENTRY
 from mcitlib.config.loader import load_layered_config
 from mcitlib.config.schema import DataSource, RunConfig, TaskSpec
-from mcitlib.registry import BENCHMARKS, METHODS
+from mcitlib.registry import BENCHMARKS, get_method
 from mcitlib.runner import build_sequence_commands
+from tests.equivalence import V3_METHOD_IDS
 
 
 def normalise(value: Any, method_id: str | None = None) -> Any:
@@ -74,7 +75,13 @@ def command_signature(command: Any, method_id: str) -> tuple[Any, ...]:
     return command.kind, command.task_id, argv
 
 
-@pytest.mark.parametrize("method_spec", METHODS, ids=lambda item: item.id)
+def test_v3_methods_cover_every_recorded_fixture(repo_root: Path) -> None:
+    fixture_root = repo_root / "tests/fixtures/v3_commands/llava"
+    assert len(V3_METHOD_IDS) == len(set(V3_METHOD_IDS)) == 12
+    assert set(V3_METHOD_IDS) == {item.name for item in fixture_root.iterdir() if item.is_dir()}
+
+
+@pytest.mark.parametrize("method_spec", tuple(get_method(name) for name in V3_METHOD_IDS), ids=lambda item: item.id)
 @pytest.mark.parametrize("benchmark", BENCHMARKS, ids=lambda item: item.id)
 def test_prototype_commands_match_v3(repo_root: Path, benchmark: Any, method_spec: Any) -> None:
     payload = json.loads((repo_root / "tests/fixtures/v3_commands/llava" / method_spec.id / f"{benchmark.id}.json").read_text())

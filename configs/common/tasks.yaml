@@ -1,0 +1,183 @@
+task:
+  model_config:
+    model_name: ${model_root}/llava-v1.5-7b
+    mm_projector: ${model_root}/llava-v1.5-7b/mm_projector.bin
+    vision_tower: ${model_root}/clip-vit-large-patch14-336
+  source:
+    model_config: model_configs/llava.json
+    data_config: data_configs/@{benchmark.v3_name}/@{task.task_name}.json
+    train_config: train_configs/@{method.v3_dir}/LLaVA/@{benchmark.v3_name}/@{split.train}/task@{task.task_id}.json
+    eval_config: train_configs/@{method.v3_dir}/LLaVA/@{benchmark.v3_name}/@{split.eval}/task@{task.task_id}.json
+  removed_install_commands:
+  - - pip
+    - install
+    - -e
+    - .
+benchmarks:
+  ucit:
+    v3_name: UCIT
+    tasks:
+      task_1:
+        task_id: 1
+        task_name: ImageNet-R
+        data_config:
+          train_path: ${data_root}/UCIT/ImageNet-R/train.json
+          test_path: ${data_root}/UCIT/ImageNet-R/test_3000.json
+          train_folder: ${data_root}/UCIT
+          test_folder: ${data_root}/UCIT
+      task_2:
+        task_id: 2
+        task_name: ArxivQA
+        data_config:
+          train_path: ${data_root}/UCIT/ArxivQA/train_4w.json
+          replay_path: ${data_root}/UCIT/ArxivQA/replay.json
+          router_path: ${data_root}/UCIT/ArxivQA/router.json
+          test_path: ${data_root}/UCIT/ArxivQA/test_3000.json
+          train_folder: ${data_root}/UCIT
+          router_folder: ${data_root}/UCIT
+          test_folder: ${data_root}/UCIT
+      task_3:
+        task_id: 3
+        task_name: VizWiz
+        data_config:
+          train_path: ${data_root}/UCIT/VizWiz-caption/train.json
+          replay_path: ${data_root}/UCIT/VizWiz-caption/replay.json
+          router_path: ${data_root}/UCIT/VizWiz-caption/router.json
+          test_path: ${data_root}/UCIT/VizWiz-caption/test_3000.json
+          anno_path: ${data_root}/UCIT/VizWiz-caption/val_coco_type_3000.json
+          train_folder: ${data_root}/UCIT
+          router_folder: ${data_root}/UCIT
+          test_folder: ${data_root}/UCIT
+      task_4:
+        task_id: 4
+        task_name: IconQA
+        data_config:
+          train_path: ${data_root}/UCIT/IconQA/train.json
+          replay_path: ${data_root}/UCIT/IconQA/replay.json
+          router_path: ${data_root}/UCIT/IconQA/router.json
+          test_path: ${data_root}/UCIT/IconQA/test_3000.json
+          train_folder: ${data_root}/UCIT
+          router_folder: ${data_root}/UCIT
+          test_folder: ${data_root}/UCIT
+      task_5:
+        task_id: 5
+        task_name: CLEVR-Math
+        data_config:
+          train_path: ${data_root}/UCIT/CLEVR-Math/train_4w.json
+          replay_path: ${data_root}/UCIT/CLEVR-Math/replay.json
+          router_path: ${data_root}/UCIT/CLEVR-Math/router.json
+          test_path: ${data_root}/UCIT/CLEVR-Math/test_3000.json
+          train_folder: ${data_root}/UCIT
+          router_folder: ${data_root}/UCIT
+          test_folder: ${data_root}/UCIT
+      task_6:
+        task_id: 6
+        task_name: Flickr30k
+        data_config:
+          train_path: ${data_root}/UCIT/Flickr30k-cap/train_brief_4w.json
+          replay_path: ${data_root}/UCIT/Flickr30k-cap/replay.json
+          router_path: ${data_root}/UCIT/Flickr30k-cap/router.json
+          test_path: ${data_root}/UCIT/Flickr30k-cap/test_3000.json
+          anno_path: ${data_root}/UCIT/Flickr30k-cap/val_coco_type_3000.json
+          train_folder: ${data_root}/UCIT
+          router_folder: ${data_root}/UCIT
+          test_folder: ${data_root}/UCIT
+  mllm_dcl:
+    v3_name: MLLM-DCL
+    tasks:
+      task_1:
+        task_id: 1
+        task_name: RS
+        data_config:
+          train_path: ${data_root}/MLLM-CL/RS/train.json
+          test_path: ${data_root}/MLLM-CL/RS/test.json
+          train_folder: ${data_root}/MLLM-CL/RS
+          test_folder: ${data_root}/MLLM-CL/RS
+      task_2:
+        task_id: 2
+        task_name: Med
+        data_config:
+          train_path: ${data_root}/MLLM-CL/Med/train.json
+          replay_path: ${data_root}/MLLM-CL/Med/replay.json
+          router_path: ${data_root}/MLLM-CL/Med/router.json
+          test_path: ${data_root}/MLLM-CL/Med/test.json
+          train_folder: ${data_root}/MLLM-CL/Med
+          router_folder: ${data_root}/MLLM-CL
+          test_folder: ${data_root}/MLLM-CL/Med
+      task_3:
+        task_id: 3
+        task_name: AD
+        data_config:
+          train_path: ${data_root}/MLLM-CL/AD/train.json
+          replay_path: ${data_root}/MLLM-CL/AD/replay.json
+          router_path: ${data_root}/MLLM-CL/AD/router.json
+          test_path: ${data_root}/MLLM-CL/AD/test.json
+          train_folder: ${data_root}/MLLM-CL/AD
+          router_folder: ${data_root}/MLLM-CL
+          test_folder: ${data_root}/MLLM-CL/AD
+      task_4:
+        task_id: 4
+        task_name: Sci
+        data_config:
+          train_path: ${data_root}/MLLM-CL/Sci/train.json
+          replay_path: ${data_root}/MLLM-CL/Sci/replay.json
+          router_path: ${data_root}/MLLM-CL/Sci/router.json
+          test_path: ${data_root}/MLLM-CL/Sci/test.json
+          train_folder: ${data_root}/MLLM-CL/Sci
+          router_folder: ${data_root}/MLLM-CL
+          test_folder: ${data_root}/MLLM-CL/Sci
+      task_5:
+        task_id: 5
+        task_name: Fin
+        data_config:
+          train_path: ${data_root}/MLLM-CL/Fin/train.json
+          replay_path: ${data_root}/MLLM-CL/Fin/replay.json
+          router_path: ${data_root}/MLLM-CL/Fin/router.json
+          test_path: ${data_root}/MLLM-CL/Fin/test.json
+          train_folder: ${data_root}/MLLM-CL/Fin
+          router_folder: ${data_root}/MLLM-CL
+          test_folder: ${data_root}/MLLM-CL/Fin
+  mllm_acl:
+    v3_name: MLLM-ACL
+    tasks:
+      task_1:
+        task_id: 1
+        task_name: OCR
+        data_config:
+          train_path: ${data_root}/MLLM-CL/OCR/train.json
+          test_path: ${data_root}/MLLM-CL/OCR_test/test.json
+          train_folder: ${data_root}/MLLM-CL/OCR
+          test_folder: ${data_root}/MLLM-CL/OCR_test
+      task_2:
+        task_id: 2
+        task_name: Math
+        data_config:
+          train_path: ${data_root}/MLLM-CL/Math/train.json
+          replay_path: ${data_root}/MLLM-CL/Math/replay.json
+          router_path: ${data_root}/MLLM-CL/Math/router.json
+          test_path: ${data_root}/MLLM-CL/Math_test/test.json
+          train_folder: ${data_root}/MLLM-CL/Math
+          router_folder: ${data_root}/MLLM-CL
+          test_folder: ${data_root}/MLLM-CL/Math_test
+      task_3:
+        task_id: 3
+        task_name: VP
+        data_config:
+          train_path: ${data_root}/MLLM-CL/VP/train.json
+          replay_path: ${data_root}/MLLM-CL/VP/replay.json
+          router_path: ${data_root}/MLLM-CL/VP/router.json
+          test_path: ${data_root}/MLLM-CL/CV-Benchv2/test.json
+          train_folder: ${data_root}/MLLM-CL/VP
+          router_folder: ${data_root}/MLLM-CL
+          test_folder: ${data_root}/MLLM-CL/CV-Benchv2
+      task_4:
+        task_id: 4
+        task_name: APP
+        data_config:
+          train_path: ${data_root}/MLLM-CL/APP/train.json
+          replay_path: ${data_root}/MLLM-CL/APP/replay.json
+          router_path: ${data_root}/MLLM-CL/APP/router.json
+          test_path: ${data_root}/MLLM-CL/APP_test/test.json
+          train_folder: ${data_root}/MLLM-CL/APP
+          router_folder: ${data_root}/MLLM-CL
+          test_folder: ${data_root}/MLLM-CL/APP_test

@@ -1,0 +1,32 @@
+# Isolated ModalPrompt environment; all LLaVA 4.31 pins remain unchanged except DeepSpeed.
+torch==2.0.1
+torchvision==0.15.2
+transformers==4.31.0
+tokenizers>=0.12.1,<0.14
+sentencepiece==0.1.99
+accelerate==0.21.0
+deepspeed==0.12.6
+bitsandbytes==0.41.0
+numpy==1.23.5
+PyYAML>=6.0
+# Training/evaluation runtime dependencies; NB-5 forbids runtime installation.
+Pillow
+tqdm
+shortuuid
+pandas
+nltk
+pycocotools
+pycocoevalcap
+openai
+validators
+einops==0.6.1
+scipy==1.10.1
+# MLLM-ACL Math scoring (MathVista table .xlsx, optional .env, token counting for the judge)
+openpyxl
+xlsxwriter
+python-dotenv
+tiktoken
+# flash-attn is NOT installable from this file: it must match your CUDA and torch build.
+#   pip install flash_attn-2.6.3+cu118torch2.0cxx11abiFALSE-cp310-cp310-linux_x86_64.whl   (CUDA 11.8, torch 2.0, Python 3.10)
+#   or: pip install flash-attn==2.5.8 --no-build-isolation
+# Run `mcitlib doctor --method <m> --benchmark <b>` afterwards; it fails if flash_attn cannot be imported.

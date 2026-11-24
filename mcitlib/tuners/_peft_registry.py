@@ -15,6 +15,8 @@ from .variants.clmoe import MCITClMoELoraConfig, MCITClMoELoraModel
 from .variants.disco import MCITDiscoLoraConfig, MCITDiscoLoraModel
 from .variants.hide import MCITHiDeLoraConfig, MCITHiDeLoraModel
 from .variants.olora import MCITOrthogonalLoraConfig, MCITOrthogonalLoraModel
+from .variants.same import SAMEConfig, SAMELinear, SAMEModel
+from .variants.sigma import SiGMAConfig, SiGMAModel
 
 # These aliases are compatibility only. Shared implementation classes use MCIT.
 CoINMOELoraConfig = MCITExpertLoraConfig
@@ -37,6 +39,13 @@ def register_mcit_tuners() -> None:
         setattr(PeftType, "MOE_LORA_CLMoE", "MOE_LORA_CLMoE")
     if not hasattr(PeftType, "SMOLORA"):
         setattr(PeftType, "SMOLORA", "SMOLORA")
+    for name in ("MOE_LORA_SAME", "MOE_LORA_SIGMA"):
+        if not hasattr(PeftType, name):
+            setattr(PeftType, name, name)
+    PEFT_TYPE_TO_CONFIG_MAPPING["MOE_LORA_SAME"] = SAMEConfig
+    PEFT_TYPE_TO_MODEL_MAPPING["MOE_LORA_SAME"] = SAMEModel
+    PEFT_TYPE_TO_CONFIG_MAPPING["MOE_LORA_SIGMA"] = SiGMAConfig
+    PEFT_TYPE_TO_MODEL_MAPPING["MOE_LORA_SIGMA"] = SiGMAModel
     PEFT_TYPE_TO_CONFIG_MAPPING["MOE_LORA_CoIN"] = MCITExpertLoraConfig
     PEFT_TYPE_TO_MODEL_MAPPING["MOE_LORA_CoIN"] = MCITExpertLoraModel
     PEFT_TYPE_TO_CONFIG_MAPPING["MOE_LORA_HiDe"] = MCITHiDeLoraConfig
@@ -75,7 +84,7 @@ def tuner_model_context(peft_type: str, model_class, config_class=None):
 # the same behaviour is installed here; without it the first ``save_pretrained`` of every
 # expert-LoRA method (and every ``PeftModel.from_pretrained`` in evaluation) raises
 # ``NotImplementedError``.
-LORA_LIKE_PEFT_TYPES = frozenset({"MOE_LORA_CoIN", "MOE_LORA_HiDe", "MOE_LORA_CLMoE", "SMOLORA"})
+LORA_LIKE_PEFT_TYPES = frozenset({"MOE_LORA_CoIN", "MOE_LORA_HiDe", "MOE_LORA_CLMoE", "SMOLORA", "MOE_LORA_SAME", "MOE_LORA_SIGMA"})
 
 
 def install_state_dict_support() -> None:
@@ -104,6 +113,51 @@ def install_state_dict_support() -> None:
         return _as_lora(model, adapter_name, lambda: original_get(model, state_dict=state_dict, adapter_name=adapter_name))
 
     def set_peft_model_state_dict(model, peft_model_state_dict, adapter_name="default"):
+        config = model.peft_config[adapter_name]
+        if str(getattr(config.peft_type, "value", config.peft_type)) == "MOE_LORA_SAME":
+            # PEFT 0.4 uses a global str.replace to insert the adapter name.
+            # SAME has one-character state names (u/s); global replacement
+            # corrupts unrelated characters in their full parameter paths.
+            # Split only the first LoRA component and preserve the remainder.
+            mapped = {}
+            for key, value in peft_model_state_dict.items():
+                if model.modules_to_save is not None:
+                    for name in model.modules_to_save:
+                        if name in key:
+                            key = key.replace(name, f"{name}.modules_to_save.{adapter_name}")
+                            break
+                if "lora_" in key:
+                    prefix, _, suffix = key.partition("lora_")
+                    component, dot, tail = suffix.partition(".")
+                    if not component:
+                        raise ValueError("invalid SAME adapter parameter name")
+                    key = f"{prefix}lora_{component}.{adapter_name}" + (f".{tail}" if dot else "")
+                if key in mapped:
+                    raise ValueError(f"duplicate SAME adapter parameter after mapping: {key}")
+                mapped[key] = value
+            # strict=False is necessary because adapter checkpoints exclude the
+            # base model and (for SAME) the separately saved projector.  It
+            # would also silently accept an entirely missing adapter layer,
+            # however, so require every tensor belonging to every injected
+            # SAME layer before loading any of the adapter into the model.
+            # A separate non-LoRA partial load never enters this PEFT branch.
+            expected = set()
+            prefixes = tuple(f"{part}.{adapter_name}." for part in
+                             ("lora_A", "lora_B", "lora_router", "lora_state"))
+            for module_name, module in model.named_modules():
+                if isinstance(module, SAMELinear):
+                    # Native LLaVA saves model.named_parameters(), which omits
+                    # duplicate aliases for tied Expert.weight/mlp.weight.
+                    # Requiring state_dict() here would demand both aliases and
+                    # reject a valid native checkpoint.
+                    expected.update(f"{module_name}.{key}" for key, _ in module.named_parameters()
+                                    if key.startswith(prefixes))
+            if not expected:
+                raise RuntimeError("SAME adapter state is incomplete; no injected SAME adapter tensors")
+            missing = expected.difference(mapped)
+            if missing:
+                raise RuntimeError(f"SAME adapter state is incomplete; missing {min(missing)}")
+            return model.load_state_dict(mapped, strict=False)
         return _as_lora(
             model, adapter_name,
             lambda: original_set(model, peft_model_state_dict, adapter_name=adapter_name),
@@ -122,6 +176,8 @@ def install_state_dict_support() -> None:
 # class depending on the method; v4 selects it explicitly.  Training does this through
 # ``tuner_model_context``; evaluation processes call ``install_method_adapter``.
 METHOD_ADAPTERS = {
+    "same": ("MOE_LORA_SAME", SAMEConfig, SAMEModel),
+    "sigma": ("MOE_LORA_SIGMA", SiGMAConfig, SiGMAModel),
     "moelora": ("MOE_LORA_CoIN", MCITExpertLoraConfig, MCITExpertLoraModel),
     "mrlora": ("MOE_LORA_CoIN", MCITExpertLoraConfig, MCITExpertLoraModel),
     "olora": ("MOE_LORA_CoIN", MCITOrthogonalLoraConfig, MCITOrthogonalLoraModel),

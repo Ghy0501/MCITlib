@@ -6,8 +6,9 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from mcitlib.registry import BENCHMARKS, METHODS
+from mcitlib.registry import BENCHMARKS, get_method
 from mcitlib.runner import build_sequence_commands
+from tests.equivalence import V3_METHOD_IDS
 
 COiN_IMPORT = "from llava.eval.CoIN.coin_utils import get_model_name_from_path"
 MCIT_IMPORT = "from mcitlib.backbones.llava.eval_runners.coin.coin_utils import get_model_name_from_path"
@@ -36,8 +37,8 @@ def _source_text(path: Path) -> str:
 
 def test_eval_files_match_their_method_specific_v3_sources(repo_root: Path, v3_root: Path) -> None:
     checked: set[tuple[str, str]] = set()
-    groups = [(method, benchmark, "train") for method in METHODS for benchmark in BENCHMARKS]
-    mrlora = next(method for method in METHODS if method.id == "mrlora")
+    groups = [(get_method(name), benchmark, "train") for name in V3_METHOD_IDS for benchmark in BENCHMARKS]
+    mrlora = get_method("mrlora")
     groups.extend((mrlora, benchmark, "router") for benchmark in BENCHMARKS)
     for method, benchmark, sequence in groups:
         commands = build_sequence_commands(

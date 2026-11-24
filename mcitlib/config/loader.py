@@ -28,6 +28,10 @@ def read_yaml(path: Path) -> dict[str, Any]:
         value = yaml.safe_load(handle) or {}
     if not isinstance(value, dict):
         raise ValueError(f"configuration must contain a mapping: {path}")
+    if value.get("format") == "mcitlib-method-v1":
+        from .compact import expand_method
+
+        value = expand_method(path.parent.parent, value)
     return value
 
 
@@ -41,6 +45,10 @@ def load_layered_config(
 ) -> dict[str, Any]:
     """Merge defaults < backbone < benchmark < method < task < CLI."""
     root = Path(config_root)
+    if backbone == "internvl":
+        from ..backbones.internvl.config import load_internvl_config
+
+        return load_internvl_config(root, benchmark, method, task_id, cli_overrides)
     result: dict[str, Any] = {}
     for path in (
         root / "defaults.yaml",

@@ -17,6 +17,11 @@ def merge_lora(args) -> None:
     tokenizer, model, _, _ = load_pretrained_model(
         args.model_path, args.model_base, model_name, device_map="cpu"
     )
+    generation_config = getattr(model, "generation_config", None)
+    if getattr(generation_config, "do_sample", None) is False:
+        # Sampling parameters are ignored by greedy generation but must be neutral for saving.
+        generation_config.temperature = 1.0
+        generation_config.top_p = 1.0
     model.save_pretrained(args.save_model_path)
     tokenizer.save_pretrained(args.save_model_path)
 

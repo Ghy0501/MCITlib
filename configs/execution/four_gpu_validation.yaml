@@ -1,0 +1,5 @@
+id: four_gpu_validation
+gpu_ids: ['0', '1', '2', '3']
+train_world_size: 4
+evaluation_chunks: 4
+batch_policy: preserve_effective_batch

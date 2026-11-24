@@ -1,0 +1,877 @@
+deepspeed_config: zero2
+environment: llava
+format: mcitlib-method-v1
+id: sigma
+overrides:
+  llava:
+    mllm_dcl:
+      task_1:
+        eval_commands:
+        - kind: eval
+          order: 3
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 4
+          set:
+            --answers-file: '@{task.eval_config.result_path}/RS/@{task.eval_config.stage}/2_1.jsonl'
+            --chunk-idx: '1'
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 5
+          set:
+            --annotation-file: '@{task.data_config.test_path}'
+          template: eval_eval_ai2d_1
+        eval_config:
+          model_path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/SiGMA/Task1_llava_lora
+          stage: SiGMA-task1
+        extra_commands: []
+        train_command:
+          kind: train
+          order: 1
+          set:
+            --expert_num: '5'
+            --lora_alpha: '32'
+            --cur_task: '0'
+          template: train_train_mem_moe_7
+        train_config:
+          cur_task: 0
+          epoch: 1
+          output_dir: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/SiGMA/Task1_llava_lora
+      task_2:
+        eval_commands:
+        - kind: eval
+          order: 9
+          set:
+            --answers-file: '@{task.eval_config.result_path}/Med/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+            --image-folder: '@{task.data_config.test_folder}'
+            --question-file: '@{task.data_config.test_path}'
+          template: eval_model_pvqa_1
+        - kind: eval
+          order: 10
+          set:
+            --image-folder: '@{task.data_config.test_folder}'
+            --question-file: '@{task.data_config.test_path}'
+          template: eval_model_pvqa_1
+        - kind: eval
+          order: 11
+          set:
+            --annotation-file: '@{task.data_config.test_path}'
+          template: eval_eval_pvqa_1
+        - kind: eval
+          order: 13
+          set:
+            --image-folder: '@{datasets.task_1.data_config.test_folder}'
+            --question-file: '@{datasets.task_1.data_config.test_path}'
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 14
+          set:
+            --answers-file: '@{task.eval_config.result_path}/RS/@{task.eval_config.stage}/2_1.jsonl'
+            --chunk-idx: '1'
+            --image-folder: '@{datasets.task_1.data_config.test_folder}'
+            --question-file: '@{datasets.task_1.data_config.test_path}'
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 15
+          template: eval_eval_ai2d_1
+        eval_config:
+          model_path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/SiGMA/Task2_llava_lora
+          stage: SiGMA-task2
+        extra_commands: []
+        train_command:
+          kind: train
+          order: 7
+          set:
+            --expert_num: '5'
+            --lora_alpha: '32'
+            --cur_task: '1'
+          template: train_train_mem_moe_8
+        train_config:
+          cur_task: 1
+          epoch: 3
+          output_dir: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/SiGMA/Task2_llava_lora
+          previous_model: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/SiGMA/Task1_llava_lora
+      task_3:
+        eval_commands:
+        - kind: eval
+          order: 19
+          template: eval_model_pvqa_1
+        - kind: eval
+          order: 20
+          set:
+            --answers-file: '@{task.eval_config.result_path}/Med/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+          template: eval_model_pvqa_1
+        - kind: eval
+          order: 21
+          template: eval_eval_pvqa_1
+        - kind: eval
+          order: 23
+          set:
+            --image-folder: '@{datasets.task_1.data_config.test_folder}'
+            --question-file: '@{datasets.task_1.data_config.test_path}'
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 24
+          set:
+            --answers-file: '@{task.eval_config.result_path}/RS/@{task.eval_config.stage}/2_1.jsonl'
+            --chunk-idx: '1'
+            --image-folder: '@{datasets.task_1.data_config.test_folder}'
+            --question-file: '@{datasets.task_1.data_config.test_path}'
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 25
+          template: eval_eval_ai2d_1
+        - kind: eval
+          order: 27
+          set:
+            --answers-file: '@{task.eval_config.result_path}/AD/@{task.eval_config.stage}/2_0.jsonl'
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 28
+          set:
+            --answers-file: '@{task.eval_config.result_path}/AD/@{task.eval_config.stage}/2_1.jsonl'
+            --chunk-idx: '1'
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 29
+          set:
+            --annotation-file: '@{task.data_config.test_path}'
+            --output-dir: '@{task.eval_config.result_path}/AD/@{task.eval_config.stage}'
+            --result-file: '@{task.eval_config.result_path}/AD/@{task.eval_config.stage}/merge.jsonl'
+          template: eval_eval_ai2d_1
+        eval_config:
+          model_path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/SiGMA/Task3_llava_lora
+          stage: SiGMA-task3
+        extra_commands: []
+        train_command:
+          kind: train
+          order: 17
+          set:
+            --cur_task: '2'
+            --expert_num: '5'
+            --lora_alpha: '32'
+          template: train_train_mem_moe_8
+        train_config:
+          cur_task: 2
+          epoch: 1
+          output_dir: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/SiGMA/Task3_llava_lora
+          previous_model: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/SiGMA/Task2_llava_lora
+      task_4:
+        eval_commands:
+        - kind: eval
+          order: 33
+          set:
+            --answers-file: '@{task.eval_config.result_path}/AD/@{task.eval_config.stage}/2_1.jsonl'
+            --chunk-idx: '1'
+            --image-folder: '@{datasets.task_3.data_config.test_folder}'
+            --question-file: '@{datasets.task_3.data_config.test_path}'
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 34
+          set:
+            --answers-file: '@{task.eval_config.result_path}/AD/@{task.eval_config.stage}/2_0.jsonl'
+            --image-folder: '@{datasets.task_3.data_config.test_folder}'
+            --question-file: '@{datasets.task_3.data_config.test_path}'
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 35
+          set:
+            --annotation-file: '@{datasets.task_3.data_config.test_path}'
+            --output-dir: '@{task.eval_config.result_path}/AD/@{task.eval_config.stage}'
+            --result-file: '@{task.eval_config.result_path}/AD/@{task.eval_config.stage}/merge.jsonl'
+          template: eval_eval_ai2d_1
+        - kind: eval
+          order: 37
+          set:
+            --answers-file: '@{task.eval_config.result_path}/RS/@{task.eval_config.stage}/2_1.jsonl'
+            --chunk-idx: '1'
+            --image-folder: '@{datasets.task_1.data_config.test_folder}'
+            --question-file: '@{datasets.task_1.data_config.test_path}'
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 38
+          set:
+            --image-folder: '@{datasets.task_1.data_config.test_folder}'
+            --question-file: '@{datasets.task_1.data_config.test_path}'
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 39
+          template: eval_eval_ai2d_1
+        - kind: eval
+          order: 41
+          set:
+            --answers-file: '@{task.eval_config.result_path}/Med/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+          template: eval_model_pvqa_1
+        - kind: eval
+          order: 42
+          template: eval_model_pvqa_1
+        - kind: eval
+          order: 43
+          template: eval_eval_pvqa_1
+        - kind: eval
+          order: 45
+          set:
+            --answers-file: '@{task.eval_config.result_path}/Sci/@{task.eval_config.stage}/2_0.jsonl'
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 46
+          set:
+            --answers-file: '@{task.eval_config.result_path}/Sci/@{task.eval_config.stage}/2_1.jsonl'
+            --chunk-idx: '1'
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 47
+          set:
+            --annotation-file: '@{task.data_config.test_path}'
+          template: eval_eval_sci_1
+        eval_config:
+          model_path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/SiGMA/Task4_llava_lora
+          stage: SiGMA-task4
+        extra_commands: []
+        train_command:
+          kind: train
+          order: 31
+          set:
+            --cur_task: '3'
+            --expert_num: '5'
+            --lora_alpha: '32'
+          template: train_train_mem_moe_8
+        train_config:
+          cur_task: 3
+          epoch: 2
+          output_dir: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/SiGMA/Task4_llava_lora
+          previous_model: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/SiGMA/Task3_llava_lora
+      task_5:
+        eval_commands:
+        - kind: eval
+          order: 51
+          set:
+            --answers-file: '@{task.eval_config.result_path}/AD/@{task.eval_config.stage}/2_0.jsonl'
+            --image-folder: '@{datasets.task_3.data_config.test_folder}'
+            --question-file: '@{datasets.task_3.data_config.test_path}'
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 52
+          set:
+            --answers-file: '@{task.eval_config.result_path}/AD/@{task.eval_config.stage}/2_1.jsonl'
+            --chunk-idx: '1'
+            --image-folder: '@{datasets.task_3.data_config.test_folder}'
+            --question-file: '@{datasets.task_3.data_config.test_path}'
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 53
+          set:
+            --annotation-file: '@{datasets.task_3.data_config.test_path}'
+            --output-dir: '@{task.eval_config.result_path}/AD/@{task.eval_config.stage}'
+            --result-file: '@{task.eval_config.result_path}/AD/@{task.eval_config.stage}/merge.jsonl'
+          template: eval_eval_ai2d_1
+        - kind: eval
+          order: 55
+          set:
+            --image-folder: '@{datasets.task_1.data_config.test_folder}'
+            --question-file: '@{datasets.task_1.data_config.test_path}'
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 56
+          set:
+            --answers-file: '@{task.eval_config.result_path}/RS/@{task.eval_config.stage}/2_1.jsonl'
+            --chunk-idx: '1'
+            --image-folder: '@{datasets.task_1.data_config.test_folder}'
+            --question-file: '@{datasets.task_1.data_config.test_path}'
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 57
+          template: eval_eval_ai2d_1
+        - kind: eval
+          order: 59
+          template: eval_model_pvqa_1
+        - kind: eval
+          order: 60
+          set:
+            --answers-file: '@{task.eval_config.result_path}/Med/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+          template: eval_model_pvqa_1
+        - kind: eval
+          order: 61
+          template: eval_eval_pvqa_1
+        - kind: eval
+          order: 63
+          set:
+            --answers-file: '@{task.eval_config.result_path}/Sci/@{task.eval_config.stage}/2_0.jsonl'
+            --image-folder: '@{datasets.task_4.data_config.test_folder}'
+            --question-file: '@{datasets.task_4.data_config.test_path}'
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 64
+          set:
+            --answers-file: '@{task.eval_config.result_path}/Sci/@{task.eval_config.stage}/2_1.jsonl'
+            --chunk-idx: '1'
+            --image-folder: '@{datasets.task_4.data_config.test_folder}'
+            --question-file: '@{datasets.task_4.data_config.test_path}'
+          template: eval_model_ai2d_1
+        - kind: eval
+          order: 65
+          template: eval_eval_sci_1
+        - kind: eval
+          order: 67
+          template: eval_model_fin_1
+        - kind: eval
+          order: 68
+          set:
+            --answers-file: '@{task.eval_config.result_path}/Fin/@{task.eval_config.stage}/2_1.jsonl'
+            --chunk-idx: '1'
+          template: eval_model_fin_1
+        - kind: eval
+          order: 69
+          template: eval_eval_finvis_1
+        eval_config:
+          model_path: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/SiGMA/Task5_llava_lora
+          stage: SiGMA-task5
+        extra_commands: []
+        train_command:
+          kind: train
+          order: 49
+          set:
+            --cur_task: '4'
+            --expert_num: '5'
+            --lora_alpha: '32'
+          template: train_train_mem_moe_8
+        train_config:
+          cur_task: 4
+          epoch: 1
+          output_dir: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/SiGMA/Task5_llava_lora
+          previous_model: ${ckpt_root}/MCITlib/MLLM-DCL/LLaVA/SiGMA/Task4_llava_lora
+      task_defaults:
+        eval_config:
+          gpu_num: 2
+          result_path: ./results/DCL/each_dataset
+        train_config:
+          batch_size: 8
+          expert_num: 5
+          gpu_num: 2
+          grad_acc: 4
+          gradient_checkpointing: 'True'
+          lr: 0.0002
+          rank: 16
+    ucit:
+      task_1:
+        eval_commands:
+        - kind: eval
+          order: 3
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+          template: eval_model_others_1
+        - kind: eval
+          order: 4
+          template: eval_model_others_1
+        - kind: eval
+          order: 5
+          set:
+            --annotation-file: '@{task.data_config.test_path}'
+            --output-dir: '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}'
+            --result-file: '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}/merge.jsonl'
+          template: eval_eval_deepseek_r1_1
+        eval_config:
+          model_path: ${ckpt_root}/MCITlib/UCIT/LLaVA/SiGMA/Task1_llava_lora
+          stage: SiGMA-task1
+        extra_commands: []
+        train_command:
+          kind: train
+          order: 1
+          template: train_train_mem_moe_7
+          set:
+            --lora_alpha: '32'
+            --expert_num: '6'
+            --cur_task: '0'
+        train_config:
+          cur_task: 0
+          output_dir: ${ckpt_root}/MCITlib/UCIT/LLaVA/SiGMA/Task1_llava_lora
+      task_2:
+        eval_commands:
+        - kind: eval
+          order: 9
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_1.task_name}/@{task.eval_config.stage}/2_1.jsonl'
+            --image-folder: '@{datasets.task_1.data_config.test_folder}'
+            --question-file: '@{datasets.task_1.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 10
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_1.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+            --image-folder: '@{datasets.task_1.data_config.test_folder}'
+            --question-file: '@{datasets.task_1.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 11
+          template: eval_eval_deepseek_r1_1
+        - kind: eval
+          order: 13
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+          template: eval_model_others_1
+        - kind: eval
+          order: 14
+          template: eval_model_others_1
+        - kind: eval
+          order: 15
+          set:
+            --annotation-file: '@{task.data_config.test_path}'
+            --output-dir: '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}'
+            --result-file: '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}/merge.jsonl'
+          template: eval_eval_deepseek_r1_1
+        eval_config:
+          model_path: ${ckpt_root}/MCITlib/UCIT/LLaVA/SiGMA/Task2_llava_lora
+          stage: SiGMA-task2
+        extra_commands: []
+        train_command:
+          kind: train
+          order: 7
+          template: train_train_mem_moe_8
+          set:
+            --lora_alpha: '32'
+            --expert_num: '6'
+            --cur_task: '1'
+        train_config:
+          cur_task: 1
+          output_dir: ${ckpt_root}/MCITlib/UCIT/LLaVA/SiGMA/Task2_llava_lora
+          previous_model: ${ckpt_root}/MCITlib/UCIT/LLaVA/SiGMA/Task1_llava_lora
+      task_3:
+        eval_commands:
+        - kind: eval
+          order: 19
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_1.task_name}/@{task.eval_config.stage}/2_1.jsonl'
+            --image-folder: '@{datasets.task_1.data_config.test_folder}'
+            --question-file: '@{datasets.task_1.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 20
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_1.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+            --image-folder: '@{datasets.task_1.data_config.test_folder}'
+            --question-file: '@{datasets.task_1.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 21
+          template: eval_eval_deepseek_r1_1
+        - kind: eval
+          order: 23
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_2.task_name}/@{task.eval_config.stage}/2_1.jsonl'
+            --image-folder: '@{datasets.task_2.data_config.test_folder}'
+            --question-file: '@{datasets.task_2.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 24
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_2.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+            --image-folder: '@{datasets.task_2.data_config.test_folder}'
+            --question-file: '@{datasets.task_2.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 25
+          set:
+            --annotation-file: '@{datasets.task_2.data_config.test_path}'
+            --output-dir: '@{task.eval_config.result_path}/@{datasets.task_2.task_name}/@{task.eval_config.stage}'
+            --result-file: '@{task.eval_config.result_path}/@{datasets.task_2.task_name}/@{task.eval_config.stage}/merge.jsonl'
+          template: eval_eval_deepseek_r1_1
+        - kind: eval
+          order: 27
+          template: eval_model_others_1
+        - kind: eval
+          order: 28
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+          template: eval_model_others_1
+        - kind: eval
+          order: 29
+          set:
+            --annotation-file: '@{task.data_config.anno_path}'
+            --output-dir: '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}'
+            --result-file: '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}/merge.jsonl'
+          template: eval_eval_caption_1
+        eval_config:
+          model_path: ${ckpt_root}/MCITlib/UCIT/LLaVA/SiGMA/Task3_llava_lora
+          stage: SiGMA-task3
+        extra_commands: []
+        train_command:
+          kind: train
+          order: 17
+          set:
+            --cur_task: '2'
+            --lora_alpha: '32'
+            --expert_num: '6'
+          template: train_train_mem_moe_8
+        train_config:
+          cur_task: 2
+          output_dir: ${ckpt_root}/MCITlib/UCIT/LLaVA/SiGMA/Task3_llava_lora
+          previous_model: ${ckpt_root}/MCITlib/UCIT/LLaVA/SiGMA/Task2_llava_lora
+      task_4:
+        eval_commands:
+        - kind: eval
+          order: 33
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_1.task_name}/@{task.eval_config.stage}/2_1.jsonl'
+            --image-folder: '@{datasets.task_1.data_config.test_folder}'
+            --question-file: '@{datasets.task_1.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 34
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_1.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+            --image-folder: '@{datasets.task_1.data_config.test_folder}'
+            --question-file: '@{datasets.task_1.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 35
+          template: eval_eval_deepseek_r1_1
+        - kind: eval
+          order: 37
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_2.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+            --image-folder: '@{datasets.task_2.data_config.test_folder}'
+            --question-file: '@{datasets.task_2.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 38
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_2.task_name}/@{task.eval_config.stage}/2_1.jsonl'
+            --image-folder: '@{datasets.task_2.data_config.test_folder}'
+            --question-file: '@{datasets.task_2.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 39
+          set:
+            --annotation-file: '@{datasets.task_2.data_config.test_path}'
+            --output-dir: '@{task.eval_config.result_path}/@{datasets.task_2.task_name}/@{task.eval_config.stage}'
+            --result-file: '@{task.eval_config.result_path}/@{datasets.task_2.task_name}/@{task.eval_config.stage}/merge.jsonl'
+          template: eval_eval_deepseek_r1_1
+        - kind: eval
+          order: 41
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_3.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+            --image-folder: '@{datasets.task_3.data_config.test_folder}'
+            --question-file: '@{datasets.task_3.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 42
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_3.task_name}/@{task.eval_config.stage}/2_1.jsonl'
+            --image-folder: '@{datasets.task_3.data_config.test_folder}'
+            --question-file: '@{datasets.task_3.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 43
+          template: eval_eval_caption_1
+        - kind: eval
+          order: 45
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+          template: eval_model_others_1
+        - kind: eval
+          order: 46
+          template: eval_model_others_1
+        - kind: eval
+          order: 47
+          set:
+            --annotation-file: '@{task.data_config.test_path}'
+            --output-dir: '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}'
+            --result-file: '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}/merge.jsonl'
+          template: eval_eval_deepseek_r1_1
+        eval_config:
+          model_path: ${ckpt_root}/MCITlib/UCIT/LLaVA/SiGMA/Task4_llava_lora
+          stage: SiGMA-task4
+        extra_commands: []
+        train_command:
+          kind: train
+          order: 31
+          set:
+            --cur_task: '3'
+            --lora_alpha: '32'
+            --expert_num: '6'
+          template: train_train_mem_moe_8
+        train_config:
+          cur_task: 3
+          output_dir: ${ckpt_root}/MCITlib/UCIT/LLaVA/SiGMA/Task4_llava_lora
+          previous_model: ${ckpt_root}/MCITlib/UCIT/LLaVA/SiGMA/Task3_llava_lora
+      task_5:
+        eval_commands:
+        - kind: eval
+          order: 51
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_2.task_name}/@{task.eval_config.stage}/2_1.jsonl'
+            --image-folder: '@{datasets.task_2.data_config.test_folder}'
+            --question-file: '@{datasets.task_2.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 52
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_2.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+            --image-folder: '@{datasets.task_2.data_config.test_folder}'
+            --question-file: '@{datasets.task_2.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 53
+          set:
+            --annotation-file: '@{datasets.task_2.data_config.test_path}'
+            --output-dir: '@{task.eval_config.result_path}/@{datasets.task_2.task_name}/@{task.eval_config.stage}'
+            --result-file: '@{task.eval_config.result_path}/@{datasets.task_2.task_name}/@{task.eval_config.stage}/merge.jsonl'
+          template: eval_eval_deepseek_r1_1
+        - kind: eval
+          order: 55
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_1.task_name}/@{task.eval_config.stage}/2_1.jsonl'
+            --image-folder: '@{datasets.task_1.data_config.test_folder}'
+            --question-file: '@{datasets.task_1.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 56
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_1.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+            --image-folder: '@{datasets.task_1.data_config.test_folder}'
+            --question-file: '@{datasets.task_1.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 57
+          template: eval_eval_deepseek_r1_1
+        - kind: eval
+          order: 59
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_3.task_name}/@{task.eval_config.stage}/2_1.jsonl'
+            --image-folder: '@{datasets.task_3.data_config.test_folder}'
+            --question-file: '@{datasets.task_3.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 60
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_3.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+            --image-folder: '@{datasets.task_3.data_config.test_folder}'
+            --question-file: '@{datasets.task_3.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 61
+          template: eval_eval_caption_1
+        - kind: eval
+          order: 63
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_4.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+            --image-folder: '@{datasets.task_4.data_config.test_folder}'
+            --question-file: '@{datasets.task_4.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 64
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_4.task_name}/@{task.eval_config.stage}/2_1.jsonl'
+            --image-folder: '@{datasets.task_4.data_config.test_folder}'
+            --question-file: '@{datasets.task_4.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 65
+          set:
+            --annotation-file: '@{datasets.task_4.data_config.test_path}'
+            --output-dir: '@{task.eval_config.result_path}/@{datasets.task_4.task_name}/@{task.eval_config.stage}'
+            --result-file: '@{task.eval_config.result_path}/@{datasets.task_4.task_name}/@{task.eval_config.stage}/merge.jsonl'
+          template: eval_eval_deepseek_r1_1
+        - kind: eval
+          order: 67
+          template: eval_model_others_1
+        - kind: eval
+          order: 68
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+          template: eval_model_others_1
+        - kind: eval
+          order: 69
+          set:
+            --annotation-file: '@{task.data_config.test_path}'
+            --output-dir: '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}'
+            --result-file: '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}/merge.jsonl'
+          template: eval_eval_deepseek_r1_1
+        eval_config:
+          model_path: ${ckpt_root}/MCITlib/UCIT/LLaVA/SiGMA/Task5_llava_lora
+          stage: SiGMA-task5
+        extra_commands: []
+        train_command:
+          kind: train
+          order: 49
+          set:
+            --cur_task: '4'
+            --lora_alpha: '32'
+            --expert_num: '6'
+          template: train_train_mem_moe_8
+        train_config:
+          cur_task: 4
+          output_dir: ${ckpt_root}/MCITlib/UCIT/LLaVA/SiGMA/Task5_llava_lora
+          previous_model: ${ckpt_root}/MCITlib/UCIT/LLaVA/SiGMA/Task4_llava_lora
+      task_6:
+        eval_commands:
+        - kind: eval
+          order: 73
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_1.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+            --image-folder: '@{datasets.task_1.data_config.test_folder}'
+            --question-file: '@{datasets.task_1.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 74
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_1.task_name}/@{task.eval_config.stage}/2_1.jsonl'
+            --image-folder: '@{datasets.task_1.data_config.test_folder}'
+            --question-file: '@{datasets.task_1.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 75
+          template: eval_eval_deepseek_r1_1
+        - kind: eval
+          order: 77
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_2.task_name}/@{task.eval_config.stage}/2_1.jsonl'
+            --image-folder: '@{datasets.task_2.data_config.test_folder}'
+            --question-file: '@{datasets.task_2.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 78
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_2.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+            --image-folder: '@{datasets.task_2.data_config.test_folder}'
+            --question-file: '@{datasets.task_2.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 79
+          set:
+            --annotation-file: '@{datasets.task_2.data_config.test_path}'
+            --output-dir: '@{task.eval_config.result_path}/@{datasets.task_2.task_name}/@{task.eval_config.stage}'
+            --result-file: '@{task.eval_config.result_path}/@{datasets.task_2.task_name}/@{task.eval_config.stage}/merge.jsonl'
+          template: eval_eval_deepseek_r1_1
+        - kind: eval
+          order: 81
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_3.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+            --image-folder: '@{datasets.task_3.data_config.test_folder}'
+            --question-file: '@{datasets.task_3.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 82
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_3.task_name}/@{task.eval_config.stage}/2_1.jsonl'
+            --image-folder: '@{datasets.task_3.data_config.test_folder}'
+            --question-file: '@{datasets.task_3.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 83
+          template: eval_eval_caption_1
+        - kind: eval
+          order: 85
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_4.task_name}/@{task.eval_config.stage}/2_1.jsonl'
+            --image-folder: '@{datasets.task_4.data_config.test_folder}'
+            --question-file: '@{datasets.task_4.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 86
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_4.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+            --image-folder: '@{datasets.task_4.data_config.test_folder}'
+            --question-file: '@{datasets.task_4.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 87
+          set:
+            --annotation-file: '@{datasets.task_4.data_config.test_path}'
+            --output-dir: '@{task.eval_config.result_path}/@{datasets.task_4.task_name}/@{task.eval_config.stage}'
+            --result-file: '@{task.eval_config.result_path}/@{datasets.task_4.task_name}/@{task.eval_config.stage}/merge.jsonl'
+          template: eval_eval_deepseek_r1_1
+        - kind: eval
+          order: 89
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_5.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+            --image-folder: '@{datasets.task_5.data_config.test_folder}'
+            --question-file: '@{datasets.task_5.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 90
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{datasets.task_5.task_name}/@{task.eval_config.stage}/2_1.jsonl'
+            --image-folder: '@{datasets.task_5.data_config.test_folder}'
+            --question-file: '@{datasets.task_5.data_config.test_path}'
+          template: eval_model_others_1
+        - kind: eval
+          order: 91
+          set:
+            --annotation-file: '@{datasets.task_5.data_config.test_path}'
+            --output-dir: '@{task.eval_config.result_path}/@{datasets.task_5.task_name}/@{task.eval_config.stage}'
+            --result-file: '@{task.eval_config.result_path}/@{datasets.task_5.task_name}/@{task.eval_config.stage}/merge.jsonl'
+          template: eval_eval_deepseek_r1_1
+        - kind: eval
+          order: 93
+          template: eval_model_others_1
+        - kind: eval
+          order: 94
+          set:
+            --answers-file: '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}/2_0.jsonl'
+            --chunk-idx: '0'
+          template: eval_model_others_1
+        - kind: eval
+          order: 95
+          set:
+            --annotation-file: '@{task.data_config.anno_path}'
+            --output-dir: '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}'
+            --result-file: '@{task.eval_config.result_path}/@{task.task_name}/@{task.eval_config.stage}/merge.jsonl'
+          template: eval_eval_caption_1
+        eval_config:
+          model_path: ${ckpt_root}/MCITlib/UCIT/LLaVA/SiGMA/Task6_llava_lora
+          stage: SiGMA-task6
+        extra_commands: []
+        train_command:
+          kind: train
+          order: 71
+          set:
+            --cur_task: '5'
+            --lora_alpha: '32'
+            --expert_num: '6'
+          template: train_train_mem_moe_8
+        train_config:
+          cur_task: 5
+          output_dir: ${ckpt_root}/MCITlib/UCIT/LLaVA/SiGMA/Task6_llava_lora
+          previous_model: ${ckpt_root}/MCITlib/UCIT/LLaVA/SiGMA/Task5_llava_lora
+      task_defaults:
+        eval_config:
+          gpu_num: 2
+          result_path: ./results/UCIT/each_dataset
+        train_config:
+          epoch: 1
+          expert_num: 6
+          gpu_num: 2
+          grad_acc: 4
+          gradient_checkpointing: 'True'
+          lr: 0.0002
+          rank: 16
+          batch_size: 8
+separate_train_and_infer: false
+source_metadata: {}
+train_entry: moe
+v3_dir: SiGMA

@@ -14,6 +14,7 @@ from typing import Any
 
 from mcitlib.config.loader import load_layered_config
 from mcitlib.config.schema import DataSource
+from mcitlib.paths import PathResolver
 from mcitlib.registry import BENCHMARKS, METHODS, get_benchmark, get_method
 
 LOSS = re.compile(r"(?:loss|Loss)[\"']?\s*[:=]\s*([0-9]+(?:\.[0-9]+)?(?:[eE][+-]?\d+)?)")
@@ -246,6 +247,9 @@ def run_combo(
     v3_root = v3_root.resolve()
     out = out.resolve()
     fixture = repo_root / "tests/fixtures/v3_commands/llava" / method.id / f"{benchmark.id}.json"
+    if not fixture.is_file():
+        raise ValueError(f"no V3 comparison fixture for {method.id}/{benchmark.id}; "
+                         "this regression tool requires a recorded V3 command")
     payload = json.loads(fixture.read_text())
     original = next(
         command["argv"] for command in payload["commands"]
@@ -305,6 +309,7 @@ def run_combo(
 
 
 def main() -> int:
+    repo_root = Path(__file__).resolve().parents[2]
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
     compare = sub.add_parser("compare")
@@ -317,14 +322,17 @@ def main() -> int:
     run.add_argument("--max-steps", type=int, default=20)
     run.add_argument("--full", action="store_true")
     run.add_argument("--execute", action="store_true")
-    run.add_argument("--v3-root", type=Path, default=os.environ.get("MCITLIB_V3_ROOT", "../MCITlib_v3_ref"))
-    run.add_argument("--out", type=Path, default=Path("regression_out"))
+    run.add_argument("--v3-root", type=Path, default=os.environ.get("MCITLIB_V3_ROOT", repo_root.parent / "MCITlib_v3_ref"))
+    run.add_argument("--out", type=Path, help="new output directory under the project logs_root")
     args = parser.parse_args()
     if args.command == "compare":
         result = compare_logs(args.v3_log, args.v4_log, args.rtol)
         print(json.dumps(result, indent=2))
         return 0 if result["passed"] else 1
-    repo_root = Path(__file__).resolve().parents[2]
+    paths = PathResolver.from_file(repo_root=repo_root)
+    args.out = paths.managed_run_dir(args.out or paths.logs_root / "regression")
+    if args.execute and (args.out.exists() or args.out.is_symlink()):
+        parser.error(f"output directory already exists; choose a new --out: {args.out}")
     combos = args.combo or [f"{method.id}:{benchmark.id}" for method in METHODS for benchmark in BENCHMARKS]
     results = []
     for combo in combos:

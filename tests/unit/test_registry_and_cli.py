@@ -19,9 +19,16 @@ def test_registry_aliases_and_matrix() -> None:
     rows = list(matrix())
     assert len(rows) == len(METHODS) * 4 * len(BENCHMARKS)
     llava_rows = [row for row in rows if row["backbone"] == "llava"]
-    assert len(llava_rows) == 36
-    assert all(row["supported"] for row in llava_rows)
-    assert all(not row["supported"] for row in rows if row["backbone"] != "llava")
+    assert len(llava_rows) == 51
+    new_methods = {"pclr", "same", "sigma", "dgg", "octopus"}
+    assert all(row["supported"] == (row["method"] not in new_methods or row["benchmark"] != "mllm_acl")
+               for row in llava_rows)
+    internvl = [row for row in rows if row["backbone"] == "internvl" and row["supported"]]
+    assert {(row["method"], row["benchmark"]) for row in internvl} == {
+        (method.id, benchmark) for method in METHODS if method.id not in new_methods
+        for benchmark in ("ucit", "mllm_dcl")
+    }
+    assert all(not row["supported"] for row in rows if row["backbone"] in {"videollava", "videollama2"})
 
 
 def test_deep_merge_does_not_mutate_base() -> None:
@@ -38,7 +45,7 @@ def test_path_resolution_and_environment_override(tmp_path: Path, monkeypatch) -
     resolver = PathResolver.from_file(config, repo_root=tmp_path)
     assert resolver.resolve("/your_model_path/llava", "model") == tmp_path / "override-models/llava"
     assert resolver.resolve("UCIT/train.json", "data") == tmp_path / "data/UCIT/train.json"
-    assert resolver.run_dir("ucit", "hide", 3) == tmp_path / "ckpts/ucit/llava/hide/task3"
+    assert resolver.run_dir("ucit", "hide", 3) == tmp_path / "logs/ucit/llava/hide/task3"
 
 
 def test_cli_list(capsys) -> None:
@@ -46,6 +53,28 @@ def test_cli_list(capsys) -> None:
     output = capsys.readouterr().out
     assert "method\tbackbone\tbenchmark" in output
     assert "hide\tllava\tucit\tTrue" in output
+
+
+def test_config_expand_uses_selected_backbone(capsys) -> None:
+    assert main(['config', 'expand', '--backbone', 'internvl', '--method', 'lora_ft',
+                 '--benchmark', 'ucit', '--task', '2']) == 0
+    config = json.loads(capsys.readouterr().out)
+    assert config['backbone'] == 'internvl'
+    assert config['model_config']['vision_tower'].endswith('/InternViT-6B-224px')
+    assert config['train_config']['previous_model'].endswith('/Task1_internvl_lora')
+    train = config['train_command']
+    assert train['args']['vision_tower'] == config['model_config']['vision_tower']
+    assert train['args']['model_name_or_path'] == config['model_config']['model_name']
+    assert 'mm_projector_lr' not in train['args']
+    assert main(['config', 'expand', '--backbone', 'videollava', '--method', 'lora_ft',
+                 '--benchmark', 'ucit', '--task', '1']) == 2
+
+
+def test_config_validate_covers_all_internvl_tasks_and_router(capsys) -> None:
+    assert main(['config', 'validate', '--backbone', 'internvl', '--json']) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert (result['methods'], result['benchmarks'], result['tasks']) == (12, 2, 143)
+    assert result['recorded_commands'] > result['tasks']
 
 
 def test_cli_train_and_eval_dry_run(capsys) -> None:
@@ -61,11 +90,12 @@ def test_cli_train_and_eval_dry_run(capsys) -> None:
     assert all(command["kind"] == "eval" for command in evaluate)
 
 
-def test_cli_train_executes_and_resumes(tmp_path: Path, capsys) -> None:
+def test_cli_train_executes_and_resumes(tmp_path: Path, capsys, monkeypatch) -> None:
     from unittest.mock import patch
 
     from mcitlib.config.schema import Command
 
+    monkeypatch.setattr("mcitlib.paths.repo_root", lambda: tmp_path)
     output = tmp_path / "executed.txt"
     command = Command(argv=[sys.executable, "-c", f"from pathlib import Path; Path({str(output)!r}).write_text('ok')"])
     paths = tmp_path / "paths.yaml"
@@ -73,7 +103,7 @@ def test_cli_train_executes_and_resumes(tmp_path: Path, capsys) -> None:
     argv = [
         "train", "--method", "lora_ft", "--benchmark", "ucit",
         "--config-root", str(tmp_path / "configs"), "--paths", str(paths),
-        "--run-dir", str(tmp_path / "run"),
+        "--run-dir", str(tmp_path / "logs/run"),
     ]
     with patch("mcitlib.runner.build_sequence_commands", return_value=[command]):
         assert main(argv) == 0

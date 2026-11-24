@@ -78,7 +78,8 @@ def import_llava():
     from ...paths import repo_root
 
     with llava_import_context():
-        import llava.model  # noqa: F401
+        # Keep model registration inside the compatibility context and in this order.
+        import llava.model  # noqa: F401, I001
         import peft  # noqa: F401
 
         import llava  # noqa: F401
@@ -98,6 +99,12 @@ def install_model_override(override: str | type | None) -> None:
     if override is None:
         return
     import_llava()
+    if override == "octopus":
+        import llava.model.builder as builder_module
+
+        from ...methods._octopus.llava_overrides.builder import load_pretrained_model
+        builder_module.load_pretrained_model = load_pretrained_model
+        return
     if override == "disco":
         from ...methods._disco.llava_overrides import LlavaLlamaForCausalLM as override_cls
     elif override == "modalprompt":
@@ -114,7 +121,8 @@ def install_model_override(override: str | type | None) -> None:
         raise NotImplementedError(f"model override is not registered: {override}")
     else:
         override_cls = override
-    import llava.model
+    # Preserve the model import sequence after installing the compatibility override.
+    import llava.model  # noqa: I001
     import llava.model.language_model.llava_llama as llama_module
 
     import llava

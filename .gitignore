@@ -19,10 +19,16 @@ __pycache__/
 .ruff_cache/
 .cache/
 .ipynb_checkpoints/
+/.workspaces/
 
 # --- Environments / packaging ---
 .venv/
 venv/
+.venv-cpu-audit/
+.venv-llava-t437/
+.venv-modalprompt-ds126/
+configs/paths.yaml
+configs/paths.validation.yaml
 env/
 ENV/
 conda/
@@ -45,9 +51,16 @@ log/
 data/
 datasets/
 dataset/
+models/
+ckpts/
 outputs/
 output/
 results/
+/reports/
+!/third_party/LLaVA/llava/eval/table/results/
+/third_party/LLaVA/llava/eval/table/results/*
+!/third_party/LLaVA/llava/eval/table/results/test_sqa_llava_13b_v0.json
+!/third_party/LLaVA/llava/eval/table/results/test_sqa_llava_lcs_558k_sqa_12e_vicuna_v1_3_13b.json
 result/
 runs/
 checkpoints/
@@ -61,3 +74,31 @@ ckpt/
 
 # --- Nested git dirs (vendored repos) ---
 **/.git/
+
+# --- Local development records ---
+/GPU_node_handoff.md
+/*.local.md
+/docs/migration/*
+!/docs/migration/drift.md
+/preparations/llava_debug_archive/
+/preparations/llava_inference_optimization/
+/tools/regression/README.md
+/.venv-*/
+/venv-*/
+/configs/paths.local.yaml
+/configs/paths.*.local.yaml
+/configs/validation_3k_1k/manifest.json
+/preparations/other_backbones/configs/offline-plan.json
+/preparations/other_backbones/configs/effective/
+
+# Local workspaces and node bindings
+.worktrees/
+.tmp/
+.tmp-*/
+tmp/
+scratch/
+test_workspaces/
+validation_runs/
+smoke_runs/
+/configs/video-node*.json
+!/configs/video-node.example.json

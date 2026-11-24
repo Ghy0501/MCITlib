@@ -20,10 +20,10 @@ import yaml
 from mcitlib.registry import BENCHMARKS, METHODS, get_method
 
 PATH_PREFIXES = (
-    ("/home/hongbo_zhao/ghy-cl-codebase/clip-vit-large-patch14-336", "${model_root}/clip-vit-large-patch14-336"),
-    ("/home/hongbo_zhao/ghy-cl-codebase/MCITlib/checkpoints", "${ckpt_root}"),
-    ("/home/hongbo_zhao/ghy-cl-codebase/MCITlib", "${repo_root}"),
-    ("/mnt/cache/guohaiyang/miniconda3/envs/coin/bin/python", "${python_root}"),
+    ("/opt/mcitlib-example/clip-vit-large-patch14-336", "${model_root}/clip-vit-large-patch14-336"),
+    ("/opt/mcitlib-example/MCITlib/checkpoints", "${ckpt_root}"),
+    ("/opt/mcitlib-example/MCITlib", "${repo_root}"),
+    ("/opt/mcitlib-example/env/bin/python", "${python_root}"),
     ("/your_model_path", "${model_root}"),
     ("/your_data_path", "${data_root}"),
     ("/your_ckpts_path", "${ckpt_root}"),
@@ -254,10 +254,11 @@ def migrate_method(v3_root: Path, commands_root: Path, method: Any, benchmarks: 
 
 
 def main() -> int:
+    project = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--v3-root", type=Path, default=os.environ.get("MCITLIB_V3_ROOT", "../MCITlib_v3_ref"))
-    parser.add_argument("--commands-root", type=Path, default=Path("tests/fixtures/v3_commands/llava"))
-    parser.add_argument("--out", type=Path, default=Path("configs"))
+    parser.add_argument("--v3-root", type=Path, default=os.environ.get("MCITLIB_V3_ROOT", project.parent / "MCITlib_v3_ref"))
+    parser.add_argument("--commands-root", type=Path, default=project / "tests/fixtures/v3_commands/llava")
+    parser.add_argument("--out", type=Path, default=project / "configs")
     parser.add_argument("--methods", help="comma-separated method IDs; default all")
     args = parser.parse_args()
     v3_root = args.v3_root.expanduser().resolve()

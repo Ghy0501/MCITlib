@@ -1,2 +1,0 @@
-## For example
-./results/CoIN/ScienceQA/Finetune

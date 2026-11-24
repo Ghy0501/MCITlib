@@ -32,6 +32,8 @@ def test_no_two_methods_share_an_output_folder(repo_root: Path, tmp_path: Path) 
     owners: dict[str, set[str]] = {}
     for method in METHODS:
         for benchmark in BENCHMARKS:
+            if method.supported_benchmarks is not None and benchmark.id not in method.supported_benchmarks:
+                continue
             if benchmark.id == "general":
                 continue
             commands = build_sequence_commands(repo_root / "configs", "llava", method.id, benchmark.id, paths=paths)
@@ -43,9 +45,9 @@ def test_no_two_methods_share_an_output_folder(repo_root: Path, tmp_path: Path) 
     assert all(folder.startswith(root) for folder in owners if "each_dataset" in folder)
 
 
-def test_results_root_is_configurable_and_defaults_next_to_checkpoints(repo_root: Path, tmp_path: Path) -> None:
+def test_results_root_is_configurable_and_defaults_to_project(repo_root: Path, tmp_path: Path) -> None:
     default = _paths(tmp_path)
-    assert default.paths.results_root == (tmp_path / "c" / "results").resolve()
+    assert default.paths.results_root == (repo_root / "results").resolve()
     config = tmp_path / "custom.yaml"
     config.write_text(f"model_root: {tmp_path}/m\ndata_root: {tmp_path}/d\nckpt_root: {tmp_path}/c\nresults_root: {tmp_path}/r\n")
     custom = PathResolver.from_file(config, repo_root=repo_root)

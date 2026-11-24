@@ -20,6 +20,8 @@ class MethodSpec:
     extra_stages: tuple[str, ...] = ()
     model_override: str | None = None
     script_aliases: tuple[tuple[str, str], ...] = ()
+    supported_backbones: tuple[str, ...] | None = None
+    supported_benchmarks: tuple[str, ...] | None = None
 
 
 @dataclass(frozen=True)
@@ -57,7 +59,7 @@ METHODS = (
     MethodSpec("disco", "DISCO", aliases=("DISCO",), train_entry="moe", required_capabilities=frozenset({"text_tower", "clip_features", "layer_index"}), model_override="disco"),
     MethodSpec("hide", "HiDe", aliases=("HiDe", "hide-llava"), train_entry="moe", required_capabilities=frozenset({"text_tower", "clip_features", "layer_index"}), model_override="hide"),
     MethodSpec("smolora", "SMoLoRA", aliases=("SMoLoRA", "smo-lora"), train_entry="moe"),
-    MethodSpec("modalprompt", "ModalPrompt", aliases=("ModalPrompt",), deepspeed_config="zero3_offload", required_capabilities=frozenset({"text_tower", "clip_features"}), separate_train_and_infer=True, model_override="modalprompt"),
+    MethodSpec("modalprompt", "ModalPrompt", aliases=("ModalPrompt",), env="llava-modalprompt-ds126", deepspeed_config="zero3_offload", required_capabilities=frozenset({"text_tower", "clip_features"}), separate_train_and_infer=True, model_override="modalprompt"),
     MethodSpec(
         "sefe", "RegLoRA", aliases=("RegLoRA", "reglora", "SEFE"), env="llava-t437",
         required_capabilities=frozenset({"model_class_override"}), model_override="sefe",
@@ -75,11 +77,21 @@ METHODS = (
             ("scripts/merge_lora_weights.py", "mcitlib/methods/_keeplora/merge.py"),
         ),
     ),
+    MethodSpec("pclr", "PCLR", aliases=("PCLR",), extra_stages=("compression_integration",),
+               supported_backbones=("llava",), supported_benchmarks=("ucit", "mllm_dcl")),
+    MethodSpec("same", "SAME", aliases=("SAME",), train_entry="moe",
+               supported_backbones=("llava",), supported_benchmarks=("ucit", "mllm_dcl")),
+    MethodSpec("sigma", "SiGMA", aliases=("SiGMA",), train_entry="moe",
+               supported_backbones=("llava",), supported_benchmarks=("ucit", "mllm_dcl")),
+    MethodSpec("dgg", "DGG", aliases=("DGG",), separate_train_and_infer=True,
+               supported_backbones=("llava",), supported_benchmarks=("ucit", "mllm_dcl")),
+    MethodSpec("octopus", "Octopus", aliases=("Octopus",), model_override="octopus", extra_stages=("gpwc", "stage2"),
+               supported_backbones=("llava",), supported_benchmarks=("ucit", "mllm_dcl")),
 )
 
 BACKBONES = (
     BackboneSpec("llava", "llava", True, frozenset({"text_tower", "clip_features", "layer_index", "model_class_override", "router_data"})),
-    BackboneSpec("internvl", "internvl", False),
+    BackboneSpec("internvl", "llava", True, frozenset({"text_tower", "clip_features", "layer_index", "model_class_override", "router_data"})),
     BackboneSpec("videollava", "videollava", False),
     BackboneSpec("videollama2", "videollama2", False),
 )
@@ -126,8 +138,16 @@ def get_benchmark(value: str) -> BenchmarkSpec:
     raise KeyError(f"unknown benchmark: {value}")
 
 
+def benchmark_supported(method: str, benchmark: str) -> bool:
+    """Check a method's explicitly configured benchmark coverage."""
+    spec, benchmark_id = get_method(method), get_benchmark(benchmark).id
+    return spec.supported_benchmarks is None or benchmark_id in spec.supported_benchmarks
+
+
 def compatibility(method: str, backbone: str) -> tuple[bool, str]:
     m, b = get_method(method), get_backbone(backbone)
+    if m.supported_backbones is not None and b.id not in m.supported_backbones:
+        return False, "method is not implemented for this backbone"
     if not b.v4_supported:
         return False, "v3-only; v4 migration pending"
     if m.id == "keeplora" and b.id == "videollama2":
@@ -143,11 +163,16 @@ def matrix() -> Iterable[dict[str, str | bool]]:
         for backbone in BACKBONES:
             supported, reason = compatibility(method.id, backbone.id)
             for benchmark in BENCHMARKS:
+                benchmark_ok = benchmark_supported(method.id, benchmark.id)
+                internvl_ok = not (backbone.id == "internvl" and benchmark.id == "mllm_acl")
+                available = supported and benchmark_ok and internvl_ok
+                note = reason if not supported or available else (
+                    "not configured for this benchmark" if not benchmark_ok else "InternVL benchmark not enabled")
                 yield {
                     "method": method.id,
                     "backbone": backbone.id,
                     "benchmark": benchmark.id,
-                    "supported": supported,
-                    "environment": method.env if supported else "—",
-                    "note": reason,
+                    "supported": available,
+                    "environment": method.env if available else "—",
+                    "note": note,
                 }

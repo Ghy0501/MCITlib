@@ -7,8 +7,13 @@ from importlib import import_module
 from typing import Any
 
 _CLASSES = {
+    "pclr": ("pclr", "PCLRMethod"),
+    "same": ("same", "SAMEMethod"),
+    "sigma": ("sigma", "SiGMAMethod"),
+    "octopus": ("octopus", "OctopusMethod"),
     "lora_ft": ("lora_ft", "LoraFTMethod"),
     "replay": ("replay", "ReplayMethod"),
+    "dgg": ("dgg", "DGGMethod"),
     "moelora": ("moelora", "MoELoRAMethod"),
     "mrlora": ("mrlora", "MRLoRAMethod"),
     "olora": ("olora", "OLoRAMethod"),

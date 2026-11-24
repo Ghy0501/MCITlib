@@ -1,0 +1,2 @@
+# Install in addition to the selected method environment for InternViT.
+timm==0.6.13

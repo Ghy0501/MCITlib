@@ -19,16 +19,17 @@ from tqdm import tqdm  # noqa: E402
 
 from mcitlib.backbones.llava.standard_train import DataArguments, make_supervised_data_module  # noqa: E402
 
+from .config_paths import resolve_fields  # noqa: E402
 from .llava_overrides.builder import load_pretrained_model  # noqa: E402
 
 
 def extract_gradients(args):
     with open(args.data_config, 'r') as f:
-        data_config = json.load(f)
+        data_config = resolve_fields(json.load(f), ("train_path", "train_folder"))
     with open(args.model_config, 'r') as f:
-        model_config = json.load(f)
+        model_config = resolve_fields(json.load(f), ("model_name",))
     with open(args.train_config, 'r') as f:
-        train_config = json.load(f)
+        train_config = resolve_fields(json.load(f), ("model_path", "space_path"))
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     local_rank = int(os.environ.get('LOCAL_RANK', 0))
@@ -144,7 +145,7 @@ def merge_gradient_chunks(output_dir, num_chunks, train_config_path, svd_mode):
     chunk_files = []
     
     with open(train_config_path, 'r') as f:
-        train_config = json.load(f)
+        train_config = resolve_fields(json.load(f), ("space_path",))
     
     fixed_rank = train_config.get('rank')
     energy_threshold = train_config.get('energy_threshold')

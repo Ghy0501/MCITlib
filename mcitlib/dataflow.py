@@ -5,7 +5,7 @@
 A sequence only works end to end if every intermediate file a step *reads* (a previous
 task's checkpoint, the merged chunk file a scorer reads, a router result, ...) is *written*
 by an earlier step.  Inputs that the user supplies (models, datasets, replay/router data)
-live under ``model_root`` / ``data_root`` and are checked by ``mcitlib doctor`` instead.
+are checked by ``mcitlib doctor`` instead, including paths outside the default roots.
 """
 from __future__ import annotations
 
@@ -15,8 +15,8 @@ from pathlib import Path
 from .config.schema import Command
 
 # flag -> role.  Values are paths; only the flags below carry intermediate artefacts.
-PRODUCES = {"--output_dir", "--save-model-path", "--answers-file", "--output", "--output-dir", "--output_xlsx", "--output_file"}
-CONSUMES = {"--previous_task_model_path", "--model-path", "--model-base", "--result-file", "--regularization_info_path"}
+PRODUCES = {"--output_dir", "--save-model-path", "--answers-file", "--output", "--output-dir", "--output_xlsx", "--output_file", "--normalized-annotation"}
+CONSUMES = {"--dgg_replay_manifest", "--dgg_history_model_path", "--previous_task_model_path", "--model-path", "--model-base", "--result-file", "--regularization_info_path"}
 
 
 @dataclass(frozen=True)
@@ -54,6 +54,7 @@ def _positional_outputs(argv: list[str]) -> list[str]:
 
 def find_gaps(
     commands: list[Command], user_roots: tuple[str, ...], already_produced: tuple[str, ...] = (),
+    internal_roots: tuple[str, ...] = (),
 ) -> list[Gap]:
     """Reads of artefacts (outside ``user_roots``) that no earlier step writes.
 
@@ -61,21 +62,45 @@ def find_gaps(
     sequence consumes the expert checkpoints of the ordinary sequence).
     """
     roots = tuple(_norm(root) for root in user_roots)
+    internal = tuple(_norm(root) for root in internal_roots)
     produced: set[str] = {_norm(item) for item in already_produced}
     gaps: list[Gap] = []
     for index, command in enumerate(commands):
         argv = command.argv
+        for value in command.metadata.get("octopus_inputs", []):
+            if not _under(_norm(value), produced):
+                gaps.append(Gap(index, command.task_id, command.kind, "octopus input", _norm(value)))
+        strict_router_join = any(module in argv for module in (
+            "mcitlib.methods._mrlora.router_results.dcl_validation",
+            "mcitlib.methods._mrlora.router_results.ucit_validation"))
         for position, token in enumerate(argv[:-1]):
             value = argv[position + 1]
-            if token in CONSUMES and not value.startswith("-"):
+            if (token == "--annotation-file" and command.metadata.get("validation_fix") == "mrlora_ucit_router_scoring"
+                    and Path(value).name == "scorer_annotations.json" and _norm(value) not in produced):
+                gaps.append(Gap(index, command.task_id, command.kind, token, _norm(value)))
+            if token == "--dgg_history_model_path" and value in {"none", "None", ""}:
+                continue
+            consumes_dgg_replay = (token == "--data_path" and command.kind == "train" and
+                                   command.env.get("MCITLIB_METHOD") == "dgg" and command.task_id != 1)
+            if (token in CONSUMES or consumes_dgg_replay) and not value.startswith("-"):
                 path = _norm(value)
-                if any(path == root or path.startswith(root + "/") for root in roots):
+                if strict_router_join and token == "--result-file":
+                    if path not in produced:
+                        gaps.append(Gap(index, command.task_id, command.kind, token, path))
+                    continue
+                under_internal = any(path == root or path.startswith(root + "/") for root in internal)
+                under_user_root = any(path == root or path.startswith(root + "/") for root in roots)
+                # These two flags can name arbitrary user-supplied external models. Doctor
+                # checks their existence. Other consumers still need a producer unless
+                # they are inside a declared external input root.
+                if not under_internal and (under_user_root or (internal and token in {"--model-base", "--model-path"})):
                     continue
                 if not _under(path, produced):
                     gaps.append(Gap(index, command.task_id, command.kind, token, path))
         if "--inputs" in argv:  # merge step: its inputs are chunk files written by inference steps
             for item in argv[argv.index("--inputs") + 1:]:
-                if not _under(_norm(item), produced):
+                path = _norm(item)
+                if (path not in produced if strict_router_join else not _under(path, produced)):
                     gaps.append(Gap(index, command.task_id, command.kind, "--inputs", _norm(item)))
         if "--discover" in argv:  # merge of chunks that no step of this sequence writes
             directory = _norm(argv[argv.index("--discover") + 1])
@@ -85,6 +110,8 @@ def find_gaps(
             if token in PRODUCES and not argv[position + 1].startswith("-"):
                 produced.add(_norm(argv[position + 1]))
         produced.update(_positional_outputs(argv))
+        if "mcitlib.methods._dgg.replay" in argv and "--manifest" in argv:
+            produced.add(_norm(argv[argv.index("--manifest") + 1]))
     return gaps
 
 
@@ -97,4 +124,6 @@ def produced_paths(commands: list[Command]) -> set[str]:
             if token in PRODUCES and not argv[position + 1].startswith("-"):
                 produced.add(_norm(argv[position + 1]))
         produced.update(_positional_outputs(argv))
+        if "mcitlib.methods._dgg.replay" in argv and "--manifest" in argv:
+            produced.add(_norm(argv[argv.index("--manifest") + 1]))
     return produced

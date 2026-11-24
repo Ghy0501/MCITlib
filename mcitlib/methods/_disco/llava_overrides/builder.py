@@ -26,6 +26,7 @@ from llava.constants import DEFAULT_IMAGE_PATCH_TOKEN, DEFAULT_IM_START_TOKEN, D
 
 from mcitlib.methods._disco.llava_overrides.language_model.llava_llama import LlavaLlamaForCausalLM
 from mcitlib.backbones.llava.model_config import inject_text_tower_config, normalize_generation_config
+from mcitlib.tuners.inference_cache import install_generation_scope
 
 def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, load_4bit=False, device_map="auto", device="cuda", num_task=10, text_tower=None, **kwargs):
     kwargs = {"device_map": device_map, **kwargs}
@@ -46,7 +47,7 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
     else:
         kwargs['torch_dtype'] = torch.float16
 
-    if 'llava' in model_name.lower():
+    if 'llava' in model_name.lower() or 'intern' in model_name.lower():
         # Load LLaVA model
         if 'lora' in model_name.lower() and model_base is None:
             warnings.warn('There is `lora` in model name but no `model_base` is provided. If you are loading a LoRA model, please provide the `model_base` argument. Detailed instruction: https://github.com/haotian-liu/LLaVA#launch-a-model-worker-lora-weights-unmerged.')
@@ -148,7 +149,7 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
 
     image_processor = None
 
-    if 'llava' in model_name.lower():
+    if 'llava' in model_name.lower() or 'intern' in model_name.lower():
         mm_use_im_start_end = getattr(model.config, "mm_use_im_start_end", False)
         mm_use_im_patch_token = getattr(model.config, "mm_use_im_patch_token", True)
         if mm_use_im_patch_token:
@@ -174,4 +175,5 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
         context_len = 2048
 
     normalize_generation_config(model)
+    install_generation_scope(model)
     return tokenizer, model, image_processor, context_len

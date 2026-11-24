@@ -69,6 +69,18 @@ class LlavaLlamaForCausalLM(LlamaForCausalLM, LlavaMetaForCausalLM):
             [nn.Parameter(torch.ones(1, dtype=torch.bfloat16)) for _ in range(8)]
             )
 
+    def _init_weights(self, module):
+        # HF's low-memory loader materializes missing parameters with empty
+        # storage and invokes this hook before it restores checkpoint weights.
+        # These four ParameterLists have explicit v3 defaults, not random weights.
+        super()._init_weights(module)
+        if module is getattr(self, "global_text_feature", None) or module is getattr(self, "global_image_feature", None):
+            for parameter in module:
+                nn.init.zeros_(parameter)
+        elif module is getattr(self, "text_boundary", None) or module is getattr(self, "image_boundary", None):
+            for parameter in module:
+                nn.init.ones_(parameter)
+
     def set_cur_task(self, cur_task, expert_num):
         self.cur_task = cur_task
         self.expert_num = expert_num
