@@ -31,6 +31,9 @@ import sys
 import transformers
 from mcitlib.backbones.llava.cleanup import remove_checkpoint_dirs
 from mcitlib.backbones.llava.model_config import TEXT_MODEL_OVERRIDES, inject_text_tower_config, normalize_generation_config
+from mcitlib.backbones.llava.overrides import import_llava
+
+import_llava()
 from mcitlib.backbones.llava.olora_checkpoint import olora_checkpoint_scope
 from mcitlib.backbones.llava.train_context import training_task_id
 

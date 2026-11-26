@@ -29,6 +29,9 @@ import sys
 import transformers
 from mcitlib.backbones.llava.cleanup import remove_checkpoint_dirs
 from mcitlib.backbones.llava.model_config import TEXT_MODEL_OVERRIDES, inject_text_tower_config, normalize_generation_config
+from mcitlib.backbones.llava.overrides import import_llava
+
+import_llava()
 
 from llava.constants import IGNORE_INDEX, IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN
 from peft.utils import WEIGHTS_NAME, set_peft_model_state_dict

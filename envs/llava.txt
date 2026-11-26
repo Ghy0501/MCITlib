@@ -1,6 +1,7 @@
 # LLaVA environment for the nine standard methods using transformers 4.31.0.
 torch==2.0.1
 torchvision==0.15.2
+-r internvl-extra.txt
 transformers==4.31.0
 tokenizers>=0.12.1,<0.14
 sentencepiece==0.1.99
