@@ -8,14 +8,15 @@ from pathlib import Path
 from .commands import NATIVE
 from .workflow import TASKS
 
+TOWERS = {
+    "videollava": {"mm_image_tower": "LanguageBind_Image", "mm_video_tower": "LanguageBind_Video_merge"},
+    "videollama2": {"mm_vision_tower": "clip-vit-large-patch14-336"},
+}
+
 
 def template(root: Path) -> dict:
     root = root.expanduser().resolve()
     models = root / "models"
-    towers = {
-        "videollava": {"mm_image_tower": "LanguageBind_Image", "mm_video_tower": "LanguageBind_Video_merge"},
-        "videollama2": {"mm_vision_tower": "clip-vit-large-patch14-336"},
-    }
     inputs = {"train_path": "train", "test_q_path": "test_questions", "test_a_path": "test_answers",
               "router_path": "router", "replay_path": "replay"}
     return {
@@ -24,7 +25,7 @@ def template(root: Path) -> dict:
         "auxiliary_clip": str(models / "clip-vit-large-patch14-336"),
         "models": {name: {"model_view": str(models / (directory + "-7B")),
                           "conda_prefix": str(root / "envs" / name),
-                          "towers": {k: str(models / v) for k, v in towers[name].items()}}
+                          "towers": {k: str(models / v) for k, v in TOWERS[name].items()}}
                    for name, directory in NATIVE.items()},
         "tasks": {task: {mode: {key: str(root / "data" / mode / task / (value + ".json"))
                                 for key, value in inputs.items()} for mode in ("sample", "full")}

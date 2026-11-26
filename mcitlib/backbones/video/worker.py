@@ -411,6 +411,7 @@ def main():
     parser.add_argument("--backbone", required=True, choices=("videollava", "videollama2"))
     parser.add_argument("--method", default="lora_ft")
     parser.add_argument("--method-options")
+    parser.add_argument("--worker-seed", type=int, help="Seed before native model initialization or sampling")
     sub = parser.add_subparsers(dest="stage", required=True)
     preflight = sub.add_parser("doctor")
     preflight.add_argument("--base", required=True)
@@ -427,6 +428,9 @@ def main():
     replay.add_argument("--output", required=True)
     replay.add_argument("--sources", required=True)
     args, remainder = parser.parse_known_args()
+    if args.worker_seed is not None:
+        from transformers import set_seed
+        set_seed(args.worker_seed)
     if args.stage == "train":
         train(args, remainder)
     elif remainder and not all(part.startswith("--local_rank=") for part in remainder):

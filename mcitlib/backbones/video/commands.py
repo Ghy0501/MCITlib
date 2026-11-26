@@ -92,6 +92,9 @@ def lora_train_command(source, node, backbone, method, task, dataset, output, bu
             max_steps=steps, dataloader_num_workers=0, report_to="none",
             per_device_train_batch_size=1, gradient_accumulation_steps=accumulation,
         )
+        if steps == 1 and method == "lora_ft":
+            # One warmup step would leave the only optimizer update at LR zero.
+            flags.update(warmup_ratio=0, save_strategy="no")
     method_options = runtime_options
     if method == "modalprompt" and method_options is None:
         method_options = dict(task=task, tasks=budgets["num_tasks"], prefix_length=budgets["prefix_len"],
