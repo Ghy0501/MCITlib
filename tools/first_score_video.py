@@ -2,6 +2,7 @@
 # Copyright (c) 2025-2026 MCITlib authors
 """Run one observed native video LoRA update and a separate offline fixture score."""
 import argparse
+import ctypes
 import json
 import os
 import re
@@ -9,6 +10,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from uuid import UUID
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -89,19 +91,68 @@ def score(path, answers):
     return {"metric": "fixture_exact_match", "correct": correct, "total": len(rows), "accuracy": correct / len(rows)}
 
 
+ORDINAL = r"0|[1-9][0-9]*"
+GPU_UUID = r"GPU-[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}"
+
+
+def logical_gpu_uuid():
+    """Read the masked CUDA driver's logical device 0 without creating a context."""
+    driver = ctypes.CDLL("libcuda.so.1")
+
+    def check(name, *args):
+        status = getattr(driver, name)(*args)
+        if status != 0:
+            raise RuntimeError(f"Cannot resolve allocated GPU: {name} returned {status}")
+
+    count, device = ctypes.c_int(), ctypes.c_int()
+    raw = (ctypes.c_ubyte * 16)()
+    check("cuInit", 0)
+    check("cuDeviceGetCount", ctypes.byref(count))
+    if count.value != 1:
+        raise RuntimeError(f"Expected exactly one visible CUDA device, found {count.value}")
+    check("cuDeviceGet", ctypes.byref(device), 0)
+    check("cuDeviceGetUuid_v2", ctypes.byref(raw), device)
+    if not any(raw):
+        raise RuntimeError("CUDA returned an empty device UUID")
+    return "GPU-" + str(UUID(bytes=bytes(raw)))
+
+
 def free_gpu():
-    gpu = os.environ.get("CUDA_VISIBLE_DEVICES", "")
-    if not re.fullmatch(r"0|[1-9][0-9]*", gpu):
-        raise ValueError("Set CUDA_VISIBLE_DEVICES to ONE allocated physical GPU index")
-    if gpu not in os.environ.get("MCITLIB_VIDEO_GPUS", gpu).split(","):
-        raise ValueError("GPU outside MCITLIB_VIDEO_GPUS")
+    mask = os.environ.get("CUDA_VISIBLE_DEVICES", "")
+    if not re.fullmatch(ORDINAL, mask) and not re.fullmatch(GPU_UUID, mask):
+        raise ValueError("Expected exactly one inherited CUDA ordinal or full GPU UUID")
+    gpu = logical_gpu_uuid()
+    if mask.startswith("GPU-") and mask.lower() != gpu.lower():
+        raise RuntimeError("Masked CUDA device UUID does not match the allocated UUID")
+
+    # CUDA ordinals and nvidia-smi indices are different namespaces.
     query = ["nvidia-smi", "-i", gpu, "--format=csv,noheader,nounits"]
-    uuid, memory, utilization = subprocess.check_output(
-        query + ["--query-gpu=uuid,memory.used,utilization.gpu"], text=True).strip().split(",")
-    apps = subprocess.check_output(query + ["--query-compute-apps=pid"], text=True).strip()
-    if apps or int(memory) > 64 or int(utilization):
+    fields = subprocess.check_output(
+        query + ["--query-gpu=index,uuid,memory.used,utilization.gpu"], text=True, timeout=10).strip()
+    index, reported, memory, utilization = (field.strip() for field in fields.split(","))
+    if not re.fullmatch(ORDINAL, index) or reported.lower() != gpu.lower():
+        raise RuntimeError("Cannot match CUDA device UUID to a physical GPU")
+    lease = os.environ.get("MCITLIB_VIDEO_GPUS")
+    if lease is not None:
+        allowed = lease.lower().split(",")
+        if index not in allowed and gpu.lower() not in allowed:
+            raise ValueError(f"GPU {gpu} (physical index {index}) is outside the MCITLIB_VIDEO_GPUS lease")
+    apps = subprocess.check_output(query + ["--query-compute-apps=pid"], text=True, timeout=10).strip()
+    if apps or not 0 <= int(memory) <= 64 or int(utilization) != 0:
         raise RuntimeError(f"GPU {gpu} is not free; no worker launched")
-    return uuid.strip()
+    return gpu
+
+
+def worker_env(run, native):
+    env = dict(os.environ, HOME=str(run), PYTHONPATH=str(native),
+               PYTHONNOUSERSITE="1", PYTHONDONTWRITEBYTECODE="1", HF_HUB_OFFLINE="1",
+               TRANSFORMERS_OFFLINE="1", WANDB_DISABLED="true", TOKENIZERS_PARALLELISM="false")
+    for key in ("HF_HOME", "XDG_CACHE_HOME", "TRITON_CACHE_DIR", "TORCH_EXTENSIONS_DIR", "CUDA_CACHE_PATH",
+                "TMPDIR"):
+        path = run / key.lower()
+        path.mkdir()
+        env[key] = str(path)
+    return env
 
 
 def main():
@@ -127,17 +178,10 @@ def main():
         parser.error("Need at least 4 GiB free in the private scratch filesystem")
     gpu = free_gpu()
     run.mkdir(mode=0o700)
-    dump(run / "plan.json", {**plan, "gpu_uuid": gpu})
+    dump(run / "plan.json", {**plan, "gpu_uuid": gpu, "cuda_visible_devices": os.environ["CUDA_VISIBLE_DEVICES"]})
     model_view(args.backbone, models, run / (NATIVE[args.backbone] + "-7B"))
     fixture(run)
-    env = dict(os.environ, HOME=str(run), PYTHONPATH=str(native), CUDA_VISIBLE_DEVICES=gpu,
-               PYTHONNOUSERSITE="1", PYTHONDONTWRITEBYTECODE="1", HF_HUB_OFFLINE="1",
-               TRANSFORMERS_OFFLINE="1", WANDB_DISABLED="true", TOKENIZERS_PARALLELISM="false")
-    for key in ("HF_HOME", "XDG_CACHE_HOME", "TRITON_CACHE_DIR", "TORCH_EXTENSIONS_DIR", "CUDA_CACHE_PATH",
-                "TMPDIR"):
-        path = run / key.lower()
-        path.mkdir()
-        env[key] = str(path)
+    env = worker_env(run, native)
     for stage, argv in (("train", train), ("generate", infer)):
         if free_gpu() != gpu:
             raise RuntimeError("GPU assignment changed")
