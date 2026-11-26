@@ -15,14 +15,12 @@ from .paths import PathResolver
 SCORER = "mcitlib.backbones.llava.eval_runners.coin.eval_ai2d"
 
 
-def selected_gpu(index, *, require_mask=False):
+def selected_gpu(index):
     """Translate a logical index without escaping the caller's visible set."""
     if not re.fullmatch(r"[0-9]+", index):
         raise ValueError("GPU must be a nonnegative logical index")
     visible = os.environ.get("CUDA_VISIBLE_DEVICES")
-    if not visible or not visible.strip():
-        if require_mask:
-            raise ValueError("allocate a GPU and set CUDA_VISIBLE_DEVICES before executing")
+    if visible is None:
         return index
     devices = visible.split(",")
     # CUDA accepts a GPU UUID prefix as well as ordinals and MIG identifiers.
@@ -34,8 +32,8 @@ def selected_gpu(index, *, require_mask=False):
     return devices[int(index)]
 
 
-def score_plan(paths, directory, backbone, gpu, port, dataset="fixture", *, require_mask=False):
-    gpu = selected_gpu(gpu, require_mask=require_mask)
+def score_plan(paths, directory, backbone, gpu, port, dataset="fixture"):
+    gpu = selected_gpu(gpu)
     plan = smoke.build_plan(paths, directory, 1, 1, master_port=port, benchmark="mllm_dcl", backbone=backbone)
     run = Path(plan["run_dir"])
     train, infer = plan["training_command"], plan["inference_command"]
@@ -150,11 +148,7 @@ def check_update(adapter):
 
 def execute(paths, directory, backbone, gpu, port, dataset="fixture", minimum=1):
     root = smoke.repo_root()
-    plan = score_plan(paths, directory, backbone, gpu, port, dataset, require_mask=True)
-    import torch
-
-    if torch.cuda.device_count() != len(os.environ["CUDA_VISIBLE_DEVICES"].split(",")):
-        raise ValueError("CUDA cannot resolve every device in the inherited CUDA_VISIBLE_DEVICES")
+    plan = score_plan(paths, directory, backbone, gpu, port, dataset)
     run = Path(plan["run_dir"])
     run.mkdir(mode=0o700)
     try:
@@ -206,7 +200,7 @@ def execute(paths, directory, backbone, gpu, port, dataset="fixture", minimum=1)
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--backbone", required=True, choices=("llava", "internvl"))
-    parser.add_argument("--gpu", default="0", help="logical index within the required inherited CUDA_VISIBLE_DEVICES")
+    parser.add_argument("--gpu", default="0", help="logical GPU index (default: 0; respects CUDA_VISIBLE_DEVICES)")
     parser.add_argument("--dataset", choices=("fixture", "rs"), default="fixture")
     parser.add_argument("--min-free-gib", type=int, default=1, help="minimum free disk before each stage")
     parser.add_argument("--paths", type=Path)

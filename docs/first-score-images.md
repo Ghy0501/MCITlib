@@ -19,18 +19,9 @@ repository's Apache-2.0 license. The model weights have their own upstream terms
    python tools/public_models.py llava internvl --root "$MODEL_ROOT" --download
    ```
 
-2. **Allocate a GPU first.** In the allocated shell, keep the scheduler's
-   `CUDA_VISIBLE_DEVICES` unchanged. On a personally managed host, explicitly
-   export the mask for the device(s) reserved for you; do not pick devices from
-   another job. The helper does not allocate devices. In the **image training
-   environment**, run the commands below from the checkout.
-   For InternVL, also install its extra dependency in that environment before running:
-   `python -m pip install -r envs/internvl-extra.txt`. Use one allocated Ampere-class
-   GPU per run. Keep several GiB free in the checkout for outputs and build caches,
-   plus room for the model downloads. Loading full-size weights also needs host RAM.
+2. In the image training environment, run one of the following from the checkout. Use `--gpu` to choose a device if needed.
 
    ```bash
-   : "${CUDA_VISIBLE_DEVICES:?Allocate a GPU and export its assigned mask first}"
    export MCITLIB_MODEL_ROOT="$HOME/mcit-runtime/models"
    mkdir -p logs
    python -m mcitlib.smoke_images --backbone llava --gpu 0 --port 29521 \
@@ -40,14 +31,7 @@ repository's Apache-2.0 license. The model weights have their own upstream terms
    ```
 
    These commands **execute**, not preview. Use an unused port and a **new**
-   run directory each time. GPU numbers are logical indices within the allocation:
-   if your scheduler sets `CUDA_VISIBLE_DEVICES=4,7`, `--gpu 1` uses device 7
-   in the inherited CUDA order. Execution rejects absent, empty or malformed
-   masks, masks CUDA cannot resolve, and out-of-range indices before writing
-   outputs or starting workers.
-   Read-only plan construction does not need an allocation. The public CLI does not require
-   a particular lock file, GPU pair or scheduler. `--min-free-gib N` sets a disk
-   floor checked at stage boundaries.
+   run directory each time. Output stays under the checkout's `logs/` directory.
 
 The trainer sees a red square and its answer. The inference process gets a blue
 square and only the question, not the answer. Both use the shared backbone-specific

@@ -11,8 +11,7 @@ valid smoke result; this is **not a benchmark or a test of learning quality**.
 From the release checkout on Linux x86_64, pick **one** worker and install its
 [pinned environment and CUDA build prerequisites](video-runtime.md#install-the-runtimes).
 Skip the other worker and the judge. The native stacks are different; don't mix
-their Torch, Transformers or PEFT packages. Use one exclusively allocated
-40 GB A100 or equivalent supported BF16 device, host RAM for the 7B model
+their Torch, Transformers or PEFT packages. Use a BF16-capable GPU, sufficient host RAM for the 7B model
 and a private scratch filesystem with at least 4 GiB free **after** provisioning
 models and the environment. Model downloads are much larger than the fixture;
 see the [download setup and size estimates](public-start.md#2-get-just-the-models-you-need).
@@ -50,25 +49,12 @@ export OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 MAX_JOBS=1
 RUN="$(mktemp -d "$RUNTIME_ROOT/first-score.XXXXXXXX")/$BACKBONE"
 args=("$BACKBONE" --sources "$SOURCES" --models "$MODELS" --run-dir "$RUN")
 python -B tools/first_score_video.py "${args[@]}" --plan
-# Run inside a single-GPU allocation. Leave the scheduler's mask and order intact.
-: "${CUDA_VISIBLE_DEVICES:?A single allocated CUDA ordinal or full GPU UUID is required}"
 python -B tools/first_score_video.py "${args[@]}"
 cat "$RUN/predictions.jsonl" "$RUN/fixture-score.json"
 ```
 
 The plan needs no GPU or weights. Execution requires a new run directory; a
-failed attempt is left intact. Train and inference inherit the original
-`CUDA_VISIBLE_DEVICES` and `CUDA_DEVICE_ORDER` unchanged. A numeric mask is a
-**CUDA ordinal**, not necessarily an `nvidia-smi` index. Before each worker,
-the runner requires exactly one device from the CUDA driver, reads logical
-device 0's UUID, and queries `nvidia-smi` **by that UUID** for occupancy.
-If `MCITLIB_VIDEO_GPUS` is set, its comma-separated entries are physical
-`nvidia-smi` indices or full GPU UUIDs; the resolved device must be on that list.
-Missing or multi-device masks, abbreviated UUIDs, MIG masks and unresolvable
-identities are rejected. There is no fallback to GPU 0. The check does not
-reserve a GPU; keep your site's allocation/lock throughout.
-Build tools and the CUDA toolkit must
-be on the worker's path; set `CUDA_HOME`, `CC` and `CXX` as required on your host.
+failed attempt is left intact. The runner uses your CUDA environment. Build tools and the CUDA toolkit must be on the worker's path; set `CUDA_HOME`, `CC` and `CXX` as required on your host.
 
 ## What to inspect
 
@@ -96,11 +82,6 @@ the saved states in FP16 and emitted exactly one row for `eval-blue`.
 | --- | --- | --- | --- | --- |
 | Video-LLaVA | 1 / 0.0799 | 224 / 4 | 20,142,861 / 41,961,191 | `Blue` / 1 of 1 |
 | VideoLLaMA2 | 1 / 6.8199 | 224 / 85 | 21,126,346 / 978,416,652 | `Blue` / 1 of 1 |
-
-An identity-only recheck under the original `PCI_BUS_ID` ordering matched both
-run UUIDs using their numeric masks and full UUID masks. In each case a fresh
-worker saw exactly one device at the corresponding PCI address; no retraining
-was required. This does not imply ordinal and management order match on other hosts.
 
 These are receipts for this fixture, not acceptance thresholds. They verify
 the native path with already provisioned environments and weights, not a fresh

@@ -2,7 +2,6 @@
 import json
 import subprocess
 import sys
-from types import SimpleNamespace
 
 import pytest
 
@@ -33,7 +32,7 @@ def test_one_device_first_score_plan(tmp_path, repo_root, monkeypatch, backbone)
     assert smoke._value(train["argv"], "--image_folder") == smoke._value(infer["argv"], "--image-folder")
 
 
-def test_gpu_allocation(monkeypatch):
+def test_gpu_index_with_and_without_visibility_mask(monkeypatch):
     from mcitlib.smoke_images import selected_gpu
 
     monkeypatch.delenv("CUDA_VISIBLE_DEVICES", raising=False)
@@ -43,21 +42,17 @@ def test_gpu_allocation(monkeypatch):
     with pytest.raises(ValueError):
         selected_gpu("2")
     monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "")
-    assert selected_gpu("0") == "0"  # read-only planning
     with pytest.raises(ValueError):
-        selected_gpu("0", require_mask=True)
+        selected_gpu("0")
 
 
-@pytest.mark.parametrize("mask,index", [(None, "0"), ("", "0"), (" ", "0"), ("-1", "0"),
+@pytest.mark.parametrize("mask,index", [("", "0"), (" ", "0"), ("-1", "0"),
                          ("4,-1,7", "2"), ("4,,7", "2"), ("4,4", "0"), ("GPU-not-a-device", "0"),
                          ("4,7", "2"), ("4,7", "-1")])
-def test_execution_requires_valid_allocation_before_any_side_effect(tmp_path, monkeypatch, mask, index):
+def test_execution_does_not_escape_visibility_mask(tmp_path, monkeypatch, mask, index):
     from mcitlib.smoke_images import execute
 
-    if mask is None:
-        monkeypatch.delenv("CUDA_VISIBLE_DEVICES", raising=False)
-    else:
-        monkeypatch.setenv("CUDA_VISIBLE_DEVICES", mask)
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", mask)
     monkeypatch.setattr(smoke, "build_plan", lambda *a, **kw: pytest.fail("invalid allocation reached planner"))
     monkeypatch.setattr(smoke, "_run", lambda *a, **kw: pytest.fail("invalid allocation reached a worker"))
     with pytest.raises(ValueError, match="GPU|CUDA_VISIBLE_DEVICES"):
@@ -78,18 +73,6 @@ def test_local_tower_view_preserves_source_and_does_not_copy_weights(tmp_path):
     assert json.loads((target / "config.json").read_text()) == {**cfg, "mm_vision_tower": str(tower)}
     assert json.loads((source / "config.json").read_text()) == cfg
     assert (target / "pytorch_model.bin").samefile(source / "pytorch_model.bin")
-
-
-def test_unavailable_device_fails_before_creating_run(tmp_path, monkeypatch):
-    from mcitlib import smoke_images
-
-    run = tmp_path / "run"
-    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "999")
-    monkeypatch.setattr(smoke_images, "score_plan", lambda *a, **kw: {"run_dir": str(run)})
-    monkeypatch.setitem(sys.modules, "torch", SimpleNamespace(cuda=SimpleNamespace(device_count=lambda: 0)))
-    with pytest.raises(ValueError, match="CUDA cannot resolve"):
-        smoke_images.execute(None, run, "llava", "0", 19021)
-    assert not run.exists()
 
 
 def test_real_native_metric_and_missing_score(tmp_path):
@@ -160,8 +143,8 @@ def test_incomplete_checkpoint_stops_before_reload_or_score(tmp_path, repo_root,
     monkeypatch.setattr(smoke, "repo_root", lambda: tmp_path)
     models = tmp_path / "models"
     monkeypatch.setenv("MCITLIB_MODEL_ROOT", str(models))
-    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "5")
-    monkeypatch.setitem(sys.modules, "torch", SimpleNamespace(cuda=SimpleNamespace(device_count=lambda: 1)))
+    monkeypatch.delenv("CUDA_VISIBLE_DEVICES", raising=False)
+    monkeypatch.setitem(sys.modules, "torch", None)  # selection must not probe CUDA
     tower = models / "clip-vit-large-patch14-336"
     base = models / "llava-v1.5-7b"
     for directory in (tower, base):

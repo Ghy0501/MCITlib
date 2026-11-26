@@ -96,11 +96,10 @@ The domain order is `counting, space, traffic, movie, gui, science, sports, star
 
 ## Start the judge first
 
-In a second shell on the **same host**, set the same `RUNTIME_ROOT`, `RESULTS_ROOT` and `JUDGE_MODEL` as above. Allocate GPUs separate from the workers (the IDs below are examples); do not override a scheduler allocation. The historical judge model is **Qwen3-30B-A3B-Instruct-2507**. Provide the complete local checkpoint and tokenizer with chat template.
+In a second shell on the **same host**, set the same `RUNTIME_ROOT`, `RESULTS_ROOT` and `JUDGE_MODEL` as above. The historical judge model is **Qwen3-30B-A3B-Instruct-2507**. Provide the complete local checkpoint and tokenizer with chat template.
 
 ```bash
 conda activate "$RUNTIME_ROOT/envs/video-judge"
-: "${CUDA_VISIBLE_DEVICES:?Use a separate judge allocation and its inherited mask}"
 python -m mcitlib.backbones.video.judge_service \
   --runtime-root "$RUNTIME_ROOT" --results-root "$RESULTS_ROOT" \
   --model-path "$JUDGE_MODEL"
@@ -112,15 +111,12 @@ Wait for **`judge_ready`**, not just the existence of `control/judge.sock`. Leav
 
 In the worker shell, choose one backbone and activate its matching prefix. Run the block once per desired backbone; the shared run ID below is safe across the two because outputs include the backbone name.
 
-The full benchmark launcher currently accepts numeric GPU masks only (1, 2 or 4 distinct IDs). If your site assigns GPU UUIDs or MIG slices, do not replace that mask with guessed host indices: use a supported allocation for the benchmark. The dedicated first-score example has its own single-device interface.
-
 ```bash
 BACKBONE=videollava       # or: BACKBONE=videollama2
 conda activate "$RUNTIME_ROOT/envs/$BACKBONE"
 RUN=first-sample
-: "${CUDA_VISIBLE_DEVICES:?Use the worker allocation, separate from the judge}"
 common=(--backbone "$BACKBONE" --method lora_ft --benchmark cl_vista
-        --video-node "$NODE" --video-run-id "$RUN" --gpus "$CUDA_VISIBLE_DEVICES")
+        --video-node "$NODE" --video-run-id "$RUN" --gpus "${CUDA_VISIBLE_DEVICES:?Set the worker GPU IDs}")
 
 # Inspect the plan without loading weights. The next two commands DO use GPUs.
 mcitlib train "${common[@]}" --video-mode sample --task 1 --dry-run
@@ -134,7 +130,7 @@ mcitlib train "${common[@]}" --video-mode sample --task 1
 mcitlib train "${common[@]}" --video-mode full --dry-run
 ```
 
-For a new sample sequence, select `--method pclr` or `--method octopus` in place of `--method lora_ft`. The executed LoRA-FT and PCLR sample training used four worker GPUs with 16 accumulation steps; Octopus used two with 32 steps. All used microbatch 1 and effective batch 64, with separate judge GPUs. Choose 1, 2 or 4 distinct physical worker IDs within your allocation; `--gpus` needs no lease wrapper. Full budgets can require a specific GPU count. MR-LoRA needs **two** GPUs, the whole plan (no `--task` or standalone `eval`), and all expert/router inputs; its expert pool is retrospective.
+For a new sample sequence, select `--method pclr` or `--method octopus` in place of `--method lora_ft`. The executed LoRA-FT and PCLR sample training used four worker GPUs with 16 accumulation steps; Octopus used two with 32 steps. All used microbatch 1 and effective batch 64, with separate judge GPUs. Full budgets can require a specific GPU count. MR-LoRA needs **two** GPUs, the whole plan (no `--task` or standalone `eval`), and all expert/router inputs; its expert pool is retrospective.
 
 ### Inference from a saved checkpoint
 
