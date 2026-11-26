@@ -1,0 +1,12 @@
+# Local Qwen3 judge, Linux x86_64, Python 3.10.18. Not a worker environment.
+# Install Torch from the cu118 index first. The reference environment also
+# contained flash-attn 2.7.3; needed only when selecting that attention backend.
+torch==2.6.0+cu118
+transformers==4.57.6
+accelerate==1.14.0
+tokenizers==0.22.2
+huggingface-hub==0.36.2
+safetensors==0.8.0
+sentencepiece==0.2.1
+numpy==2.2.6
+PyYAML==6.0.3

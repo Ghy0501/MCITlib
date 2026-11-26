@@ -704,6 +704,10 @@ class _Step:
         cwd = cwd if cwd.is_absolute() else repo_root / cwd
         # Vendored llava/peft always come first, whatever the user's environment holds.
         env = process_env(command.env, repo_root)
+        if command.metadata.get("native_video"):
+            # Native video packages select their own PEFT/Transformers ABI.
+            env["PYTHONPATH"] = command.env["PYTHONPATH"]
+            env["PYTHONNOUSERSITE"] = "1"
         if physical_include and "CUDA_VISIBLE_DEVICES" not in command.env:
             env.pop("CUDA_VISIBLE_DEVICES", None)
         env["PATH"] = str(Path(sys.executable).parent) + os.pathsep + env.get("PATH", "")

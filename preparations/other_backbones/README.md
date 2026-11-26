@@ -2,7 +2,7 @@
 
 Backbone implementations follow the [shared method contract](../../docs/llava_implementation.md), including OLoRA non-reentrant checkpoint execution, DISCO/HiDe persistent statistics and request-scoped inference optimization, fresh-rank registration, and target-specific shapes/layers. The executable InternVL integration is described in the [InternVL guide](../../docs/internvl.md) and [sample queue](../../docs/internvl_sample_validation.md). Video backbone execution remains outside this preparation package.
 
-This package prepares data and JSON configuration inventories for InternVL, Video-LLaVA and VideoLLaMA2. Its tools generate offline inputs; they do not load models, start GPU work, install packages or establish reproduction results. Run InternVL through the unified project CLI and sample queue. Video-LLaVA and VideoLLaMA2 execution still requires backbone integration and validation.
+This package prepares data and JSON configuration inventories for InternVL, Video-LLaVA and VideoLLaMA2. Its tools generate offline inputs; they do not load models, start GPU work, install packages or establish reproduction results. For actual video training, inference, scoring and current validation coverage see the [CL-VISTA runtime guide](../../docs/video-runtime.md). The inventory below describes the earlier preparation stage, not the runtime support matrix.
 
 The generated inventory covers 35 backbone/method combinations: 12 InternVL, 12 Video-LLaVA and 11 VideoLLaMA2. InternVL has UCIT and MLLM-DCL variants, so the inventory contains 47 benchmark variants. MLLM-ACL is outside the sample recipe. Video CL-VISTA follows counting, space, traffic, movie, GUI, science, sports and STAR: eight tasks and 36 lower-triangular evaluation cells.
 

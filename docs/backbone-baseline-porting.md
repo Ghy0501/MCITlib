@@ -1,5 +1,7 @@
 # 新 backbone / VideoLLM 的 baseline 接入约定
 
+本文保留接入时的验收约定；两个视频模型的当前交付状态以 [CL-VISTA 运行指南](video-runtime.md) 为准。
+
 目的：把全部 baselines 历次集成中可预防的失败前移，复用已有实现和证据，避免每个模型重新搭建验证系统。统一覆盖 registry 中全部 17 个方法，不再按新旧分组。当前后续目标是 Video-LLaVA、VideoLLaMA2，共 34 个方法/模型组合；缺实现或资源阻塞仍列入目标。
 
 先看 [全部方法集成复核与迁移矩阵](all-baselines-integration.md) 和 [机器可读目标清单](baseline-porting-matrix.json)。这些是 2026-11-17 的已审查快照；开始新任务时与实际 registry 对账，不把静态清单当作永久完整列表。

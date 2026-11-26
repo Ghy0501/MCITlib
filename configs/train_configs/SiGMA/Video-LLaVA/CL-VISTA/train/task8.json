@@ -1,0 +1,11 @@
+{
+  "gpu_num": 2,
+  "rank": 16,
+  "lora_alpha": 32,
+  "expert_num": 8,
+  "cur_task": 7,
+  "epoch": 1,
+  "batch_size": 4,
+  "grad_acc": 2,
+  "lr": 0.0002
+}

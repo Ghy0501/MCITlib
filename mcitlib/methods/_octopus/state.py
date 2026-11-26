@@ -19,13 +19,15 @@ def digest(path: Path) -> str:
 
 
 def _validate_order(output: Path, history: list[Path]) -> None:
-    pattern = re.compile(r"Task(\d+)_llava_lora$")
+    pattern = re.compile(r"Task(\d+)_(llava|videollava|videollama2)_lora$")
     match = pattern.fullmatch(output.name)
     if match is None or int(match.group(1)) != len(history) + 1:
         raise ValueError('Octopus current task is inconsistent with history length')
+    backbone = match.group(2)
     for index, path in enumerate(history, 1):
         match = pattern.fullmatch(path.name)
-        if match is None or int(match.group(1)) != index or path.parent.resolve() != output.parent.resolve():
+        if (match is None or int(match.group(1)) != index or match.group(2) != backbone or
+                path.parent.resolve() != output.parent.resolve()):
             raise ValueError('Octopus history must be contiguous and chronological')
 
 

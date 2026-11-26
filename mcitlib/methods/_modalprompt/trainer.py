@@ -97,6 +97,28 @@ class ModalPromptTrainer(LLaVATrainer):
         # then perform forward and backward. No low-precision sync is added.
         model.train()
         inputs = self._prepare_inputs(inputs)
+        self.restore_embedding_master(model)
+        if is_sagemaker_mp_enabled():
+            from transformers.trainer import smp_forward_backward
+
+            loss_mb = smp_forward_backward(model, inputs, self.args.gradient_accumulation_steps)
+            return loss_mb.reduce_mean().detach().to(self.args.device)
+        with self.compute_loss_context_manager():
+            loss = self.compute_loss(model, inputs)
+        if self.args.n_gpu > 1:
+            loss = loss.mean()
+        if self.do_grad_scaling:
+            self.scaler.scale(loss).backward()
+        elif self.use_apex:
+            from apex import amp
+
+            with amp.scale_loss(loss, self.optimizer) as scaled_loss:
+                scaled_loss.backward()
+        else:
+            self.accelerator.backward(loss)
+        return loss.detach() / self.args.gradient_accumulation_steps
+
+    def restore_embedding_master(self, model):
         mask = self.model.embed_tokens_mask_1d
         for name, weight in model.named_parameters():
             if "embed_tokens.weight" not in name:
@@ -134,23 +156,3 @@ class ModalPromptTrainer(LLaVATrainer):
                     weight.copy_(old * (1 - expanded) + weight * expanded)
             else:
                 raise RuntimeError("ModalPrompt requires a DeepSpeed FP32 master parameter")
-
-        if is_sagemaker_mp_enabled():
-            from transformers.trainer import smp_forward_backward
-
-            loss_mb = smp_forward_backward(model, inputs, self.args.gradient_accumulation_steps)
-            return loss_mb.reduce_mean().detach().to(self.args.device)
-        with self.compute_loss_context_manager():
-            loss = self.compute_loss(model, inputs)
-        if self.args.n_gpu > 1:
-            loss = loss.mean()
-        if self.do_grad_scaling:
-            self.scaler.scale(loss).backward()
-        elif self.use_apex:
-            from apex import amp
-
-            with amp.scale_loss(loss, self.optimizer) as scaled_loss:
-                scaled_loss.backward()
-        else:
-            self.accelerator.backward(loss)
-        return loss.detach() / self.args.gradient_accumulation_steps

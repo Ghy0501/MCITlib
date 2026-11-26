@@ -1,0 +1,9 @@
+{
+  "component": "Video-LLaVA",
+  "files": {
+    "SOURCES.json": "217509372ed48d6a7dfe7b3ca0087d1168ad6c7a94e8dc778d17938745f530c9",
+    "runtime.diff": "b94901d4aa3561ced5b5727d31378a1134fd72fc3c9049e7032b504037fda615"
+  },
+  "schema_version": 1,
+  "upstream_commit": "a3a622c9beb690e84c2923785279f179a6aac07e"
+}

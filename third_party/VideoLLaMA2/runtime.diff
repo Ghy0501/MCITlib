@@ -1,0 +1,41 @@
+--- a/videollama2/eval/inference_video_qa_router.py
++++ b/videollama2/eval/inference_video_qa_router.py
+@@ -12 +11,0 @@
+-sys.path.append('./')
+--- a/videollama2/model/__init__.py
++++ b/videollama2/model/__init__.py
+@@ -48 +48 @@
+-def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, load_4bit=False, device_map="auto", device="cuda", use_flash_attn=False, **kwargs):
++def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, load_4bit=False, device_map="auto", device="cuda", use_flash_attn=False, merge_adapter=True, **kwargs):
+@@ -135,2 +135,3 @@
+-        print('Merging LoRA weights...')
+-        model = model.merge_and_unload()
++        if merge_adapter:
++            print('Merging LoRA weights...')
++            model = model.merge_and_unload()
+--- a/videollama2/train.py
++++ b/videollama2/train.py
+@@ -37 +36,0 @@
+-sys.path.append('/your_path/MCITlib_v3/VideoLLaMA2/LoRA-FT/')
+@@ -426 +425 @@
+-def train(attn_implementation=None):
++def train(attn_implementation=None, method_hooks=None):
+@@ -514 +513,2 @@
+-        model = get_peft_model(model, lora_config)
++        build_adapter = method_hooks.build if method_hooks is not None else get_peft_model
++        model = build_adapter(model, lora_config)
+@@ -582,0 +583,4 @@
++    if getattr(method_hooks, "method", None) in {"pclr", "modalprompt"}:
++        method_hooks.run(model, tokenizer, data_args, training_args, model_args.previous_task_model_path)
++        return
++
+@@ -586,0 +591,3 @@
++    if hasattr(method_hooks, "install_video_prior"):
++        method_hooks.install_video_prior(tokenizer, model_args.previous_task_model_path, training_args.local_rank)
++
+@@ -588,0 +596,2 @@
++    if hasattr(method_hooks, "wrap_data"):
++        data_module = method_hooks.wrap_data(data_module, data_args)
+@@ -594,0 +604,2 @@
++    if hasattr(method_hooks, "before_checkpoint"):
++        method_hooks.before_checkpoint(model)

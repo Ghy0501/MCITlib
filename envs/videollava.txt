@@ -1,0 +1,31 @@
+# Video-LLaVA worker, Linux x86_64, Python 3.10.19.
+# Install Torch from the cu117 index first; install flash-attn 2.6.3 separately.
+# See docs/video-runtime.md for installation order and native build prerequisites.
+torch==2.0.1+cu117
+torchvision==0.15.2+cu117
+transformers==4.31.0
+tokenizers==0.13.3
+huggingface-hub==0.36.0
+safetensors==0.6.2
+accelerate==0.21.0
+peft==0.4.0
+deepspeed==0.13.1
+bitsandbytes==0.41.0
+sentencepiece==0.1.99
+numpy==1.26.4
+scipy==1.15.3
+scikit-learn==1.2.2
+decord==0.6.0
+opencv-python==4.8.1.78
+pytorchvideo==0.1.5
+av==16.0.1
+Pillow==12.0.0
+timm==0.6.13
+einops==0.6.1
+einops-exts==0.0.4
+tensorboardX==2.6.2.2
+pydantic==1.10.24
+protobuf==6.33.0
+tqdm==4.67.1
+shortuuid==1.0.13
+PyYAML==6.0.3

@@ -10,14 +10,14 @@ from pathlib import Path
 from mcitlib.cli import main
 from mcitlib.config.loader import deep_merge
 from mcitlib.paths import PathResolver
-from mcitlib.registry import BENCHMARKS, METHODS, get_method, matrix
+from mcitlib.registry import BENCHMARKS, METHODS, VIDEO_BACKBONES, VIDEO_METHODS, get_method, matrix
 
 
 def test_registry_aliases_and_matrix() -> None:
     assert get_method("RegLoRA").id == "sefe"
     assert get_method("O-LoRA").id == "olora"
     rows = list(matrix())
-    assert len(rows) == len(METHODS) * 4 * len(BENCHMARKS)
+    assert len(rows) == len(METHODS) * (2 * len(BENCHMARKS) + len(VIDEO_BACKBONES))
     llava_rows = [row for row in rows if row["backbone"] == "llava"]
     assert len(llava_rows) == 51
     new_methods = {"pclr", "same", "sigma", "dgg", "octopus"}
@@ -28,7 +28,9 @@ def test_registry_aliases_and_matrix() -> None:
         (method.id, benchmark) for method in METHODS if method.id not in new_methods
         for benchmark in ("ucit", "mllm_dcl")
     }
-    assert all(not row["supported"] for row in rows if row["backbone"] in {"videollava", "videollama2"})
+    videos = [row for row in rows if row["backbone"] in VIDEO_BACKBONES]
+    assert len(videos) == 34 and {row["benchmark"] for row in videos} == {"cl_vista"}
+    assert {row["method"] for row in videos if row["supported"]} == VIDEO_METHODS
 
 
 def test_deep_merge_does_not_mutate_base() -> None:

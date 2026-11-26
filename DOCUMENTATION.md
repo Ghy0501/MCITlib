@@ -3,6 +3,7 @@
 | Topic | Guide |
 | --- | --- |
 | Installation, paths, and basic commands | [README](README.md) |
+| CL-VISTA: Video-LLaVA and VideoLLaMA2 installation, binding, training, inference, scoring, and evidence | [Video runtime](docs/video-runtime.md) |
 | InternVL model and method behavior | [InternVL implementation](docs/internvl.md) |
 | InternVL four-GPU sample queue | [InternVL sample validation](docs/internvl_sample_validation.md) |
 | Configuration templates and precedence | [Configuration](docs/configuration.md) |

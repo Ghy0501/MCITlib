@@ -97,7 +97,8 @@ def supervised_token_counts(model, batch):
     return result
 
 
-def collect_mean(model, dataloader, device, microbatch):
+def collect_mean(model, dataloader, device, microbatch, *,
+                 count_tokens=supervised_token_counts, move_batch=_move_batch, offload_activations=False):
     """Mean one full-model gradient per logical batch, offloading to CPU.
 
     The V4 loader may split a logical batch to fit memory. Each microbatch loss
@@ -111,7 +112,7 @@ def collect_mean(model, dataloader, device, microbatch):
     count = 0
     for batch in dataloader:
         labels = batch['labels']
-        weights = supervised_token_counts(model, batch)
+        weights = count_tokens(model, batch)
         denominator = sum(weights)
         if denominator <= 0:
             raise ValueError('GPWC logical batch has no supervised tokens')
@@ -121,10 +122,16 @@ def collect_mean(model, dataloader, device, microbatch):
             stop = min(size, start + microbatch)
             part = {key: value[start:stop] if torch.is_tensor(value) or isinstance(value, list) else value
                     for key, value in batch.items()}
-            part = _move_batch(part, device)
+            part = move_batch(part, device)
             weight = sum(weights[start:stop]) / denominator
             if weight:
-                (model(**part).loss * weight).backward()
+                from contextlib import nullcontext
+                context = torch.autograd.graph.save_on_cpu(pin_memory=True) if offload_activations else nullcontext()
+                with context:
+                    loss = model(**part).loss
+                if not torch.isfinite(loss):
+                    raise ValueError("GPWC encountered non-finite language loss")
+                (loss * weight).backward()
         count += 1
         for name, parameter in model.named_parameters():
             if parameter.grad is None:

@@ -1,0 +1,32 @@
+# VideoLLaMA2 worker, Linux x86_64, Python 3.10.18.
+# Install Torch from the cu118 index first; install flash-attn 2.5.8 separately.
+# See docs/video-runtime.md. Do not layer this over the Video-LLaVA environment.
+torch==2.2.0+cu118
+torchvision==0.17.0+cu118
+torchaudio==2.2.0+cu118
+transformers==4.40.0
+tokenizers==0.19.1
+huggingface-hub==0.23.4
+safetensors==0.7.0
+accelerate==0.26.1
+peft==0.4.0
+deepspeed==0.13.1
+bitsandbytes==0.43.0
+sentencepiece==0.1.99
+numpy==1.24.4
+scipy==1.15.3
+scikit-learn==1.2.2
+decord==0.6.0
+opencv-python==4.6.0.66
+imageio==2.34.0
+imageio-ffmpeg==0.4.9
+Pillow==10.4.0
+timm==1.0.3
+einops==0.6.1
+einops-exts==0.0.4
+tensorboard==2.20.0
+pydantic==2.12.5
+protobuf==6.33.4
+tqdm==4.67.1
+shortuuid==1.0.13
+PyYAML==6.0.3

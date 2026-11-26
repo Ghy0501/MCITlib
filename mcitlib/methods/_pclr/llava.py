@@ -112,7 +112,7 @@ def make_data(tokenizer, data_args):
 
 
 @torch.no_grad()
-def task_initial_query(base, data, batch_size, device):
+def task_initial_query(base, data, batch_size, device, *, query=queries, move_media=None):
     """Deterministic full-task mean; the release's precomputed key files are unavailable."""
     loader = DataLoader(data['train_dataset'], batch_size=batch_size, shuffle=False,
                         collate_fn=data['data_collator'], num_workers=0)
@@ -120,8 +120,8 @@ def task_initial_query(base, data, batch_size, device):
     for batch in loader:
         images = batch.get('images')
         if images is not None:
-            images = images.to(device)
-        text, vision = queries(base, batch['instruction_ids'].to(device), batch['instruction_mask'].to(device),
+            images = images.to(device) if move_media is None else move_media(images, device)
+        text, vision = query(base, batch['instruction_ids'].to(device), batch['instruction_mask'].to(device),
                                images, batch['has_image'])
         total_text = text.float().sum(0) if total_text is None else total_text + text.float().sum(0)
         total_vision = vision.float().sum(0) if total_vision is None else total_vision + vision.float().sum(0)
@@ -132,9 +132,10 @@ def task_initial_query(base, data, batch_size, device):
 
 
 class RoutedLlava(nn.Module):
-    def __init__(self, pool, stage='learn'):
+    def __init__(self, pool, stage='learn', query=queries):
         super().__init__()
         self.pool, self.stage = pool, stage
+        self.query = query
         self.config = pool.base.config
         self.register_buffer('probability', torch.ones(len(pool.task_text), device=pool.task_text.device))
 
@@ -156,7 +157,7 @@ class RoutedLlava(nn.Module):
         base = self.pool.base
         args = dict(input_ids=input_ids, attention_mask=attention_mask, images=images, **kwargs)
         if self.stage == 'learn':
-            text, vision = queries(base, instruction_ids, instruction_mask, images, has_image)
+            text, vision = self.query(base, instruction_ids, instruction_mask, images, has_image)
             self.pool.set_query(text, vision, 'new')
             output = base(labels=labels, **args)
             return {'loss': output.loss + self.pool.config.query_weight * self.pool.alignment_loss(),
@@ -194,7 +195,7 @@ class RoutedLlava(nn.Module):
         if instruction_ids is None:
             raise ValueError("PCLR generation requires plain instruction_ids")
         mask = torch.ones_like(instruction_ids, dtype=torch.bool)
-        text, vision = queries(self.pool.base, instruction_ids, mask, images)
+        text, vision = self.query(self.pool.base, instruction_ids, mask, images)
         part = 'new'
         if len(self.pool.task_text) and next(iter(self.pool.groups.values())).new_text.shape[0]:
             score = text.to(self.pool.task_text.dtype) @ self.pool.task_text.T + vision.to(self.pool.task_vision.dtype) @ self.pool.task_vision.T
@@ -204,8 +205,9 @@ class RoutedLlava(nn.Module):
         return self.pool.base.generate(inputs, images=images, **kwargs)
 
 
-def run(base, tokenizer, data_args, training_args, previous):
-    from ...backbones.llava.trainer import LLaVATrainer
+def run(base, tokenizer, data_args, training_args, previous, *, video=None):
+    if video is None:
+        from ...backbones.llava.trainer import LLaVATrainer
     stage = os.environ.get('MCITLIB_PCLR_STAGE', 'learn')
     task_id = int(os.environ['MCITLIB_PCLR_TASK_ID'])
     if task_id < 1:
@@ -213,7 +215,7 @@ def run(base, tokenizer, data_args, training_args, previous):
     device = training_args.device
     dtype = torch.bfloat16 if training_args.bf16 else torch.float16 if training_args.fp16 else torch.float32
     prepare_base_precision(base, device, dtype)
-    data = make_data(tokenizer, data_args)
+    data = make_data(tokenizer, data_args) if video is None else video.make_data(tokenizer, data_args)
     options = json.loads(os.environ.get('MCITLIB_PCLR_OPTIONS', '{}'))
     if set(options) - {'new_rank', 'top_rank', 'alpha', 'share_rank', 'skip_interval'}:
         raise ValueError('unknown PCLR pool setting')
@@ -237,11 +239,15 @@ def run(base, tokenizer, data_args, training_args, previous):
     else:
         if stage != 'learn' or task_id != 1:
             raise ValueError("PCLR continuation or integration requires a prior checkpoint")
-        pool = RankPool(base, target_groups(base), PoolConfig(base.config.hidden_size, base.get_vision_tower().hidden_size,
-                                                             **options))
+        targets, tower = ((target_groups(base), base.get_vision_tower()) if video is None
+                          else (video.targets(base), video.tower(base)))
+        pool = RankPool(base, targets, PoolConfig(base.config.hidden_size, tower.hidden_size, **options))
         phase = None
     if stage == 'learn':
-        text, vision, count = task_initial_query(base, data, max(1, training_args.per_device_train_batch_size), device)
+        query_options = {} if video is None else {"query": video.query, "move_media": video.move_media}
+        text, vision, count = task_initial_query(
+            base, data, max(1, training_args.per_device_train_batch_size), device, **query_options,
+        )
         if previous:
             pool.begin_task(text, vision)
         else:
@@ -255,8 +261,9 @@ def run(base, tokenizer, data_args, training_args, previous):
         pool.compress(split)
     else:
         raise ValueError(f"invalid PCLR stage {stage}")
-    model = RoutedLlava(pool, stage)
-    trainer = LLaVATrainer(model=model, tokenizer=tokenizer, args=training_args, **data)
+    model = RoutedLlava(pool, stage, query=queries if video is None else video.query)
+    trainer_class = LLaVATrainer if video is None else video.trainer
+    trainer = trainer_class(model=model, tokenizer=tokenizer, args=training_args, **data)
     trainer.train()
     trainer.save_state()
     if stage == 'learn':

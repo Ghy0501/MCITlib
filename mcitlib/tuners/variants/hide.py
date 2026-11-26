@@ -30,6 +30,7 @@ from ..mcit_expert_lora import (
 @dataclass
 class MCITHiDeLoraConfig(MCITExpertLoraConfig):
     cur_task: int = field(default=4)
+    video_top_k: int | None = None
 
     def __post_init__(self):
         self.peft_type = PeftType.MOE_LORA_HiDe
@@ -123,8 +124,10 @@ class MCITHiDeLoraLayer(MCITExpertLoraLayer):
 class MCITHiDeLoraLinear(MCITExpertLoraLinear, MCITHiDeLoraLayer):
     def __init__(self, adapter_name, in_features, out_features, r=0, lora_alpha=1,
                  lora_dropout=0.0, fan_in_fan_out=False, train_signal=False, layer=0,
-                 expert_weight=None, cur_task=0, **kwargs):
+                 expert_weight=None, cur_task=0, video_top_k=None, **kwargs):
         self.cur_task, self.training = cur_task, train_signal
+        self.video_top_k = video_top_k
+        self.video_selection = None
         self.layer, self.expert_weight = layer, expert_weight if expert_weight is not None else []
         super().__init__(adapter_name, in_features, out_features, r=r, lora_alpha=lora_alpha,
                          lora_dropout=lora_dropout, fan_in_fan_out=fan_in_fan_out, **kwargs)
@@ -154,6 +157,16 @@ class MCITHiDeLoraLinear(MCITExpertLoraLinear, MCITHiDeLoraLayer):
                 a = self.lora_A[self.active_adapter](self.lora_dropout[self.active_adapter](x))
                 b = self.lora_B[self.active_adapter](a)
                 result += b * self.scaling[self.active_adapter]
+            elif self.video_top_k is not None:
+                if self.video_selection is None:
+                    raise RuntimeError("HiDe video inference has no request-scoped layer-31 routing")
+                dropped = self.lora_dropout[self.active_adapter](x)
+                combined = torch.zeros_like(result, dtype=torch.float32)
+                for expert, weight in self.video_selection:
+                    a = self.lora_A[self.active_adapter].loraA[expert](dropped)
+                    b = self.lora_B[self.active_adapter].loraB[expert](a)
+                    combined += b.float() * self.scaling[self.active_adapter] * weight
+                result += combined.to(result.dtype)
             else:
                 for i in range(len(self.expert_weight)):
                     result += self.lora_B[self.active_adapter].loraB[i](
@@ -166,8 +179,13 @@ class MCITHiDeLoraLinear(MCITExpertLoraLinear, MCITHiDeLoraLayer):
 
 class MCITHiDeLoraModel(MCITExpertLoraModel):
     def __init__(self, model, config, adapter_name):
+        # Legacy image layers share the wrapped model's routing list during attachment.
+        has_model_routes = hasattr(model, "expert_weight")
+        if not has_model_routes:
+            self.expert_weight = [0.0] * config[adapter_name].expert_num
         super().__init__(model, config, adapter_name)
-        self.expert_weight = [0.0] * 8
+        if has_model_routes:
+            self.expert_weight = [0.0] * 8
 
     def _module_context(self, key):
         return {"layer": key.split(".")[2]}
@@ -177,6 +195,7 @@ class MCITHiDeLoraModel(MCITExpertLoraModel):
             "cur_task": lora_config.cur_task,
             "train_signal": self.model.training,
             "expert_weight": self.expert_weight,
+            "video_top_k": lora_config.video_top_k,
         }
 
     def _linear_class(self):

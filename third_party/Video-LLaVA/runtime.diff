@@ -1,0 +1,41 @@
+--- a/videollava/model/builder.py
++++ b/videollava/model/builder.py
+@@ -27 +27 @@
+-def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, load_4bit=False, device_map="auto", device="cuda", **kwargs):
++def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, load_4bit=False, device_map="auto", device="cuda", merge_adapter=True, **kwargs):
+@@ -81,2 +81,3 @@
+-            print('Merging LoRA weights...')
+-            model = model.merge_and_unload()
++            if merge_adapter:
++                print('Merging LoRA weights...')
++                model = model.merge_and_unload()
+--- a/videollava/model/language_model/llava_llama.py
++++ b/videollava/model/language_model/llava_llama.py
+@@ -16 +15,0 @@
+-sys.path.append('/your_path/MCITlib_v3/Video-LLaVA/LoRA-FT')
+--- a/videollava/train/train.py
++++ b/videollava/train/train.py
+@@ -17 +16,0 @@
+-sys.path.append('/your_path/MCITlib_v3/Video-LLaVA/LoRA-FT')
+@@ -915 +914 @@
+-def train():
++def train(method_hooks=None):
+@@ -1000 +999,2 @@
+-        model = get_peft_model(model, lora_config)
++        build_adapter = method_hooks.build if method_hooks is not None else get_peft_model
++        model = build_adapter(model, lora_config)
+@@ -1097,0 +1098,4 @@
++    if getattr(method_hooks, "method", None) in {"pclr", "modalprompt"}:
++        method_hooks.run(model, tokenizer, data_args, training_args, model_args.previous_task_model_path)
++        return
++
+@@ -1101,0 +1106,3 @@
++    if hasattr(method_hooks, "install_video_prior"):
++        method_hooks.install_video_prior(tokenizer, model_args.previous_task_model_path, training_args.local_rank)
++
+@@ -1103,0 +1111,2 @@
++    if hasattr(method_hooks, "wrap_data"):
++        data_module = method_hooks.wrap_data(data_module, data_args)
+@@ -1112,0 +1122,2 @@
++    if hasattr(method_hooks, "before_checkpoint"):
++        method_hooks.before_checkpoint(model)

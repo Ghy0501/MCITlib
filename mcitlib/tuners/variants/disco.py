@@ -30,6 +30,7 @@ from ..mcit_expert_lora import (
 @dataclass
 class MCITDiscoLoraConfig(MCITExpertLoraConfig):
     cur_task: int = field(default=0)
+    video_top_k: int | None = None
 
     def __post_init__(self):
         self.peft_type = PeftType.MOE_LORA_CoIN
@@ -112,12 +113,14 @@ def apply_block_diagonal_expert_mask(weight: torch.Tensor, mask_signal, diag_siz
 
 class MCITDiscoLoraLinear(MCITExpertLoraLinear, MCITDiscoLoraLayer):
     def __init__(self, adapter_name, in_features, out_features, r=0, lora_alpha=1,
-                 lora_dropout=0.0, fan_in_fan_out=False, train_signal=False, cur_task=0, **kwargs):
+                 lora_dropout=0.0, fan_in_fan_out=False, train_signal=False, cur_task=0, video_top_k=None, **kwargs):
         init_lora_weights = kwargs.pop("init_lora_weights", True)
         self.expert_num = kwargs.pop("expert_num", True)
         self.te_dim = kwargs.pop("task_embedding_dim", True)
         self.cur_task = cur_task
         self.lora_id = cur_task
+        self.video_top_k = video_top_k
+        self.video_selection = None
         self.mask_signal = [1.0, 0, 0, 0, 0, 0, 0, 0]
         nn.Linear.__init__(self, in_features, out_features, **kwargs)
         MCITDiscoLoraLayer.__init__(self, in_features=in_features, out_features=out_features, expert_num=self.expert_num)
@@ -155,6 +158,14 @@ class MCITDiscoLoraLinear(MCITExpertLoraLinear, MCITDiscoLoraLayer):
             if self.training:
                 a = self.lora_A[self.active_adapter].loraA[self.lora_id](self.lora_dropout[self.active_adapter](x))
                 b = self.lora_B[self.active_adapter].loraB[self.lora_id](a)
+            elif self.video_top_k is not None:
+                if self.video_selection is None:
+                    raise RuntimeError("DISCO video inference has no request-scoped top-k routing")
+                dropped = self.lora_dropout[self.active_adapter](x)
+                b = torch.zeros_like(result)
+                for expert, weight in self.video_selection:
+                    a = self.lora_A[self.active_adapter].loraA[expert](dropped)
+                    b += self.lora_B[self.active_adapter].loraB[expert](a * weight)
             else:
                 a = self.lora_A[self.active_adapter](self.lora_dropout[self.active_adapter](x))
                 ab = self.lora_AB[self.active_adapter](a)
@@ -167,7 +178,8 @@ class MCITDiscoLoraLinear(MCITExpertLoraLinear, MCITDiscoLoraLayer):
 
 class MCITDiscoLoraModel(MCITExpertLoraModel):
     def _extra_module_kwargs(self, lora_config):
-        return {"cur_task": lora_config.cur_task, "train_signal": self.model.training}
+        return {"cur_task": lora_config.cur_task, "train_signal": self.model.training,
+                "video_top_k": lora_config.video_top_k}
 
     def _linear_class(self):
         return MCITDiscoLoraLinear

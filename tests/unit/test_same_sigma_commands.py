@@ -48,5 +48,5 @@ def test_full_commands_and_sample_budget(repo_root, method, benchmark, total):
         for command in evals:
             assert command.env['MCITLIB_SAME_CLIP_TOWER']
     assert not benchmark_supported(method, 'mllm_acl')
-    for backbone in ('internvl', 'videollava', 'videollama2'):
-        assert not compatibility(method, backbone)[0]
+    assert not compatibility(method, 'internvl')[0]
+    assert all(compatibility(method, backbone)[0] for backbone in ('videollava', 'videollama2'))

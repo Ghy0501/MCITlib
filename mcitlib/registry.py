@@ -92,8 +92,8 @@ METHODS = (
 BACKBONES = (
     BackboneSpec("llava", "llava", True, frozenset({"text_tower", "clip_features", "layer_index", "model_class_override", "router_data"})),
     BackboneSpec("internvl", "llava", True, frozenset({"text_tower", "clip_features", "layer_index", "model_class_override", "router_data"})),
-    BackboneSpec("videollava", "videollava", False),
-    BackboneSpec("videollama2", "videollama2", False),
+    BackboneSpec("videollava", "videollava", True, frozenset({"layer_index", "router_data", "text_tower", "clip_features"})),
+    BackboneSpec("videollama2", "videollama2", True, frozenset({"layer_index", "router_data", "text_tower", "clip_features"})),
 )
 
 BENCHMARKS = (
@@ -101,6 +101,16 @@ BENCHMARKS = (
     BenchmarkSpec("mllm_dcl", "MLLM-DCL", "train_DCL.sh", "Eval_MLLM_DCL", ("RS", "Med", "AD", "Sci", "Fin")),
     BenchmarkSpec("mllm_acl", "MLLM-ACL", "train_ACL.sh", "Eval_MLLM_ACL", ("OCR", "Math", "VP", "APP")),
 )
+VIDEO_BACKBONES = frozenset({"videollava", "videollama2"})
+VIDEO_METHODS = frozenset({
+    "lora_ft", "replay", "moelora", "mrlora", "olora", "clmoe", "smolora", "sigma",
+    "disco", "hide", "same", "pclr", "sefe", "keeplora", "dgg", "octopus", "modalprompt",
+})
+CL_VISTA = BenchmarkSpec(
+    "cl_vista", "CL-VISTA", "train_CVU.sh", "Eval_CVU",
+    ("counting", "space", "traffic", "movie", "gui", "science", "sports", "star"),
+)
+
 GENERAL_BENCHMARK = BenchmarkSpec(
     "general", "General_Benchmarks", "", "Eval_benchmarks", ("POPE", "MME", "MMBench", "SEED-Bench")
 )
@@ -120,6 +130,7 @@ def get_method(value: str) -> MethodSpec:
 
 def get_backbone(value: str) -> BackboneSpec:
     key = _key(value)
+    key = {"video_llava": "videollava", "video_llama2": "videollama2"}.get(key, key)
     for spec in BACKBONES:
         if key == _key(spec.id):
             return spec
@@ -128,9 +139,9 @@ def get_backbone(value: str) -> BackboneSpec:
 
 def get_benchmark(value: str) -> BenchmarkSpec:
     key = _key(value)
-    aliases = {"dcl": "mllm_dcl", "acl": "mllm_acl"}
+    aliases = {"dcl": "mllm_dcl", "acl": "mllm_acl", "cvu": "cl_vista"}
     key = aliases.get(key, key)
-    for spec in BENCHMARKS:
+    for spec in (*BENCHMARKS, CL_VISTA):
         if key in {_key(spec.id), _key(spec.v3_name)}:
             return spec
     if key in {_key(GENERAL_BENCHMARK.id), _key(GENERAL_BENCHMARK.v3_name)}:
@@ -141,17 +152,19 @@ def get_benchmark(value: str) -> BenchmarkSpec:
 def benchmark_supported(method: str, benchmark: str) -> bool:
     """Check a method's explicitly configured benchmark coverage."""
     spec, benchmark_id = get_method(method), get_benchmark(benchmark).id
+    if benchmark_id == CL_VISTA.id:
+        return spec.id in VIDEO_METHODS
     return spec.supported_benchmarks is None or benchmark_id in spec.supported_benchmarks
 
 
 def compatibility(method: str, backbone: str) -> tuple[bool, str]:
     m, b = get_method(method), get_backbone(backbone)
+    if b.id in VIDEO_BACKBONES:
+        return (True, b.env) if m.id in VIDEO_METHODS else (False, "CL-VISTA video migration pending")
     if m.supported_backbones is not None and b.id not in m.supported_backbones:
         return False, "method is not implemented for this backbone"
     if not b.v4_supported:
         return False, "v3-only; v4 migration pending"
-    if m.id == "keeplora" and b.id == "videollama2":
-        return False, "not present in v3"
     missing = m.required_capabilities - b.capabilities
     if missing:
         return False, f"missing capabilities: {', '.join(sorted(missing))}"
@@ -162,7 +175,8 @@ def matrix() -> Iterable[dict[str, str | bool]]:
     for method in METHODS:
         for backbone in BACKBONES:
             supported, reason = compatibility(method.id, backbone.id)
-            for benchmark in BENCHMARKS:
+            benchmarks = (CL_VISTA,) if backbone.id in VIDEO_BACKBONES else BENCHMARKS
+            for benchmark in benchmarks:
                 benchmark_ok = benchmark_supported(method.id, benchmark.id)
                 internvl_ok = not (backbone.id == "internvl" and benchmark.id == "mllm_acl")
                 available = supported and benchmark_ok and internvl_ok
@@ -173,6 +187,6 @@ def matrix() -> Iterable[dict[str, str | bool]]:
                     "backbone": backbone.id,
                     "benchmark": benchmark.id,
                     "supported": available,
-                    "environment": method.env if available else "—",
+                    "environment": reason if available else "—",
                     "note": note,
                 }

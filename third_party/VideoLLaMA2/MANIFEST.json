@@ -1,0 +1,9 @@
+{
+  "component": "VideoLLaMA2",
+  "files": {
+    "SOURCES.json": "12b4dc545b67f6e083d559e119aa237ac752841cb113421463eac5a0de8cfc25",
+    "runtime.diff": "a648efbe991d87aefaaf94b241af82602f9e47a344b80770edd2826b62dd814b"
+  },
+  "schema_version": 1,
+  "upstream_commit": "a3a622c9beb690e84c2923785279f179a6aac07e"
+}

@@ -71,10 +71,19 @@ def _check_task(task: dict[str, Any], name: str, task_id: int) -> int:
 
 def validate_config(root: str | Path, backbone: str = "llava") -> dict[str, int]:
     """Validate tasks, router stages and recorded command references."""
-    from ..registry import BENCHMARKS, METHODS, benchmark_supported, compatibility, get_backbone
+    from ..registry import (
+        BENCHMARKS,
+        METHODS,
+        VIDEO_BACKBONES,
+        benchmark_supported,
+        compatibility,
+        get_backbone,
+    )
 
     root = _root(Path(root))
     backbone = get_backbone(backbone).id
+    if backbone in VIDEO_BACKBONES:
+        raise ValueError("CL-VISTA uses the node binding and video doctor")
     if backbone == "internvl":
         total_tasks = total_commands = 0
         benchmarks = [bench for bench in BENCHMARKS if bench.id in {"ucit", "mllm_dcl"}]
@@ -130,10 +139,20 @@ def validate_config(root: str | Path, backbone: str = "llava") -> dict[str, int]
 
 def expand_task(root: str | Path, method: str, benchmark: str, task: int, sequence: str = "train",
                 backbone: str = "llava") -> dict[str, Any]:
-    from ..registry import benchmark_supported, compatibility, get_backbone, get_benchmark, get_method
+    from ..registry import (
+        CL_VISTA,
+        VIDEO_BACKBONES,
+        benchmark_supported,
+        compatibility,
+        get_backbone,
+        get_benchmark,
+        get_method,
+    )
 
     root = _root(Path(root))
     method_spec, benchmark_spec, backbone_spec = get_method(method), get_benchmark(benchmark), get_backbone(backbone)
+    if backbone_spec.id in VIDEO_BACKBONES or benchmark_spec.id == CL_VISTA.id:
+        raise ValueError("CL-VISTA uses the node binding and video train --dry-run")
     supported, reason = compatibility(method_spec.id, backbone_spec.id)
     if not supported:
         raise ValueError(f"unsupported {backbone_spec.id}/{method_spec.id}: {reason}")

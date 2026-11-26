@@ -17,7 +17,8 @@ def option(argv, name):
 @pytest.mark.parametrize('method', ['pclr', 'same', 'sigma', 'dgg', 'octopus'])
 def test_scope_and_full_dcl_epochs(repo_root, method):
     assert compatibility(method, 'llava')[0]
-    assert all(not compatibility(method, backbone)[0] for backbone in ('internvl', 'videollava', 'videollama2'))
+    assert not compatibility(method, 'internvl')[0]
+    assert all(compatibility(method, backbone)[0] for backbone in ('videollava', 'videollama2'))
     assert all(benchmark_supported(method, name) for name in ('ucit', 'mllm_dcl'))
     assert all(not benchmark_supported(method, name) for name in ('mllm_acl', 'general'))
     epochs = [int(option(expand_task(repo_root / 'configs', method, 'mllm_dcl', task)

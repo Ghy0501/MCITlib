@@ -9,10 +9,17 @@ import os
 import sys
 from pathlib import Path
 
-from .registry import BACKBONES, BENCHMARKS, METHODS, get_benchmark, matrix
+from .registry import BACKBONES, BENCHMARKS, METHODS, VIDEO_BACKBONES, get_backbone, get_benchmark, matrix
+
+
+def _add_video_options(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--video-node", type=Path, help="CL-VISTA node-local JSON binding")
+    parser.add_argument("--video-mode", choices=("sample", "full"), default="sample")
+    parser.add_argument("--video-run-id", default="local")
 
 
 def _add_common(parser: argparse.ArgumentParser) -> None:
+    _add_video_options(parser)
     parser.add_argument("--backbone", default="llava")
     parser.add_argument("--method", required=True)
     parser.add_argument("--benchmark", required=True)
@@ -57,6 +64,8 @@ def build_parser() -> argparse.ArgumentParser:
     doctor = sub.add_parser("doctor", help="check environment, GPUs, imports, inputs and prerequisites before a run")
     doctor.add_argument("--backbone", default="llava")
     doctor.add_argument("--method", required=True)
+    _add_video_options(doctor)
+    doctor.add_argument("--dry-run", action="store_true")
     doctor.add_argument("--dgg-sample-profile", action="store_true")
     doctor.add_argument("--dgg-sample-manifest", type=Path)
     doctor.add_argument("--benchmark", required=True)
@@ -125,6 +134,17 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "list":
         print_list()
         return 0
+    if args.command in {"doctor", "train", "eval"}:
+        try:
+            if get_benchmark(args.benchmark).id == "cl_vista":
+                from .backbones.video.cli import run as run_video
+
+                return run_video(args)
+            if get_backbone(args.backbone).id in VIDEO_BACKBONES:
+                raise ValueError("Video backbones require --benchmark cl_vista (CL-VISTA)")
+        except (KeyError, ValueError, RuntimeError, OSError) as error:
+            print(f"mcitlib: {error}", file=sys.stderr)
+            return 2
     if args.command == "doctor":
         from .doctor import main_doctor
         from .paths import bootstrap_sys_path

@@ -20,10 +20,9 @@ def history_from_env():
     return value
 
 
-def setup_stage_two(model, accumulation):
-    history = history_from_env()
+def attach_validated_history(model, history):
     adapters, scales = [], []
-    from .state import digest, load_manifest
+    from .state import load_manifest
     for index, path in enumerate(history):
         checkpoint = Path(path)
         predecessors = load_manifest(checkpoint)
@@ -33,8 +32,14 @@ def setup_stage_two(model, accumulation):
         cfg = json.loads((checkpoint / 'adapter_config.json').read_text())
         scales.append(float(cfg['lora_alpha']) / int(cfg['r']))
     attach_history(model, adapters, scales)
+
+
+def setup_stage_two(model, accumulation, audit_path=None):
+    from .state import digest
+
+    history = history_from_env()
     gpwc_path = Path(os.environ['MCITLIB_OCTOPUS_GPWC'])
-    audit_path = gpwc_path.with_suffix(gpwc_path.suffix + '.audit.json')
+    audit_path = Path(audit_path) if audit_path else gpwc_path.with_suffix(gpwc_path.suffix + '.audit.json')
     audit = json.loads(audit_path.read_text())
     if digest(gpwc_path) != audit.get('gpwc_sha256'):
         raise ValueError('Octopus GPWC checksum mismatch')
@@ -44,6 +49,7 @@ def setup_stage_two(model, accumulation):
     expected = [str(Path(item).resolve()) for item in history]
     if gpwc.get('history') != expected:
         raise ValueError('Octopus GPWC history differs from current history')
+    attach_validated_history(model, history)
     return OctopusLoss(model, gpwc['gradients'], int(accumulation),
                        float(os.environ['MCITLIB_OCTOPUS_LAMBDA1']),
                        float(os.environ['MCITLIB_OCTOPUS_LAMBDA2']),
@@ -61,7 +67,8 @@ class OctopusLoss:
         self.provenance = provenance
 
     def extra_loss(self, model, inputs, outputs, base_loss):
-        loss, _, _ = regularization(self.pairs, self.lambda_1, self.lambda_2)
+        loss, orthogonality, magnitude = regularization(self.pairs, self.lambda_1, self.lambda_2)
+        self.last_terms = (orthogonality.detach(), magnitude.detach())
         # Accelerate/DeepSpeed divide the full backward loss by GAS. Multiplying
         # this term restores the release's task_loss/GAS + regularizer rule.
         return loss * self.accumulation

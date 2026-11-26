@@ -1,11 +1,13 @@
 # MCITlib: Multimodal Continual Instruction Tuning
 
-MCITlib provides unified configuration, training, evaluation, and reporting across continual learning methods. LLaVA-1.5 supports UCIT, MLLM-DCL, MLLM-ACL, and general image evaluation. InternVL-Chat-ViT-6B-Vicuna-7B supports UCIT and MLLM-DCL. Video-LLaVA and VideoLLaMA2 have offline preparation tools.
+MCITlib provides unified configuration, training, evaluation, and reporting across continual learning methods. LLaVA-1.5 supports UCIT, MLLM-DCL, MLLM-ACL, and general image evaluation. InternVL-Chat-ViT-6B-Vicuna-7B supports UCIT and MLLM-DCL. Video-LLaVA and VideoLLaMA2 support CL-VISTA training, held-out generation, and local judge scoring.
+
+**Running video?** Start with the [CL-VISTA runtime guide](docs/video-runtime.md) for installation, model and data layout, GPU selection, and commands for both backbones. Official eight-task **sample** runs exist for Video-LLaVA LoRA-FT, PCLR, and Octopus. VideoLLaMA2 has bounded runtime checks, not official sample or full results.
 
 ```text
 mcitlib/      Python package and CLI
 configs/      Methods, benchmarks, training profiles, and path templates
-third_party/  Required LLaVA and PEFT source
+third_party/  Backbone and adapter source
 assets/       Method resources
 envs/         Pinned runtime requirements
 tests/        CPU and model integration tests
@@ -15,7 +17,7 @@ docs/         Usage and implementation contracts
 
 ## Installation
 
-Use Python 3.10. Choose the requirements for the method and install each runtime in a separate environment:
+For image backbones, use Python 3.10. Choose the requirements for the method and install each runtime in a separate environment:
 
 | Methods | Requirements |
 | --- | --- |

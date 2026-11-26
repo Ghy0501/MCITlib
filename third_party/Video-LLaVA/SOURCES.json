@@ -1,0 +1,213 @@
+{
+  "repository": "Ghy0501/MCITlib",
+  "commit": "a3a622c9beb690e84c2923785279f179a6aac07e",
+  "files": {
+    "LICENSE": {
+      "path": "Video-LLaVA/LoRA-FT/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    "videollava/__init__.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/__init__.py",
+      "sha256": "52508db720555fae39081e92e8b7f26244df4153b5f3f6bc7bd4a647b7071310"
+    },
+    "videollava/constants.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/constants.py",
+      "sha256": "81eb913586d303b004220bb4c33383044abac04074efebd8955f60c184ce66dc"
+    },
+    "videollava/conversation.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/conversation.py",
+      "sha256": "5afe31bc49b0878b2adb4f1f5f16e1b138eaeec134e93ec3c65869cee28356ed"
+    },
+    "videollava/eval/run_inference_video_qa.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/eval/video/run_inference_video_qa.py",
+      "sha256": "2d5a54e473b7bbcc6e72675c13385abe80f958b2489197ae820cf6beac161cf9"
+    },
+    "videollava/eval/run_inference_video_qa_router.py": {
+      "path": "Video-LLaVA/MR-LoRA/videollava/eval/video/run_inference_video_qa_router.py",
+      "sha256": "9a70c6b881837c0c3bf2570c80484448e24b60dfcb2432c9314eddc6ba571f09"
+    },
+    "videollava/mm_utils.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/mm_utils.py",
+      "sha256": "d67676293b6ee97608dd6e6cf4a5ed80599156b7ae869895abed26d9f880a9df"
+    },
+    "videollava/model/__init__.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/__init__.py",
+      "sha256": "58caff90f3cb1cf6d88257be0913b67e2a28de09134c3ab4c0082bc901fdcb73"
+    },
+    "videollava/model/builder.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/builder.py",
+      "sha256": "c3f7630e1fdaf76ef811df7ca4d39923bd136028021e4e1d9b715f16ed6e2173",
+      "prepared_sha256": "d15d2c63b680a7ed20e663cc359fa99a361e4b062fe7e930947bd33e04d06968"
+    },
+    "videollava/model/language_model/llava_llama.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/language_model/llava_llama.py",
+      "sha256": "1b56da0764eae14c7b668653d2b28d26ea175b91ec072998a3beb99799b02aea",
+      "prepared_sha256": "38cd4998627e433190ecf12798f99c5312608230a2d224acda3f13e4c7942a26"
+    },
+    "videollava/model/language_model/llava_mpt.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/language_model/llava_mpt.py",
+      "sha256": "8f7f645150d7928d81ef0de67279c5a2c49e3bb8f06a361a547edfc55649a427"
+    },
+    "videollava/model/language_model/mpt/adapt_tokenizer.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/language_model/mpt/adapt_tokenizer.py",
+      "sha256": "1a877c5856cbea1fee9d986b5fee1889ca14ccba765f01071acdb444d8dfbb2e"
+    },
+    "videollava/model/language_model/mpt/attention.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/language_model/mpt/attention.py",
+      "sha256": "7b5f698435988614cb0fc36aa9a30b294d9b984d2e270b9259f997f9de15affd"
+    },
+    "videollava/model/language_model/mpt/blocks.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/language_model/mpt/blocks.py",
+      "sha256": "e1666f4cecb0d101c8c073586c4ce75d7983c2d1a173fca98abbe92543e010ea"
+    },
+    "videollava/model/language_model/mpt/configuration_mpt.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/language_model/mpt/configuration_mpt.py",
+      "sha256": "7e5fa6b9c72f7992094c6bec4c5aa03b1e8da27272862c85e228cfc11ec63a51"
+    },
+    "videollava/model/language_model/mpt/custom_embedding.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/language_model/mpt/custom_embedding.py",
+      "sha256": "7c8a8b156977c48083dff878049f1186cb67c45b1a0c9b801b5987b6c721f9ff"
+    },
+    "videollava/model/language_model/mpt/flash_attn_triton.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/language_model/mpt/flash_attn_triton.py",
+      "sha256": "3f548a86236f026bab28555954ae13afd7b4bc70b6ef81059570ea74d267e63c"
+    },
+    "videollava/model/language_model/mpt/hf_prefixlm_converter.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/language_model/mpt/hf_prefixlm_converter.py",
+      "sha256": "3901fdcbfda941a95deb9b0607db6286894a303714b0a11f9e0b0116ee142be7"
+    },
+    "videollava/model/language_model/mpt/meta_init_context.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/language_model/mpt/meta_init_context.py",
+      "sha256": "8a643f6cd204d93a75a55a200d0f48388f7a1a969b6b0f055a3eeaa6a55f61fe"
+    },
+    "videollava/model/language_model/mpt/modeling_mpt.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/language_model/mpt/modeling_mpt.py",
+      "sha256": "5a5503aa4a8878fb69c4e76849c075b9123266ec163ed598659b57e7de4e41bd"
+    },
+    "videollava/model/language_model/mpt/norm.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/language_model/mpt/norm.py",
+      "sha256": "d68257021b3824fadc0868c0faa4684e8723ffb3150f4d06225a131976437076"
+    },
+    "videollava/model/language_model/mpt/param_init_fns.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/language_model/mpt/param_init_fns.py",
+      "sha256": "47fe44634b233c9c8c668bebcb80305d0ffb7a50a4464938070fe6f173a7acb5"
+    },
+    "videollava/model/llava_arch.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/llava_arch.py",
+      "sha256": "315dc420726328e6ccc448301ce7cf033d23fbd0226d8782f76d89a8e9c75e2d"
+    },
+    "videollava/model/multimodal_encoder/builder.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/builder.py",
+      "sha256": "ec3a0224cd623e5613ff3b8fe86babb5db253aea2321fe48e80d30b2d5f86ce4"
+    },
+    "videollava/model/multimodal_encoder/clip_encoder.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/clip_encoder.py",
+      "sha256": "9830cf602e51dbcb4d679c730987f62213f0db8de0a5bbda57cad6b48469f50e"
+    },
+    "videollava/model/multimodal_encoder/languagebind/__init__.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/__init__.py",
+      "sha256": "629af1001f954346a3f2e5764b5a7f6837eb84dd42eae623f81767cc9d79bdb1"
+    },
+    "videollava/model/multimodal_encoder/languagebind/audio/configuration_audio.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/audio/configuration_audio.py",
+      "sha256": "df7c511c45f2bb497577b76a2f3b5f6348838461f82b2e38772f7dfd3e1391d6"
+    },
+    "videollava/model/multimodal_encoder/languagebind/audio/modeling_audio.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/audio/modeling_audio.py",
+      "sha256": "129a0d4e37e8e2aa1ccd4df3b2fa0bc1a686c473e58fa5399877aa77adc0bba9"
+    },
+    "videollava/model/multimodal_encoder/languagebind/audio/processing_audio.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/audio/processing_audio.py",
+      "sha256": "2cc56d2957f163f1bc3955f126f90972e6a3008dfafb9d307f36df8e8525b7ab"
+    },
+    "videollava/model/multimodal_encoder/languagebind/audio/tokenization_audio.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/audio/tokenization_audio.py",
+      "sha256": "b6246a588befa63bc6d45e3d66a68a1663441068d7cd4537691747685102de4b"
+    },
+    "videollava/model/multimodal_encoder/languagebind/depth/configuration_depth.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/depth/configuration_depth.py",
+      "sha256": "acf7ec32ccbcd7bfc7232277b4afbce65c1b50c416dbeca6538698d9d258073f"
+    },
+    "videollava/model/multimodal_encoder/languagebind/depth/modeling_depth.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/depth/modeling_depth.py",
+      "sha256": "0c93e3247d5bfb71728cc787ac31e1cbee846647cda812f8d1aea9a8c55c1e0a"
+    },
+    "videollava/model/multimodal_encoder/languagebind/depth/processing_depth.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/depth/processing_depth.py",
+      "sha256": "0109078c173c4781dbc0f556e38fcc9532edaa0d62fe2d95989e5f1ee45c44d6"
+    },
+    "videollava/model/multimodal_encoder/languagebind/depth/tokenization_depth.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/depth/tokenization_depth.py",
+      "sha256": "702d088d1888c225878fd3c4aa9c657c8f9de1e5208b5ef5500d92c3af248e36"
+    },
+    "videollava/model/multimodal_encoder/languagebind/image/configuration_image.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/image/configuration_image.py",
+      "sha256": "78bbdb57e53c79cdd347d6f3bc58ecd5741c3e50f9bc2e452461f6911876a0da"
+    },
+    "videollava/model/multimodal_encoder/languagebind/image/modeling_image.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/image/modeling_image.py",
+      "sha256": "5c024149095aa328d09e5cdee46f09d864b31c4a56652579426a009a28301836"
+    },
+    "videollava/model/multimodal_encoder/languagebind/image/processing_image.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/image/processing_image.py",
+      "sha256": "9bf60cc1b3c3dab8b52b265b8d01825b499fa05b01c2e314baedded42156ab35"
+    },
+    "videollava/model/multimodal_encoder/languagebind/image/tokenization_image.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/image/tokenization_image.py",
+      "sha256": "ecc114aedfdd72ea32e21e8b3edee74d6410854e35fc59c030e31e28644cd986"
+    },
+    "videollava/model/multimodal_encoder/languagebind/thermal/configuration_thermal.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/thermal/configuration_thermal.py",
+      "sha256": "1e1333d9aae3b565ad0f810c4eb8ca507ae2470b678f023fc57af1b65eea41df"
+    },
+    "videollava/model/multimodal_encoder/languagebind/thermal/modeling_thermal.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/thermal/modeling_thermal.py",
+      "sha256": "f532fe630e66f2ec7aaf1aed11a5654c725d9c082b47f1207d53350087cedd50"
+    },
+    "videollava/model/multimodal_encoder/languagebind/thermal/processing_thermal.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/thermal/processing_thermal.py",
+      "sha256": "6f74c9a5b8227a70ffdec68d8947694494c983f4ac6e98f4863d5e6b3ed9c913"
+    },
+    "videollava/model/multimodal_encoder/languagebind/thermal/tokenization_thermal.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/thermal/tokenization_thermal.py",
+      "sha256": "23dca035e39a71146b93515716d381e4547484d3db07938828298ec14169f507"
+    },
+    "videollava/model/multimodal_encoder/languagebind/video/configuration_video.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/video/configuration_video.py",
+      "sha256": "be68b1ca1ec98a8a4e87cf6c3ce61fdd1370d2ebf243bf4d4040e4555a1cfbb1"
+    },
+    "videollava/model/multimodal_encoder/languagebind/video/modeling_video.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/video/modeling_video.py",
+      "sha256": "c08f3149d613561b5e6491b1a5c2617559c38bb8dd0f3ea25fd9dd2882ba0aeb"
+    },
+    "videollava/model/multimodal_encoder/languagebind/video/processing_video.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/video/processing_video.py",
+      "sha256": "38cf16f8a72f769a94313c2b050a2de9f8063948e40514d83b77c0589c78c2a3"
+    },
+    "videollava/model/multimodal_encoder/languagebind/video/tokenization_video.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_encoder/languagebind/video/tokenization_video.py",
+      "sha256": "1d2af7e0a809a76a6d97378f62419e8ab72c43effceabcbe9fcb03e7841f4f07"
+    },
+    "videollava/model/multimodal_projector/builder.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/model/multimodal_projector/builder.py",
+      "sha256": "19f127682ffad6a7bb71a35fc7a463dbb3eb76594180ba54931bee02331a0bd9"
+    },
+    "videollava/train/llama_flash_attn_monkey_patch.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/train/llama_flash_attn_monkey_patch.py",
+      "sha256": "06ce5f55f3c1b2fdb4d0678ee7dfb8022cc627287d05f800287cd75fc0ad2cf6"
+    },
+    "videollava/train/llava_trainer.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/train/llava_trainer.py",
+      "sha256": "33424ae5e186a5e4e65bb43511a5337af5d55085134dcaab0d895ede3aec219b"
+    },
+    "videollava/train/train.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/train/train.py",
+      "sha256": "806c77ccc35cf9d2b8f70254b5e0bc5ad0fd22e7a963036e5327dc9c02ce2652",
+      "prepared_sha256": "0057343f3a3b5e36bfc90fbaf02c7d2bbbe9ce080d6cfaa670d57bf10bc99ba6"
+    },
+    "videollava/utils.py": {
+      "path": "Video-LLaVA/LoRA-FT/videollava/utils.py",
+      "sha256": "aacff68c3661da26cc40a6e985c4d8e5d3b81189e9e5f8b9fb7709612b604423"
+    }
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "repository": "Ghy0501/MCITlib",
+  "commit": "a3a622c9beb690e84c2923785279f179a6aac07e",
+  "files": {
+    "LICENSE": {
+      "path": "VideoLLaMA2/LoRA-FT/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    "videollama2/__init__.py": {
+      "path": "VideoLLaMA2/LoRA-FT/videollama2/__init__.py",
+      "sha256": "c5e0881ac124fc77067b78ad256eae5e04fd6238d5841e6df8a66a38f76c5cb1"
+    },
+    "videollama2/constants.py": {
+      "path": "VideoLLaMA2/LoRA-FT/videollama2/constants.py",
+      "sha256": "ac1b04c07390eff33c8cb2d2f1c8125f3ed7b5faa98c4e4db58ad50aeb2a0c3c"
+    },
+    "videollama2/eval/inference_video_qa_router.py": {
+      "path": "VideoLLaMA2/MR-LoRA/videollama2/eval/inference_video_qa_router.py",
+      "sha256": "455837ff9d3eee2ceff961db19b44a88ef203e53c70db51166912941a876ecdd",
+      "prepared_sha256": "cf2b955083a47297d9ff0d343ccd72b8d039651e97e5143e438bfcc07e986f0a"
+    },
+    "videollama2/mm_utils.py": {
+      "path": "VideoLLaMA2/LoRA-FT/videollama2/mm_utils.py",
+      "sha256": "1c233b1d9b5715987c79e6bd54a96a25e733241dba9d6e8083ef44c94882e706"
+    },
+    "videollama2/model/__init__.py": {
+      "path": "VideoLLaMA2/LoRA-FT/videollama2/model/__init__.py",
+      "sha256": "15a375065a339929f80b7de0beeeded9d9078634b9fbfb1598c7c58952430088",
+      "prepared_sha256": "daa7b5ff71f5deef9065360c4087c1afb2b3588f09d57e3f4a2c2c55fa8c62ad"
+    },
+    "videollama2/model/encoder.py": {
+      "path": "VideoLLaMA2/LoRA-FT/videollama2/model/encoder.py",
+      "sha256": "f865d15f128bed0ab365d5e1bd93205e98b25011f3ea28b0217072df1da1b597"
+    },
+    "videollama2/model/projector.py": {
+      "path": "VideoLLaMA2/LoRA-FT/videollama2/model/projector.py",
+      "sha256": "8f6d790bf48c4cf78acffac2fcfeaec30737c08a429088149e8bb094481d5615"
+    },
+    "videollama2/model/videollama2_arch.py": {
+      "path": "VideoLLaMA2/LoRA-FT/videollama2/model/videollama2_arch.py",
+      "sha256": "68d875b097fd3a389f2eecc911c275aba779dc1014aa55aabdb68ddf184d1e61"
+    },
+    "videollama2/model/videollama2_llama.py": {
+      "path": "VideoLLaMA2/LoRA-FT/videollama2/model/videollama2_llama.py",
+      "sha256": "f63bb6d62626ff472ef6d83d9bc521457626d0d650720f40dd3552b212f660c4"
+    },
+    "videollama2/model/videollama2_mistral.py": {
+      "path": "VideoLLaMA2/LoRA-FT/videollama2/model/videollama2_mistral.py",
+      "sha256": "9f14fe5a1b6d6c378f32d054c09196efc27d56d2410cb97e6809c6196248e413"
+    },
+    "videollama2/model/videollama2_mixtral.py": {
+      "path": "VideoLLaMA2/LoRA-FT/videollama2/model/videollama2_mixtral.py",
+      "sha256": "8217055f8543f023bc44d52f991fa9d8dc1f8174aae6ced1caa28777a6e17ccd"
+    },
+    "videollama2/model/videollama2_qwen2.py": {
+      "path": "VideoLLaMA2/LoRA-FT/videollama2/model/videollama2_qwen2.py",
+      "sha256": "c665bd9b598bf6165bb87a48b36cb56054f54429a54424e974a2d7f41623aa27"
+    },
+    "videollama2/train.py": {
+      "path": "VideoLLaMA2/LoRA-FT/videollama2/train.py",
+      "sha256": "6ab88a017fa2ebff904fa933ab9acd5d6449d4f877b5b0d7a366ee4e8131eed4",
+      "prepared_sha256": "e8a5483f46cd2be88332374de97bfed88480ebcdc6536977c5507ad4f0f48d03"
+    },
+    "videollama2/utils.py": {
+      "path": "VideoLLaMA2/LoRA-FT/videollama2/utils.py",
+      "sha256": "5c318f254e303f2da25a0f20354f7e0dde392b9d408b5a56c9b7ab35c476947c"
+    },
+    "videollama2/videollama2_trainer.py": {
+      "path": "VideoLLaMA2/LoRA-FT/videollama2/videollama2_trainer.py",
+      "sha256": "2a9cd0f022dad7ac9caf97af555f875595992fd1545f07684a3bbcde519c47d2"
+    }
+  }
+}
