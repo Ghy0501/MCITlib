@@ -2,6 +2,9 @@
 <img src="./resources/MCITlib.png"  width="800px">
 </p>
 <h2 align="center"> <a href="https://arxiv.org/pdf/2508.07307">MCITlib: Multimodal Continual Instruction Tuning Library and Benchmark</a></h2>
+
+**Looking for the lightweight v4 library?** Use [v4-dev](https://github.com/Ghy0501/MCITlib/tree/v4-dev) and its [first-run guide](https://github.com/Ghy0501/MCITlib/blob/v4-dev/docs/public-start.md) for LLaVA, InternVL, Video-LLaVA and VideoLLaMA2. This page documents v3.
+
 <p align="center">
   <a href="#-introduction">✨Introduction</a> •
   <a href="#-methods-provided">🥇 Methods Provided</a> •
