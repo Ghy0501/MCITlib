@@ -262,6 +262,23 @@ def _write_json(path: Path, value: Any) -> None:
         handle.write(json.dumps(value, ensure_ascii=False, indent=2) + "\n")
 
 
+def _check_checkpoint(plan: dict[str, Any]) -> Path:
+    adapter = Path(plan["adapter_path"])
+    if adapter.resolve() != adapter:
+        raise RuntimeError("unexpected symlink in adapter path")
+    state = json.loads((adapter / "trainer_state.json").read_text(encoding="utf-8"))
+    steps = plan["actual_global_steps"] = state.get("global_step")
+    if type(steps) is not int or steps != plan["limits"]["max_steps"]:
+        raise RuntimeError(f"unexpected trainer global_step: {steps}")
+    files = [adapter / name for name in ("config.json", "adapter_config.json", "adapter_model.bin",
+                                         "non_lora_trainables.bin", "trainer_state.json")]
+    missing = [str(p) for p in files if p.is_symlink() or not p.is_file() or not p.stat().st_size]
+    if missing:
+        raise RuntimeError(f"missing, symlinked or empty adapter files: {', '.join(missing)}")
+    plan["adapter"] = {"path": str(adapter), "files": [str(p) for p in files]}
+    return adapter
+
+
 def execute_plan(plan: dict[str, Any], paths_file: Path | None) -> dict[str, Any]:
     """Run the full doctor before creating a directory or executing either command."""
     from .doctor import run_doctor
@@ -297,18 +314,7 @@ def execute_plan(plan: dict[str, Any], paths_file: Path | None) -> dict[str, Any
         _validate_records(records, Path(plan["image_folder"]))
         _write_json(run_dir / "train-subset.json", records)
         _run(plan["training_command"], root, run_dir / "train.log")
-        adapter = Path(plan["adapter_path"])
-        state = json.loads((adapter / "trainer_state.json").read_text(encoding="utf-8"))
-        actual_steps = state.get("global_step")
-        plan["actual_global_steps"] = actual_steps
-        if type(actual_steps) is not int or actual_steps != plan["limits"]["max_steps"]:
-            raise RuntimeError(f"unexpected trainer global_step: {actual_steps}")
-        files = [adapter / name for name in ("config.json", "adapter_config.json", "adapter_model.bin",
-                                               "non_lora_trainables.bin", "trainer_state.json")]
-        missing = [str(path) for path in files if not path.is_file() or not path.stat().st_size]
-        if missing:
-            raise RuntimeError(f"missing or empty adapter files: {', '.join(missing)}")
-        plan["adapter"] = {"path": str(adapter), "files": [str(path) for path in files]}
+        adapter = _check_checkpoint(plan)
         _run(plan["inference_command"], root, run_dir / "inference.log")
         inference = json.loads((run_dir / "inference.json").read_text(encoding="utf-8"))
         if (inference.get("benchmark") != benchmark or inference.get("adapter_path") != str(adapter)
