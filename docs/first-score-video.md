@@ -71,18 +71,3 @@ bitwise identical text across environments. Keep the private model view and
 its original snapshots available to reload the adapter later. To reclaim
 space, remove only your own run directory after retaining the evidence you need.
 For actual CL-VISTA evaluation use the [separate benchmark procedure](video-runtime.md).
-
-## Reference smoke
-
-Each run below used one A100 PCIe 40 GB, the pinned native sources and an
-existing local 7B model and towers. Both separate inference processes loaded
-the saved states in FP16 and emitted exactly one row for `eval-blue`.
-
-| Worker | Step / logged loss | Changed tensors (LoRA / projector) | Adapter / projector bytes | Prediction / score |
-| --- | --- | --- | --- | --- |
-| Video-LLaVA | 1 / 0.0799 | 224 / 4 | 20,142,861 / 41,961,191 | `Blue` / 1 of 1 |
-| VideoLLaMA2 | 1 / 6.8199 | 224 / 85 | 21,126,346 / 978,416,652 | `Blue` / 1 of 1 |
-
-These are receipts for this fixture, not acceptance thresholds. They verify
-the native path with already provisioned environments and weights, not a fresh
-environment install, Hub download, or byte-for-byte identity with those snapshots.

@@ -4,10 +4,11 @@
 | --- | --- |
 | Installation, paths, and basic commands | [README](README.md) |
 | New machine: pinned weights, data sources, and first score | [Public quick start](docs/public-start.md) |
-| CL-VISTA: Video-LLaVA and VideoLLaMA2 installation, binding, training, inference, scoring, and evidence | [Video runtime](docs/video-runtime.md) |
+| CL-VISTA: Video-LLaVA and VideoLLaMA2 installation, binding, training, inference, and scoring | [Video runtime](docs/video-runtime.md) |
 | InternVL model and method behavior | [InternVL implementation](docs/internvl.md) |
 | InternVL four-GPU sample queue | [InternVL sample validation](docs/internvl_sample_validation.md) |
 | Configuration templates and precedence | [Configuration](docs/configuration.md) |
+| Porting a method to a backbone | [Method porting guide](docs/backbone-baseline-porting.md) |
 | Sample data and validation queues | [Sample validation](configs/validation_3k_1k/README.md) |
 | Four-GPU execution | [Execution profile](docs/four_gpu_validation.md) |
 | Queue handoff | [Handoff](docs/validation-handoff.md) |
@@ -24,4 +25,4 @@
 | CPU and model integration checks | [CI](docs/ci.md) |
 | Video data and additional configuration preparation | [Offline preparation](preparations/other_backbones/README.md) |
 
-`docs/` contains reusable usage and implementation guidance. Run-specific evidence belongs in `reports/`; commands and markers in `logs/`; predictions and scores in `results/`; weights in the configured checkpoint root. These generated directories and local machine paths are excluded from Git.
+`docs/` is for reusable method descriptions and instructions. Keep individual runs private: reports in `reports/`, logs in `logs/`, predictions and scores in `results/`, and weights in the configured checkpoint root. Do not publish machine paths, internal handoffs, per-run metrics or checkpoint fingerprints as examples. Public dependency revisions and source checksums are part of the installation instructions.

@@ -52,7 +52,7 @@ def test_internvl_plan_is_isolated_and_only_uses_four_reviewed_gpus(tmp_path):
 
 
 def test_gpu_lease_proof_requires_four_actual_exclusive_fds(tmp_path):
-    directory = tmp_path / ".workspaces/sample-completion-20261108-control"
+    directory = tmp_path / ".workspaces/test-lease-control"
     directory.mkdir(parents=True)
     fds = []
     try:

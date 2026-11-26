@@ -49,10 +49,10 @@ SMoLoRA image instruction embeddings use existing byte-matched `assets/smolora` 
 
 Existing InternVL UCIT/DCL samples and their separately hashed `validation_aux` router/Replay files are reused when the manifests agree. Video sample and auxiliary manifests are independently checked. These checks establish data provenance, not compatibility with a backbone loader. Video-LLaVA needs explicit loader overrides for both `mm_image_tower` and `mm_video_tower`; VideoLLaMA2 needs `mm_vision_tower`. The package records these settings without editing the original model's `config.json`.
 
-Full-data auxiliary paths have separate readiness records. At the local inventory snapshot, the InternVL UCIT/DCL full Replay files were missing and the UCIT task-1 full router file existed but was empty. Their affected full profiles are blocked; the sample auxiliary files are not substituted into them. Source existence and row counts describe the time the plan was generated, so regenerate the plan when inputs change.
+Full-data auxiliary paths have separate readiness records. Missing or empty full-data inputs block the affected profiles; sample auxiliary files are not substituted. Regenerate the plan when inputs change.
 
 For video MR-LoRA, the expert pool mapping is `F=counting, G=space, D=traffic, A=movie, C=GUI, E=science, H=sports, B=STAR`; it is not alphabetical task order. The original inference prompt and extractor mapping are checked, but the extractor's cross-domain lookup remains blocked pending an end-to-end correction and validation.
 
 The `reference_evidence/` directory contains byte-identical snapshots of the router and training contracts, stored as `.txt` files with original relative paths and SHA-256 values in its manifest. The generator validates the fixed manifest hash and every snapshot before inspecting them as data; it never imports or executes them. These snapshots support offline contract checks and do not supply model execution entry points. The optional local source inventory is informational and may be absent.
 
-MVBench, LongVideoBench, Video-MME, MMVU and NExT-QA have root placeholders. No benchmark is downloaded or sampled. Local asset and CPU video-decode evidence are referenced by the generated inventory. The one-frame checks cover selected examples only; they do not prove that all videos decode or that a model can run.
+MVBench, LongVideoBench, Video-MME, MMVU and NExT-QA have root placeholders. The inventory does not download, sample or validate these benchmarks.

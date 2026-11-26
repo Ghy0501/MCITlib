@@ -2,16 +2,9 @@
 
 Use this guide from a **release checkout** on a Linux x86_64 CUDA host. The two video workers use different versions of Torch and Transformers; a third environment runs the local Qwen judge. You supply the model weights, tower weights, annotations and media. Neither installing MCITlib nor generating a node binding downloads them.
 
-## What has been run?
+## Supported methods
 
-| Backbone | Official CL-VISTA sample | Other evidence |
-| --- | --- | --- |
-| Video-LLaVA (`videollava`) | LoRA-FT (`lora_ft`), PCLR (`pclr`), Octopus (`octopus`): each completed 8 training tasks and 36 held-out evaluation cells. | The remaining 14 methods have bounded A100 checks. |
-| VideoLLaMA2 (`videollama2`) | No official eight-task sample result. | All 17 methods have bounded A100 checks covering training, saving, reloading, generating and scoring; some checkpoints were temporary. |
-
-The official sample used 3,000 train rows and 1,000 held-out questions per domain. After task N, it evaluated the N domains seen so far: **36,000 scored predictions per method**, not 36,000 distinct questions. PCLR's completed sample included its integration stages at tasks 4-8; Octopus's included GPWC and second-stage training at tasks 2-8. Neither backbone has an official **full-data** result here.
-
-The 17 CLI method IDs for both backbones are `lora_ft`, `replay`, `moelora`, `mrlora`, `olora`, `clmoe`, `disco`, `hide`, `smolora`, `modalprompt`, `sefe`, `keeplora`, `pclr`, `same`, `sigma`, `dgg`, and `octopus`. A bounded check exercises a small amount of real data, not the eight-task schedule or its storage budget. In particular, MR-LoRA has a routing diagnostic, not a validated eight-expert result matrix.
+The 17 CLI method IDs for both backbones are `lora_ft`, `replay`, `moelora`, `mrlora`, `olora`, `clmoe`, `disco`, `hide`, `smolora`, `modalprompt`, `sefe`, `keeplora`, `pclr`, `same`, `sigma`, `dgg`, and `octopus`.
 
 ## Install the runtimes
 
@@ -25,7 +18,7 @@ Run these Bash examples from the repository root, with Conda initialized. Replac
 | [VideoLLaMA2](../envs/videollama2.txt) | 3.10.18 | 2.2.0 / cu118 | 4.40.0 | 2.5.8 |
 | [Judge](../envs/video-judge.txt) | 3.10.18 | 2.6.0 / cu118 | 4.57.6 | 2.7.3 (optional backend) |
 
-The files pin runtime packages from the A100 environments; they are not complete machine images. A fresh checkout contains **source recipes**, not installed video packages: run the preparation and checksum commands below. The [public quick start](public-start.md) lists the matching model, towers and judge. A worker must load PEFT 0.4.0 from **its own environment**. Do not install the image-backbone requirements or add image PEFT to your shell's `PYTHONPATH`.
+The files pin the runtime packages; they are not complete machine images. A fresh checkout contains **source recipes**, not installed video packages: run the preparation and checksum commands below. The [public quick start](public-start.md) lists the matching model, towers and judge. A worker must load PEFT 0.4.0 from **its own environment**. Do not install the image-backbone requirements or add image PEFT to your shell's `PYTHONPATH`.
 
 ```bash
 export RUNTIME_ROOT=/absolute/path/to/video-runtime
@@ -71,7 +64,7 @@ On minimal Linux images the pinned OpenCV wheels may need system OpenGL/X11 runt
 
 ## Bind models and data
 
-The worker expects the prepared sources under `RUNTIME_ROOT/sources`. Set `native_sources` in the node JSON or export `MCITLIB_VIDEO_SOURCES` to use a different prepared directory. The public [validation record](video-validation.json) summarizes which stages and denominators were verified.
+The worker expects the prepared sources under `RUNTIME_ROOT/sources`. Set `native_sources` in the node JSON or export `MCITLIB_VIDEO_SOURCES` to use a different prepared directory.
 
 ```bash
 conda activate "$RUNTIME_ROOT/envs/videollava"  # either worker can generate the binding
@@ -96,7 +89,7 @@ The domain order is `counting, space, traffic, movie, gui, science, sports, star
 
 ## Start the judge first
 
-In a second shell on the **same host**, set the same `RUNTIME_ROOT`, `RESULTS_ROOT` and `JUDGE_MODEL` as above. The historical judge model is **Qwen3-30B-A3B-Instruct-2507**. Provide the complete local checkpoint and tokenizer with chat template.
+In a second shell on the **same host**, set the same `RUNTIME_ROOT`, `RESULTS_ROOT` and `JUDGE_MODEL` as above. The reference judge is **Qwen3-30B-A3B-Instruct-2507**. Provide the complete local checkpoint and tokenizer with chat template.
 
 ```bash
 conda activate "$RUNTIME_ROOT/envs/video-judge"
@@ -130,7 +123,7 @@ mcitlib train "${common[@]}" --video-mode sample --task 1
 mcitlib train "${common[@]}" --video-mode full --dry-run
 ```
 
-For a new sample sequence, select `--method pclr` or `--method octopus` in place of `--method lora_ft`. The executed LoRA-FT and PCLR sample training used four worker GPUs with 16 accumulation steps; Octopus used two with 32 steps. All used microbatch 1 and effective batch 64, with separate judge GPUs. Full budgets can require a specific GPU count. MR-LoRA needs **two** GPUs, the whole plan (no `--task` or standalone `eval`), and all expert/router inputs; its expert pool is retrospective.
+For a new sample sequence, select `--method pclr` or `--method octopus` in place of `--method lora_ft`. Full budgets can require a specific GPU count. MR-LoRA needs **two** GPUs, the whole plan (no `--task` or standalone `eval`), and all expert/router inputs; its expert pool is retrospective.
 
 ### Inference from a saved checkpoint
 

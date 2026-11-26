@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Compare CPU-only release plans with the audited CL-VISTA sample runs."""
+"""Check the CL-VISTA sample schedule and method-specific training stages on CPU."""
 import json
-from collections import Counter
 from pathlib import Path
 from unittest import TestCase
 
@@ -24,7 +23,7 @@ def sample_plan(method, workers=4):
     }
     node = {"tasks": tasks, "models": {"videollava": {"model_view": "base", "towers": {"mm_video_tower": "tower"}}},
             "media": "media", "checkpoints": "checkpoints", "results": "results"}
-    return build_cl_vista_plan(ROOT / "configs", node, "videollava", method, "sample", "audit",
+    return build_cl_vista_plan(ROOT / "configs", node, "videollava", method, "sample", "example",
                                gpu_count=workers, judge_directory="judge")
 
 
@@ -32,36 +31,28 @@ def arg(command, flag):
     return command.argv[command.argv.index("--" + flag) + 1]
 
 
-class TestFormalSampleEvidence(TestCase):
-    def test_plan_matches_receipt_cells_and_saved_plan_counts(self):
-        evidence = json.loads((ROOT / "docs/video-validation.json").read_text())
-        self.assertEqual(tuple(evidence["task_order"]), TASKS)
+class TestVideoSampleSchedule(TestCase):
+    def test_generate_then_score_each_seen_domain_after_training(self):
         self.assertEqual(tuple(CL_VISTA.tasks), TASKS)
-        self.assertEqual(evidence["native_denominator_per_cell"], 1000)
-        self.assertEqual(set(evidence["plan_stage_counts"]), set(METHODS))
-        coverage = evidence["coverage_by_training_task"]
-        self.assertEqual(coverage, list(range(1, 9)))
-        self.assertEqual(len(coverage), evidence["training_tasks_per_run"])
-        expected = [(i, domain) for i, n in enumerate(coverage, 1) for domain in TASKS[:n]]
-        self.assertEqual(len(expected), evidence["scored_cells_per_run"])
-        self.assertEqual(len(expected) * evidence["native_denominator_per_cell"],
-                         evidence["scored_predictions_per_run"])
         for method in METHODS:
             with self.subTest(method=method):
                 plan = sample_plan(method)
-                stages = Counter(c.sequence if c.kind == "train" else c.kind for c in plan)
-                self.assertEqual(dict(stages), evidence["plan_stage_counts"][method])
-                for kind in ("generate", "score"):
-                    cells = [c for c in plan if c.kind == kind]
-                    self.assertEqual([(c.task_id, c.metadata["eval_domain"]) for c in cells], expected)
-                    for (task, domain), cell in zip(expected, cells):
-                        pred = f"results/sample/videollava/{method}/audit/task{task}/{domain}/predictions.jsonl"
-                        if kind == "score":
-                            self.assertEqual(cell.argv[-1], pred)
-                        else:
-                            self.assertEqual(arg(cell, "predictions"), pred)
-                            self.assertEqual(arg(cell, "questions"), f"{domain}/questions")
-                            self.assertEqual(arg(cell, "answers"), f"{domain}/answers")
+                task_ids = [c.task_id for c in plan]
+                self.assertEqual(task_ids, sorted(task_ids))
+                for task in range(1, len(TASKS) + 1):
+                    stages = [c for c in plan if c.task_id == task]
+                    cells = [c for c in stages if c.kind in {"generate", "score"}]
+                    seen = TASKS[:task]
+                    self.assertEqual([(c.kind, c.metadata["eval_domain"]) for c in cells],
+                                     [(kind, domain) for domain in seen for kind in ("generate", "score")])
+                    self.assertLess(max(i for i, c in enumerate(stages) if c.kind == "train"),
+                                    stages.index(cells[0]))
+                    for domain, generate, score in zip(seen, cells[::2], cells[1::2], strict=True):
+                        pred = f"results/sample/videollava/{method}/example/task{task}/{domain}/predictions.jsonl"
+                        self.assertEqual(arg(generate, "predictions"), pred)
+                        self.assertEqual(score.argv[-1], pred)
+                        self.assertEqual(arg(generate, "questions"), f"{domain}/questions")
+                        self.assertEqual(arg(generate, "answers"), f"{domain}/answers")
 
     def test_training_stages_and_parameters(self):
         for method in METHODS:

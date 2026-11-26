@@ -62,27 +62,23 @@ are separate inputs, not covered by the source recipes.
 
 ## Configure the workers
 
-These are historical Linux/A100 versions, not a universal dependency lock.
-Use separate environments and CUDA-compatible wheels; the two training
-stacks are not interchangeable. Observed training doctor reports provide
-the Torch, CUDA, Transformers, DeepSpeed and PEFT versions below. Flash
-Attention and Accelerate versions are from installed distribution metadata.
+Use separate Linux environments with compatible CUDA wheels; the training stacks are not interchangeable.
 
 | Worker | Python | Torch / CUDA | Transformers | PEFT | DeepSpeed | Flash Attention | Accelerate |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Video-LLaVA | 3.10 | 2.0.1+cu117 / 11.7 | 4.31.0 | 0.4.0 | 0.13.1 | 2.6.3 | 0.21.0 |
 | VideoLLaMA2 | 3.10 | 2.2.0+cu118 / 11.8 | 4.40.0 | 0.4.0 | 0.13.1 | 2.5.8 | 0.26.1 |
 
-- Both need Decord (0.6.0 observed), Pillow, NumPy, torchvision matched to
+- Both need Decord (0.6.0), Pillow, NumPy, torchvision matched to
   Torch, OpenCV, einops, SentencePiece, tokenizers, tqdm and Hugging Face Hub.
   Provision TensorBoard or tensorboardX for training logs and bitsandbytes
   for quantized paths. Prebuild or locally supply the required native
   extensions, compiler and Ninja, especially DeepSpeed CPUAdam for offload.
-- Video-LLaVA also imports PyTorchVideo (0.1.5 observed). Configure local
+- Video-LLaVA also imports PyTorchVideo (0.1.5). Configure local
   Video-LLaVA-7B tokenizer/config/weights and **both** LanguageBind_Image and
   LanguageBind_Video_merge towers in the model view. The video doctor expects
   eight frames in channel-first order.
-- VideoLLaMA2 uses timm (1.0.3 observed) and imageio. Bind a local Mistral-based
+- VideoLLaMA2 uses timm (1.0.3) and imageio. Bind a local Mistral-based
   VideoLLaMA2-7B model view and the CLIP ViT-L/14-336 vision tower. The video
   doctor expects eight frames in time-first order.
 - Set the selected model's `conda_prefix`, `model_view` and `towers`; set
@@ -107,10 +103,7 @@ The original standalone parser is not a release dependency.
 
 Use the separate judge interpreter and a trusted, local
 `Qwen3-30B-A3B-Instruct-2507` checkpoint with its tokenizer and chat template.
-The historical environment had Python 3.10, Torch 2.6.0+cu118, Transformers
-4.57.6, Accelerate 1.14.0 and Flash Attention 2.7.3. Its historical deployment
-used two dedicated GPUs. Set the judge's device visibility independently from
-training. With the offline flags above and the release importable, launch:
+Install the [judge environment](../envs/video-judge.txt). With the offline flags above and the release importable, launch:
 
 ```sh
 python -m mcitlib.backbones.video.judge_service --runtime-root "$RUNTIME_ROOT" \

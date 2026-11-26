@@ -23,9 +23,9 @@ PREFIXES = (
 )
 
 LEGACY_PREFIXES = (
-    (r"^/home/[^/]+/ghy-cl-codebase/clip-vit-large-patch14-336(?=/|$)", "${model_root}/clip-vit-large-patch14-336"),
-    (r"^/home/[^/]+/ghy-cl-codebase/MCITlib/checkpoints(?=/|$)", "${ckpt_root}"),
-    (r"^/home/[^/]+/ghy-cl-codebase/MCITlib(?=/|$)", "${repo_root}"),
+    (r"^/home/[^/]+/[^/]+/clip-vit-large-patch14-336(?=/|$)", "${model_root}/clip-vit-large-patch14-336"),
+    (r"^/home/[^/]+/[^/]+/MCITlib/checkpoints(?=/|$)", "${ckpt_root}"),
+    (r"^/home/[^/]+/[^/]+/MCITlib(?=/|$)", "${repo_root}"),
     (r"^/mnt/cache/[^/]+/miniconda3/envs/coin/bin/python(?=/|$)", "${python_root}"),
 )
 

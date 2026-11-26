@@ -48,7 +48,7 @@ python tools/public_models.py llava --root "$MODEL_ROOT" --download
 # python tools/public_models.py videollava judge --root "$MODEL_ROOT" --download
 ```
 
-The helper uses immutable Hub revisions, deduplicates shared towers, and links the model names expected by MCITlib into the model root. It does not overwrite existing model directories or fetch benchmark data. Keep the hidden `.hub-cache` with its links when transferring to an offline host, and do not edit the downloaded configs in place. The pins identify **public inputs for new runs**; they do not assert a byte-for-byte audit of every historical checkpoint.
+The helper uses immutable Hub revisions, deduplicates shared towers, and links the model names expected by MCITlib into the model root. It does not overwrite existing model directories or fetch benchmark data. Keep the hidden `.hub-cache` with its links when transferring to an offline host, and do not edit the downloaded configs in place. Keep the pinned revisions with your own run metadata so others can reproduce the inputs.
 
 ## 3. Train, reload and get the first score
 

@@ -2,7 +2,7 @@
 
 本目录工具只生成数据和配置清单，不启动模型执行。InternVL 的统一入口见[实现说明](../../../docs/internvl.md)和[四卡 sample 队列](../../../docs/internvl_sample_validation.md)；Video-LLaVA、VideoLLaMA2 仍需执行入口接入与 GPU 验证。离线清单与实际实验状态分开记录。
 
-## 已生成的本机配置
+## 可生成的配置
 
 | 版本 | 目录 | 主训练预算 |
 | --- | --- | --- |
@@ -30,4 +30,4 @@ InternVL 复用既有 UCIT、MLLM-DCL 的 3000/1000 样本；两个视频模型�
 
 按用户要求，MVBench、LongVideoBench、Video-MME、MMVU、NExT-QA 仅在 [地址模板](general-video.example.json)保留占位符，未下载或采样。
 
-本机生成的 plan 和 effective 配置由本目录 `.gitignore` 排除，可用 [准备工具](../README.md)重新生成并覆盖根路径变量。原全量 Replay 缺口、空 router 文件和具体就绪边界见各 effective 目录的 `manifest.json`。
+生成的 plan 和 effective 配置由本目录 `.gitignore` 排除。可用[准备工具](../README.md)指定根路径并生成配置；各目录的 `manifest.json` 记录当前输入文件的就绪状态。

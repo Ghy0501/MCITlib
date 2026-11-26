@@ -27,7 +27,6 @@ from mcitlib.smoke import _first_records, _validate_records
 
 METHODS = ("moelora", "olora", "disco", "hide", "smolora", "clmoe", "modalprompt", "sefe")
 BENCHMARKS = ("ucit", "mllm_dcl")
-DEFAULT_STATE = Path(__file__).resolve().parents[1] / "logs/validation_3k_1k/llava-sample-20261106-4gpu-01/state.json"
 LIMIT_TOKENS = 16
 
 
@@ -490,7 +489,7 @@ def main() -> int:
     sub = parser.add_subparsers(dest="action", required=True)
     create = sub.add_parser("prepare")
     create.add_argument("--run-dir", type=Path, required=True)
-    create.add_argument("--state", type=Path, default=DEFAULT_STATE)
+    create.add_argument("--state", type=Path, required=True, help="state.json from the source validation run")
     create.add_argument("--samples", type=int, default=4)
     create.add_argument("--max-steps", type=int, default=2)
     create.add_argument("--master-port", type=int, default=29913)

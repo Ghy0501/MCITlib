@@ -71,31 +71,7 @@ is `DATA_ROOT/MLLM-CL/RS/{train.json,test.json}`, with image paths relative to
 train and first test rows are used; overlapping question IDs or images are rejected.
 Even on authentic RS data, this is not full-split accuracy.
 
-## Observed fixture runs
-
-On 2026-11-26, both families ran on a single 40 GB A100 per invocation, using
-existing local weights and an offline worker (Python 3.10.15, Torch 2.0.1+cu118,
-Transformers 4.31.0, DeepSpeed 0.9.5, FlashAttention 2.6.3, timm 0.6.13).
-Neither score below is benchmark
-accuracy. In each case the trainer saved step 1, all 224 saved LoRA B tensors
-were finite, at least one was nonzero, and the separate inference process
-decoded two new tokens on `fixture-test-1`.
-
-| Backbone | Train loss | Reloaded prediction | Native score | Adapter SHA-256 prefix |
-| --- | ---: | --- | ---: | --- |
-| LLaVA-1.5-7B | 5.7525 | Blue | 1/1 (100.00%) | `1b59e090ff438f3e` |
-| InternVL-Chat-ViT-6B-Vicuna-7B | 5.1725 | Blue | 1/1 (100.00%) | `38f0bb2f7427481e` |
-
-Hashes identify these persisted `adapter_model.bin` files; reproducing the
-procedure does not require a bit-identical checkpoint. The runs did not exercise
-fresh network downloads or audit all existing weight files against the public pins.
-
-**Separate RS data check:** with one authorized RS training row and the first
-test question (ID `1027618`, reference `1`), both reloaded models generated
-`There are two rectangular retail areas` within the eight-token cap. The native
-scorer reported **0/1 (0.00%)** for each. The saved adapter SHA-256 prefixes
-were `d163d13cd7746196` (LLaVA) and `653e276b0171244f` (InternVL).
-These are measured single-question results, not full RS benchmark estimates.
+## CPU checks
 
 To test command construction, failure checks, fixture isolation and the native
 metric without training, use the image environment with pytest installed:

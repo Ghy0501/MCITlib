@@ -4,7 +4,7 @@ MCITlib provides unified configuration, training, evaluation, and reporting acro
 
 **New machine?** [Start from a public checkout](docs/public-start.md): choose one of the four backbones, download its pinned public inputs, and run training and inference on a tiny example before preparing a full benchmark.
 
-**Running video?** Start with the [CL-VISTA runtime guide](docs/video-runtime.md) for installation, model and data layout, GPU selection, and commands for both backbones. Official eight-task **sample** runs exist for Video-LLaVA LoRA-FT, PCLR, and Octopus. VideoLLaMA2 has bounded runtime checks, not official sample or full results.
+**Running video?** The [CL-VISTA runtime guide](docs/video-runtime.md) covers model and data layout, training, generation, and scoring for both video backbones.
 
 ```text
 mcitlib/      Python package and CLI

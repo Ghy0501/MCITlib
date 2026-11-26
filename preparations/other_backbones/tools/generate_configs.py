@@ -14,6 +14,8 @@ from typing import Any
 VIDEO_TASKS = ('counting', 'space', 'traffic', 'movie', 'gui', 'science', 'sports', 'star')
 UCIT_TASKS = ('ImageNet-R', 'ArxivQA', 'VizWiz', 'IconQA', 'CLEVR-Math', 'Flickr30k')
 DCL_TASKS = ('RS', 'Med', 'AD', 'Sci', 'Fin')
+LEGACY_METHODS = ('CL-MoE', 'DISCO', 'HiDe', 'KeepLoRA', 'LoRA-FT', 'MR-LoRA',
+                  'MoELoRA', 'ModalPrompt', 'OLoRA', 'RegLoRA', 'Replay', 'SMoLoRA')
 MODELS = {'InternVL': ('internvl', ('UCIT', 'MLLM-DCL')),
           'Video-LLaVA': ('videollava', ('CL-VISTA',)),
           'VideoLLaMA2': ('videollama2', ('CL-VISTA',))}
@@ -84,8 +86,6 @@ def portable(value: Any) -> Any:
                      ('/opt/mcitlib-example/MCITlib/checkpoints/', '${CKPT_ROOT}/MCITlib/'),
                      ('/data/mcitlib/ckpt_VISTA/', '${CKPT_ROOT}/MCITlib/'),
                      ('./MCITlib/', '${CKPT_ROOT}/MCITlib/'),
-                     ('/root/blockdata1/Models/Qwen3-30B-A3B-Instruct-2507', '${JUDGE_MODEL}'),
-                     ('/root/blockdata1/Models/Video-LLaVA-7B', '${MODEL_ROOT}/Video-LLaVA-7B'),
                      ('/opt/mcitlib-example/clip-vit-large-patch14-336', '${MODEL_ROOT}/clip-vit-large-patch14-336'),
                      ('/your_model_path/Qwen3-30B-A3B-Instruct-2507', '${JUDGE_MODEL}'),
                      ('/your_model_path/Internvl-chat-7b', '${MODEL_ROOT}/InternVL-Chat-ViT-6B-Vicuna-7B'),
@@ -340,11 +340,10 @@ def generate(project: Path) -> dict[str, Any]:
         for benchmark in benchmarks:
             tasks = VIDEO_TASKS if benchmark == 'CL-VISTA' else UCIT_TASKS if benchmark == 'UCIT' else DCL_TASKS
             datasets = dataset_plan(project, benchmark, tasks)
-            for method_dir in sorted((project / 'configs/train_configs').iterdir()):
-                base = method_dir / model / benchmark
+            for method in LEGACY_METHODS:
+                base = project / 'configs/train_configs' / method / model / benchmark
                 if not base.is_dir():
                     continue
-                method = method_dir.name
                 combinations.add((model, method))
                 stages = []
                 for number, task in enumerate(tasks, 1):
@@ -476,12 +475,7 @@ def generate(project: Path) -> dict[str, Any]:
                               'router_and_method_specific_parameters': 'preserve legacy auxiliary files',
                               'resource_status': 'plans only; not validated on hardware'},
             'mllm_acl': 'InternVL legacy full configs remain in source tree; no sample generated or scheduled',
-            'general_benchmarks': general_inventory(project),
-            'asset_inventory': str(project / 'reports/engineering/offline-backbones-20261108/assets-inventory.json'),
-            'environment_inventory': str(project / 'reports/engineering/offline-backbones-20261108/environment-inventory.json'),
-            'video_sample_validation': str(project / 'reports/engineering/offline-backbones-20261108/video-sample-validation.json'),
-            'video_cpu_decode': str(project / 'reports/engineering/offline-backbones-20261108/video-cpu-decode.json'),
-            'video_cpu_decode_scope': 'one sampled train/test frame per task and environment; not full decoding or model validation'}
+            'general_benchmarks': general_inventory(project)}
 
 
 def main() -> int:
