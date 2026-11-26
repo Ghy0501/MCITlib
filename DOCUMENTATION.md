@@ -3,6 +3,7 @@
 | Topic | Guide |
 | --- | --- |
 | Installation, paths, and basic commands | [README](README.md) |
+| New machine: pinned weights, data sources, and first score | [Public quick start](docs/public-start.md) |
 | CL-VISTA: Video-LLaVA and VideoLLaMA2 installation, binding, training, inference, scoring, and evidence | [Video runtime](docs/video-runtime.md) |
 | InternVL model and method behavior | [InternVL implementation](docs/internvl.md) |
 | InternVL four-GPU sample queue | [InternVL sample validation](docs/internvl_sample_validation.md) |

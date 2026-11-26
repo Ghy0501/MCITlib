@@ -2,6 +2,8 @@
 
 MCITlib provides unified configuration, training, evaluation, and reporting across continual learning methods. LLaVA-1.5 supports UCIT, MLLM-DCL, MLLM-ACL, and general image evaluation. InternVL-Chat-ViT-6B-Vicuna-7B supports UCIT and MLLM-DCL. Video-LLaVA and VideoLLaMA2 support CL-VISTA training, held-out generation, and local judge scoring.
 
+**New machine?** [Start from a public checkout](docs/public-start.md): choose one of the four backbones, download its pinned public inputs, and run training and inference on a tiny example before preparing a full benchmark.
+
 **Running video?** Start with the [CL-VISTA runtime guide](docs/video-runtime.md) for installation, model and data layout, GPU selection, and commands for both backbones. Official eight-task **sample** runs exist for Video-LLaVA LoRA-FT, PCLR, and Octopus. VideoLLaMA2 has bounded runtime checks, not official sample or full results.
 
 ```text
@@ -33,11 +35,7 @@ python -m pip install -e .
 mcitlib list
 ```
 
-InternVL also requires its vision dependencies in each selected runtime:
-
-```bash
-python -m pip install -r envs/internvl-extra.txt
-```
+Each image profile includes [InternVL's pinned vision dependency](envs/internvl-extra.txt). It is not a dependency of the lightweight CLI installation.
 
 ## Paths and outputs
 

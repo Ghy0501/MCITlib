@@ -100,4 +100,8 @@ def test_timeout_kills_only_the_spawned_process_group(tmp_path: Path) -> None:
                                    os.environ.copy(), str(tmp_path), log, 0.5)
     assert code == 124 and child_pid.is_file()
     status = Path(f"/proc/{int(child_pid.read_text())}/stat")
-    assert not status.exists() or status.read_text().split()[2] == "Z"
+    try:
+        state = status.read_text().rsplit(")", 1)[1].split()[0]
+    except (FileNotFoundError, ProcessLookupError):
+        return  # already reaped
+    assert state in {"X", "Z"}  # dead or zombie; never accept a live child

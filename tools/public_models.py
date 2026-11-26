@@ -44,7 +44,7 @@ def install(root, name, revision, fetch):
                           ignore_patterns=exclude)).resolve(strict=True)
     if target.is_symlink() and target.resolve() == snapshot:
         return
-    target.symlink_to(snapshot, target_is_directory=True)  # existing links are never replaced
+    target.symlink_to(snapshot.relative_to(root), target_is_directory=True)
 
 
 def main():

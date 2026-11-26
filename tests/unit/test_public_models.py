@@ -30,7 +30,7 @@ def test_plan_pins_models_and_deduplicates_shared_towers():
 def test_install_links_exact_snapshot_without_overwriting_user_data(tmp_path):
     root = tmp_path / "models"
     root.mkdir()
-    snapshot = tmp_path / "snapshots" / "abc"
+    snapshot = root / ".hub-cache" / "models--org--m" / "snapshots" / "abc"
     snapshot.mkdir(parents=True)
     calls = []
 
@@ -40,6 +40,7 @@ def test_install_links_exact_snapshot_without_overwriting_user_data(tmp_path):
 
     install(root, "org/m", "abc", fetch)
     assert (root / "m").resolve() == snapshot
+    assert not (root / "m").readlink().is_absolute()
     assert calls[0]["revision"] == "abc"
     install(root, "org/m", "abc", fetch)
     (root / "m").unlink()

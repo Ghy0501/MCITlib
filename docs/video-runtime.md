@@ -25,7 +25,7 @@ Run these Bash examples from the repository root, with Conda initialized. Replac
 | [VideoLLaMA2](../envs/videollama2.txt) | 3.10.18 | 2.2.0 / cu118 | 4.40.0 | 2.5.8 |
 | [Judge](../envs/video-judge.txt) | 3.10.18 | 2.6.0 / cu118 | 4.57.6 | 2.7.3 (optional backend) |
 
-The files pin runtime packages from the A100 environments; they are not complete machine images. Before installing, check your checkout for the selected native source: `third_party/Video-LLaVA/videollava` or `third_party/VideoLLaMA2/videollama2`. If missing, obtain the complete release; an unrelated PyPI or upstream package is not a substitute. A worker must load PEFT 0.4.0 from **its own environment**. Do not install the image-backbone requirements or add image PEFT to your shell's `PYTHONPATH`.
+The files pin runtime packages from the A100 environments; they are not complete machine images. A fresh checkout contains **source recipes**, not installed video packages: run the preparation and checksum commands below. The [public quick start](public-start.md) lists the matching model, towers and judge. A worker must load PEFT 0.4.0 from **its own environment**. Do not install the image-backbone requirements or add image PEFT to your shell's `PYTHONPATH`.
 
 ```bash
 export RUNTIME_ROOT=/absolute/path/to/video-runtime
@@ -67,6 +67,8 @@ install_video_env video-judge
 
 For a single backbone, skip the other worker installation. If FlashAttention is supplied as a binary wheel, install the matching **Python, Torch, CUDA and C++ ABI** build in place of its source install. For a source build, select the compatible toolkit and compiler for that environment before running the function. Limit build parallelism with `MAX_JOBS` on memory-constrained hosts.
 
+On minimal Linux images the pinned OpenCV wheels may need system OpenGL/X11 runtime libraries (including `libGL.so.1`); `pip check` cannot detect missing shared libraries. In each video worker, verify `python -c 'import cv2, decord; print(cv2.__version__, decord.__version__)'` before loading weights. If imports fail, provision the missing system library in the worker image or ask its maintainer. The tiny video demo additionally needs OpenCV's FFmpeg MPEG-4 writer.
+
 ## Bind models and data
 
 The worker expects the prepared sources under `RUNTIME_ROOT/sources`. Set `native_sources` in the node JSON or export `MCITLIB_VIDEO_SOURCES` to use a different prepared directory. The public [validation record](video-validation.json) summarizes which stages and denominators were verified.
@@ -98,7 +100,8 @@ In a second shell on the **same host**, set the same `RUNTIME_ROOT`, `RESULTS_RO
 
 ```bash
 conda activate "$RUNTIME_ROOT/envs/video-judge"
-CUDA_VISIBLE_DEVICES=2,3 python -m mcitlib.backbones.video.judge_service \
+: "${CUDA_VISIBLE_DEVICES:?Use a separate judge allocation and its inherited mask}"
+python -m mcitlib.backbones.video.judge_service \
   --runtime-root "$RUNTIME_ROOT" --results-root "$RESULTS_ROOT" \
   --model-path "$JUDGE_MODEL"
 ```
@@ -109,12 +112,15 @@ Wait for **`judge_ready`**, not just the existence of `control/judge.sock`. Leav
 
 In the worker shell, choose one backbone and activate its matching prefix. Run the block once per desired backbone; the shared run ID below is safe across the two because outputs include the backbone name.
 
+The full benchmark launcher currently accepts numeric GPU masks only (1, 2 or 4 distinct IDs). If your site assigns GPU UUIDs or MIG slices, do not replace that mask with guessed host indices: use a supported allocation for the benchmark. The dedicated first-score example has its own single-device interface.
+
 ```bash
 BACKBONE=videollava       # or: BACKBONE=videollama2
 conda activate "$RUNTIME_ROOT/envs/$BACKBONE"
 RUN=first-sample
+: "${CUDA_VISIBLE_DEVICES:?Use the worker allocation, separate from the judge}"
 common=(--backbone "$BACKBONE" --method lora_ft --benchmark cl_vista
-        --video-node "$NODE" --video-run-id "$RUN" --gpus 0,1)
+        --video-node "$NODE" --video-run-id "$RUN" --gpus "$CUDA_VISIBLE_DEVICES")
 
 # Inspect the plan without loading weights. The next two commands DO use GPUs.
 mcitlib train "${common[@]}" --video-mode sample --task 1 --dry-run
@@ -145,7 +151,7 @@ print(json.dumps(node, indent=2))
 PY
 mcitlib eval --backbone "$BACKBONE" --method lora_ft --benchmark cl_vista \
   --video-node "$EVAL_NODE" --video-mode sample --video-run-id "$RUN" \
-  --gpus 0,1 --after-task 1
+  --gpus "${CUDA_VISIBLE_DEVICES:?Use the worker allocation}" --after-task 1
 ```
 
 ### Check or score one cell
