@@ -18,6 +18,7 @@ import torch.nn as nn
 
 from mcitlib.tuners import inference_cache as cache
 from mcitlib.tuners.variants import disco, hide
+from tests.conftest import requires_method_abi
 
 FIXTURES = Path(__file__).resolve().parents[1] / 'fixtures/llava_mainline'
 
@@ -500,7 +501,7 @@ def test_eval_entry_builder_scopes_real_generate(tmp_path, monkeypatch, kind):
     assert cache._ACTIVE.get() is None
 
 
-@pytest.mark.parametrize('kind', ['disco', 'hide'])
+@pytest.mark.parametrize('kind', [pytest.param(kind, marks=requires_method_abi(kind)) for kind in ('disco', 'hide')])
 def test_builder_scopes_transformers_generate_on_real_tiny_llama(tmp_path, monkeypatch, kind):
     """Generate multiple tokens through actual Llama and its official expert layers."""
     import importlib

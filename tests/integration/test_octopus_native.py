@@ -4,13 +4,15 @@
 from __future__ import annotations
 
 import copy
+import importlib.util
 import json
+import sys
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import patch
 
 import pytest
 import torch
-from peft import LoraConfig, get_peft_model
 from torch import nn
 from torch.nn import functional as F
 from torch.utils.data import DataLoader
@@ -26,6 +28,7 @@ from mcitlib.methods._octopus.gpwc import (
 from mcitlib.methods._octopus.history import attach_history
 from mcitlib.methods._octopus.state import load_manifest, write_manifest
 from mcitlib.methods._octopus.workflow import sample
+from tests.conftest import requires_method_abi
 
 
 def tiny():
@@ -35,6 +38,8 @@ def tiny():
 
 
 def adapter(model):
+    from peft import LoraConfig, get_peft_model
+
     return get_peft_model(model, LoraConfig(r=2, lora_alpha=4, target_modules=['q_proj'],
                                            lora_dropout=0, task_type='CAUSAL_LM'))
 
@@ -110,14 +115,38 @@ def test_gpwc_counts_tokens_after_image_expansion_and_truncation():
     assert supervised_token_counts(model, batch) == [3, 3]
 
 
+@requires_method_abi("octopus")
+@patch.dict(sys.modules)
 def test_gpwc_flash_patch_matches_eager_full_model_gradients_on_cpu(monkeypatch):
     """Exercise the real V4 attention wrapper with an equivalent CPU SDPA kernel.
 
     The real CUDA FlashAttention kernel still needs hardware validation; this
     checks the V4 packing, causal masks, padding, loss and all model gradients.
     """
+    from mcitlib.backbones.llava.overrides import import_llava
+
+    import_llava()
+    cpu_only = importlib.util.find_spec("flash_attn") is None
+    if cpu_only:
+        monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "fixtures/fake_flash_attn"))
     from llava.train import llama_flash_attn_monkey_patch as flash
     from transformers.models.llama import modeling_llama
+
+    if cpu_only:
+        # The CUDA package supplies these indexing operations too. Keep its
+        # import-only stand-in non-executable outside this numerical test.
+        def unpad(values, mask):
+            indices = mask.flatten().nonzero(as_tuple=True)[0]
+            lengths = mask.sum(dim=1, dtype=torch.int32)
+            offsets = F.pad(lengths.cumsum(0, dtype=torch.int32), (1, 0))
+            return values.flatten(0, 1)[indices], indices, offsets, int(lengths.max())
+
+        def pad(values, indices, batch, length):
+            result = values.new_zeros(batch * length, *values.shape[1:])
+            return result.index_copy(0, indices, values).reshape(batch, length, *values.shape[1:])
+
+        monkeypatch.setattr(flash, "unpad_input", unpad)
+        monkeypatch.setattr(flash, "pad_input", pad)
 
     def cpu_kernel(qkv, cu_lengths, max_length, dropout, softmax_scale=None, causal=False):
         assert dropout == 0 and softmax_scale is None and causal and max_length > 0

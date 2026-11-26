@@ -5,6 +5,7 @@ import fcntl
 import json
 import os
 import struct
+import subprocess
 import sys
 from pathlib import Path
 
@@ -95,10 +96,21 @@ def test_public_queue_acquires_and_releases_own_four_leases(tmp_path, monkeypatc
         os.close(fd)
 
 
-def test_public_queue_reaps_its_detached_descendant_before_releasing_leases(tmp_path, monkeypatch):
+def test_public_queue_reaps_its_detached_descendant_before_releasing_leases(tmp_path, repo_root):
+    # The controller must start childless. The pytest process may already own
+    # a multiprocessing resource tracker after the distributed CPU tests.
+    subprocess.run(
+        [sys.executable, "-c", "import sys; from pathlib import Path; "
+         "from tests.core.test_internvl_validation_queue import _assert_detached_descendant_reaped; "
+         "_assert_detached_descendant_reaped(Path(sys.argv[1]))", str(tmp_path)],
+        cwd=repo_root, check=True, timeout=30,
+    )
+
+
+def _assert_detached_descendant_reaped(tmp_path):
     root, fds = acquire_gpu_leases(tmp_path, tmp_path / "logs/.gpu-leases")
-    monkeypatch.setenv("MCITLIB_INTERNVL_LEASE_ROOT", str(root))
-    monkeypatch.setenv("MCITLIB_INTERNVL_LEASE_FDS", ",".join(map(str, fds)))
+    os.environ["MCITLIB_INTERNVL_LEASE_ROOT"] = str(root)
+    os.environ["MCITLIB_INTERNVL_LEASE_FDS"] = ",".join(map(str, fds))
     run = tmp_path / "run"
     run.mkdir()
     record = tmp_path / "orphan.pid"

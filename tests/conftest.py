@@ -4,9 +4,20 @@
 from __future__ import annotations
 
 import os
+from importlib.metadata import version
 from pathlib import Path
 
 import pytest
+
+
+def requires_method_abi(method: str):
+    """Select the declared Transformers ABI without deselecting the default CI job."""
+    from mcitlib.doctor import _pinned
+    from mcitlib.registry import get_method
+
+    profile = get_method(method).env
+    pin = _pinned(Path(__file__).resolve().parents[1] / "envs" / f"{profile}.txt")["transformers"]
+    return pytest.mark.skipif(version("transformers") != pin, reason=f"{method} requires {profile} (Transformers {pin})")
 
 
 @pytest.fixture(scope="session")

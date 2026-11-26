@@ -21,7 +21,9 @@ def _env(repo_root: Path, tmp_path: Path, method: str) -> dict[str, str]:
     result = os.environ.copy()
     for name in ("MCITLIB_NO_VENDORED_PATH", "MCITLIB_MODEL_OVERRIDE", "MCITLIB_SELFCHECK"):
         result.pop(name, None)
-    result.update(PYTHONPATH=str(repo_root), PYTHONDONTWRITEBYTECODE="1", CUDA_VISIBLE_DEVICES="",
+    # The CPU harness replaces the attention patch before training; no kernel is executed.
+    paths = (repo_root, repo_root / "tests/fixtures/fake_flash_attn")
+    result.update(PYTHONPATH=os.pathsep.join(map(str, paths)), PYTHONDONTWRITEBYTECODE="1", CUDA_VISIBLE_DEVICES="",
                   HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1", OMP_NUM_THREADS="1",
                   TRITON_CACHE_DIR=str(tmp_path / "triton"), TORCH_EXTENSIONS_DIR=str(tmp_path / "torch"),
                   HF_HOME=str(tmp_path / "hf"), XDG_CACHE_HOME=str(tmp_path / "cache"),
@@ -47,10 +49,10 @@ def test_fresh_public_moelora_plugin_registers_its_tuner(repo_root: Path, tmp_pa
     code = """
 import sys
 import transformers
+from mcitlib.methods import create_method
 from peft.utils import PeftType
 assert 'mcitlib.tuners._peft_registry' not in sys.modules
 assert not hasattr(PeftType, 'MOE_LORA_CoIN')
-from mcitlib.methods import create_method
 config = transformers.LlamaConfig(vocab_size=32, hidden_size=16, intermediate_size=32,
                                    num_hidden_layers=1, num_attention_heads=4, num_key_value_heads=4)
 model = transformers.LlamaForCausalLM(config)

@@ -17,6 +17,7 @@ from mcitlib.backbones.llava import olora_checkpoint as olora_checkpoint
 from mcitlib.backbones.llava.trainer import LLaVATrainer
 from mcitlib.methods.olora import OLoRAMethod
 from mcitlib.tuners._peft_registry import install_method_adapter
+from tests.conftest import requires_method_abi
 
 
 def tiny_model():
@@ -91,6 +92,7 @@ def run_backward(mode):
     return loss, extra, gradient, hits
 
 
+@requires_method_abi("olora")
 def test_real_checkpoint_combines_olora_gradients_once():
     base = run_backward("uncheckpointed")
     old = run_backward("reentrant")
@@ -110,6 +112,7 @@ class TinyDataset(Dataset):
         return {"input_ids": ids, "labels": ids.clone()}
 
 
+@requires_method_abi("olora")
 def test_real_hf_trainer_reenables_checkpoint_without_reentrant(tmp_path):
     model, method = tiny_model()
     args = transformers.TrainingArguments(
@@ -147,6 +150,7 @@ def test_real_hf_trainer_reenables_checkpoint_without_reentrant(tmp_path):
     assert checkpoint_module.checkpoint is original
 
 
+@requires_method_abi("olora")
 def test_training_entry_uses_scope_with_real_hf_trainer(tmp_path, monkeypatch):
     from mcitlib.backbones.llava.overrides import import_llava
 

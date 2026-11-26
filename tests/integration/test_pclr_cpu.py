@@ -8,6 +8,7 @@ from torch import nn
 from mcitlib.backbones.llava.overrides import import_llava
 from mcitlib.methods._pclr.core import PoolConfig, RankPool
 from mcitlib.methods._pclr.llava import RoutedLlava, prepare_base_precision, target_groups
+from tests.conftest import requires_method_abi
 
 
 class TinyVision(nn.Module):
@@ -34,6 +35,7 @@ def make_base():
     return model
 
 
+@requires_method_abi("pclr")
 def test_real_llava_two_tasks_compression_and_reload(tmp_path):
     torch.manual_seed(42)
     base = make_base()
